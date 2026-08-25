@@ -16,7 +16,9 @@
   #gameWrap {
     position: relative;
     width: 100vw;
-    height: 100vh;
+    height: 100vh;              /* fallback for older browsers */
+    height: -webkit-fill-available; /* older iOS Safari */
+    height: 100dvh;             /* tracks Safari's address bar show/hide */
   }
   canvas {
     display: block;
@@ -637,11 +639,27 @@
 
   let W, H;
   function resize() {
-    W = canvas.width = window.innerWidth;
-    H = canvas.height = window.innerHeight;
+    // visualViewport tracks Safari's address bar shrinking/growing much more reliably
+    // than window.innerWidth/innerHeight, which can lag or misreport during the transition.
+    const vv = window.visualViewport;
+    W = canvas.width = vv ? Math.round(vv.width) : window.innerWidth;
+    H = canvas.height = vv ? Math.round(vv.height) : window.innerHeight;
   }
   window.addEventListener('resize', resize);
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', resize);
+    window.visualViewport.addEventListener('scroll', resize);
+  }
   resize();
+
+  // Nudge Safari to collapse its address bar on load / orientation change.
+  // Doesn't do anything on browsers that don't need it — harmless no-op elsewhere.
+  function nudgeSafariChrome() {
+    window.scrollTo(0, 1);
+    setTimeout(() => window.scrollTo(0, 1), 300);
+  }
+  window.addEventListener('load', nudgeSafariChrome);
+  window.addEventListener('orientationchange', () => setTimeout(nudgeSafariChrome, 300));
 
   // ---------- Utility ----------
   function rand(min, max) { return Math.random() * (max - min) + min; }
