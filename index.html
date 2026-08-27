@@ -457,11 +457,43 @@
     position: absolute;
     bottom: 16px;
     right: 16px;
-    width: auto;
-    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    align-items: flex-end;
   }
-  .menuVolume input.volumeSlider {
-    width: 110px;
+  .menuVolume .volumeRow {
+    width: auto;
+    margin-bottom: 0;
+  }
+  .menuVolume input.volumeSlider,
+  .menuVolume input.musicVolumeSlider {
+    width: 100px;
+  }
+  input.musicVolumeSlider {
+    flex: 1;
+    accent-color: #ff3d9e;
+  }
+  .musicToggleBtn {
+    width: 26px; height: 26px;
+    border-radius: 50%;
+    border: 2px solid rgba(111,242,255,0.45);
+    background: rgba(111,242,255,0.06);
+    color: #6ff2ff;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    pointer-events: auto;
+    flex-shrink: 0;
+  }
+  .musicToggleBtn:active {
+    background: rgba(111,242,255,0.25);
+  }
+  .musicToggleBtn.muted {
+    color: #6b6b7a;
+    border-color: rgba(255,255,255,0.2);
   }
   .buildTag {
     position: absolute;
@@ -483,6 +515,9 @@
     #shipPreviewCanvas { width: 56px; height: 56px; }
     .shipArrowBtn { width: 24px; height: 24px; font-size: 11px; }
     .shipDescLabel { max-width: 150px; font-size: 9px; }
+    .menuVolume input.volumeSlider, .menuVolume input.musicVolumeSlider { width: 70px; }
+    .menuVolume .volLabel { font-size: 10px; }
+    .musicToggleBtn { width: 22px; height: 22px; font-size: 10px; }
   }
   .hidden { display: none !important; }
   body.in-menu #hud, body.in-menu #muteBtn, body.in-menu #pauseBtn, body.in-menu #controls, body.in-menu #levelIndicator {
@@ -637,9 +672,17 @@
         <button id="achievementsBtn" class="secondaryBtn">ACHIEVEMENTS</button>
       </div>
     </div>
-    <div class="volumeRow menuVolume">
-      <span class="volLabel">🔊 VOLUME</span>
-      <input type="range" class="volumeSlider" min="0" max="100" value="35">
+    <div class="menuVolume">
+      <div class="volumeRow">
+        <button id="musicMuteBtn" class="musicToggleBtn" type="button" title="Toggle music">🎵</button>
+        <span class="volLabel">MUSIC</span>
+        <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
+      </div>
+      <div class="volumeRow">
+        <button id="sfxMuteBtn" class="musicToggleBtn" type="button" title="Toggle sound effects">🔊</button>
+        <span class="volLabel">SFX</span>
+        <input type="range" class="volumeSlider" min="0" max="100" value="35">
+      </div>
     </div>
     <div class="buildTag">BETA BUILD — AUG 25</div>
   </div>
@@ -696,7 +739,7 @@
       </div>
       <div class="htpSection">
         <h3>Enemies</h3>
-        <p>A UFO mothership drifts in periodically and fires wide, sloppy shots. Destroy it and two escape pods eject — smaller, faster, and much more accurate. UFOs drop powerups far more often than asteroids, so they're worth hunting down.</p>
+        <p>A UFO mothership drifts in periodically and fires wide, sloppy shots. UFOs drop powerups far more often than asteroids, so they're worth hunting down. Before level 5, a mothership just dies when destroyed. From level 5 on, killing it ejects two escape pods — smaller, faster, and far more accurate. From level 10 on, destroying a pod breaks it down into two more debris pieces on top of that.</p>
       </div>
       <button id="htpBackBtn" class="secondaryBtn">BACK</button>
     </div>
@@ -714,7 +757,13 @@
   <div id="pauseOverlay" class="hidden">
     <h1>PAUSED</h1>
     <div class="volumeRow">
-      <span class="volLabel">🔊 VOLUME</span>
+      <button id="musicMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle music">🎵</button>
+      <span class="volLabel">MUSIC</span>
+      <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
+    </div>
+    <div class="volumeRow">
+      <button id="sfxMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle sound effects">🔊</button>
+      <span class="volLabel">SFX</span>
       <input type="range" class="volumeSlider" min="0" max="100" value="35">
     </div>
     <button id="resumeBtn">RESUME</button>
@@ -858,6 +907,7 @@
         if (thrustGain && ctx) thrustGain.gain.setTargetAtTime(muted ? 0 : thrustGain.gain.value, ctx.currentTime, 0.05);
         return muted;
       },
+      isMuted() { return muted; },
       setThrust(on) {
         if (!ctx || !thrustGain) return;
         const target = (on && !muted) ? 0.08 : 0;
@@ -918,6 +968,162 @@
     };
   })();
 
+  // ---------- Music: procedural 80s synthwave loop ----------
+  // Independent AudioContext from SFX, and independently mutable — plays continuously from
+  // the first tap on the page and keeps going straight through any pause state, on purpose.
+  const MUSIC = (function() {
+    const CHORDS = [
+      { bass: 110.00, notes: [220.00, 261.63, 329.63] }, // Am
+      { bass: 87.31,  notes: [174.61, 220.00, 261.63] }, // F
+      { bass: 130.81, notes: [261.63, 329.63, 392.00] }, // C
+      { bass: 98.00,  notes: [196.00, 246.94, 293.66] }  // G
+    ];
+    let ctx = null, masterGain = null;
+    let playing = false, muted = false;
+    let desiredVolume = 0.22;
+    const tempo = 108;
+    let nextNoteTime = 0, currentStep = 0, timerId = null;
+    const lookaheadMs = 25, scheduleAheadTime = 0.12;
+
+    function secondsPer16th() { return (60.0 / tempo) / 4; }
+
+    function ensureCtx() {
+      if (ctx) { if (ctx.state === 'suspended') ctx.resume(); return; }
+      ctx = new (window.AudioContext || window.webkitAudioContext)();
+      masterGain = ctx.createGain();
+      masterGain.gain.value = muted ? 0 : desiredVolume;
+      masterGain.connect(ctx.destination);
+    }
+
+    function noiseBuffer(duration) {
+      const size = Math.max(1, Math.floor(ctx.sampleRate * duration));
+      const buffer = ctx.createBuffer(1, size, ctx.sampleRate);
+      const data = buffer.getChannelData(0);
+      for (let i = 0; i < size; i++) data[i] = (Math.random() * 2 - 1) * (1 - i / size);
+      return buffer;
+    }
+
+    function kick(time) {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(140, time);
+      osc.frequency.exponentialRampToValueAtTime(45, time + 0.12);
+      gain.gain.setValueAtTime(0.9, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + 0.25);
+      osc.connect(gain); gain.connect(masterGain);
+      osc.start(time); osc.stop(time + 0.26);
+    }
+
+    function snare(time) {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuffer(0.2);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass'; filter.frequency.value = 1200;
+      const gain = ctx.createGain(); gain.gain.value = 0.45;
+      src.connect(filter); filter.connect(gain); gain.connect(masterGain);
+      src.start(time);
+
+      const osc = ctx.createOscillator(); const oGain = ctx.createGain();
+      osc.type = 'triangle'; osc.frequency.setValueAtTime(180, time);
+      oGain.gain.setValueAtTime(0.25, time);
+      oGain.gain.exponentialRampToValueAtTime(0.001, time + 0.1);
+      osc.connect(oGain); oGain.connect(masterGain);
+      osc.start(time); osc.stop(time + 0.1);
+    }
+
+    function hihat(time, vol) {
+      const src = ctx.createBufferSource();
+      src.buffer = noiseBuffer(0.05);
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'highpass'; filter.frequency.value = 7000;
+      const gain = ctx.createGain(); gain.gain.value = vol;
+      src.connect(filter); filter.connect(gain); gain.connect(masterGain);
+      src.start(time);
+    }
+
+    function bassNote(freq, time, dur) {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = 'sawtooth'; osc.frequency.value = freq;
+      const filter = ctx.createBiquadFilter();
+      filter.type = 'lowpass'; filter.frequency.value = 400;
+      gain.gain.setValueAtTime(0.0001, time);
+      gain.gain.linearRampToValueAtTime(0.35, time + 0.02);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+      osc.connect(filter); filter.connect(gain); gain.connect(masterGain);
+      osc.start(time); osc.stop(time + dur + 0.02);
+    }
+
+    function padChord(freqs, time, dur) {
+      freqs.forEach((f) => {
+        [-4, 4].forEach((detune) => {
+          const osc = ctx.createOscillator(); const gain = ctx.createGain();
+          osc.type = 'sawtooth'; osc.frequency.value = f; osc.detune.value = detune;
+          const filter = ctx.createBiquadFilter();
+          filter.type = 'lowpass'; filter.frequency.value = 1800;
+          gain.gain.setValueAtTime(0.0001, time);
+          gain.gain.linearRampToValueAtTime(0.05, time + 0.6);
+          gain.gain.linearRampToValueAtTime(0.0001, time + dur);
+          osc.connect(filter); filter.connect(gain); gain.connect(masterGain);
+          osc.start(time); osc.stop(time + dur + 0.05);
+        });
+      });
+    }
+
+    function arpNote(freq, time, dur) {
+      const osc = ctx.createOscillator(); const gain = ctx.createGain();
+      osc.type = 'square'; osc.frequency.value = freq;
+      gain.gain.setValueAtTime(0.09, time);
+      gain.gain.exponentialRampToValueAtTime(0.001, time + dur);
+      osc.connect(gain); gain.connect(masterGain);
+      osc.start(time); osc.stop(time + dur + 0.02);
+    }
+
+    function scheduleStep(step, time) {
+      const bar = Math.floor(step / 16) % 4;
+      const stepInBar = step % 16;
+      const chord = CHORDS[bar];
+
+      if (stepInBar % 4 === 0) kick(time);
+      if (stepInBar === 4 || stepInBar === 12) snare(time);
+      if (stepInBar % 2 === 0) hihat(time, stepInBar % 4 === 0 ? 0.16 : 0.09);
+      if (stepInBar % 2 === 0) bassNote(chord.bass, time, secondsPer16th() * 1.8);
+      if (stepInBar === 0) padChord(chord.notes, time, (60 / tempo) * 4 * 0.95);
+
+      const arpFreq = chord.notes[step % chord.notes.length] * 2;
+      arpNote(arpFreq, time, secondsPer16th() * 0.8);
+    }
+
+    function scheduler() {
+      while (nextNoteTime < ctx.currentTime + scheduleAheadTime) {
+        scheduleStep(currentStep, nextNoteTime);
+        nextNoteTime += secondsPer16th();
+        currentStep = (currentStep + 1) % 64;
+      }
+      if (playing) timerId = setTimeout(scheduler, lookaheadMs);
+    }
+
+    return {
+      play() {
+        ensureCtx();
+        if (playing) return;
+        playing = true;
+        currentStep = 0;
+        nextNoteTime = ctx.currentTime + 0.05;
+        scheduler();
+      },
+      toggleMute() {
+        muted = !muted;
+        if (masterGain && ctx) masterGain.gain.setTargetAtTime(muted ? 0 : desiredVolume, ctx.currentTime, 0.05);
+        return muted;
+      },
+      isMuted() { return muted; },
+      setVolume(v) {
+        desiredVolume = Math.max(0, Math.min(1, v));
+        if (masterGain && ctx && !muted) masterGain.gain.setTargetAtTime(desiredVolume, ctx.currentTime, 0.05);
+      }
+    };
+  })();
+
 
   // ---------- Game State ----------
   let ship, bullets, asteroids, particles, powerups, floatingTexts, rayBeams, score, lives, level, gameOver, running;
@@ -947,7 +1153,7 @@
   const POWERUP_WEIGHTS = { shield: 3, range: 3, spread: 3, raygun: 2, overcharge: 2, rapidfire: 2, piercing: 2 };
   const SHIELD_MAX_CHARGES = 3;      // shield doesn't expire — it stacks and depletes on hits
   const RANGE_MAX_STACKS = 5;
-  const RANGE_LIFE_PER_STACK = 20;   // extra bullet-life frames per stack
+  const RANGE_LIFE_PER_STACK = 8;    // extra bullet-life frames per stack (was 20 — max stack was covering almost a full screen width)
   const SPREAD_MAX_STACKS = 5;       // universal utility now — stacks alongside anything, including weapon modes
 
   // Ray Gun: passive auto-turret that zaps small (size-1) asteroids on its own, no aiming needed.
@@ -1035,9 +1241,42 @@
       hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
       desc: 'Cosmetic recolor of Phantom. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'rayChain5' }
+    },
+    {
+      name: 'INTERCEPTOR NOVA', color: '#ffb347',
+      points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
+      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
+      desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
+      unlock: { type: 'achievement', id: 'ufoHunter' }
+    },
+    {
+      name: 'VIPER BLAZE', color: '#ff5e1a',
+      points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
+      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
+      desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
+      unlock: { type: 'achievement', id: 'podBrood' }
+    },
+    {
+      name: 'TITAN PLATINUM', color: '#c8d6e5',
+      points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
+      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
+      desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
+      unlock: { type: 'achievement', id: 'score15k' }
+    },
+    {
+      name: 'PHANTOM PRISM', color: '#b3f0ff', shimmer: true,
+      points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
+      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
+      desc: 'Cosmetic recolor of Phantom — shimmers through colors. Same handling, different shine.',
+      unlock: { type: 'achievement', id: 'level20' }
     }
   ];
   let selectedSkinIndex = 0;
+
+  function shipDisplayColor(skin) {
+    if (skin.shimmer) return `hsl(${Math.floor(Date.now() / 8) % 360}, 90%, 70%)`;
+    return skin.color;
+  }
 
   // ---------- Achievements ----------
   // Each maps to unlocking one cosmetic ship variant. check() reads live run state and/or
@@ -1070,6 +1309,34 @@
       desc: 'Land a 5-target Ray Gun chain in a single volley.',
       progress: () => '',
       check: () => rayChain5Flag
+    },
+    ufoHunter: {
+      shipIndex: 8,
+      label: 'UFO Hunter',
+      desc: 'Destroy 20 UFOs total (motherships, pods, or debris), across all runs.',
+      progress: () => `${Math.min(saveData.totalUfosDestroyed, 20)}/20`,
+      check: () => saveData.totalUfosDestroyed >= 20
+    },
+    podBrood: {
+      shipIndex: 9,
+      label: 'Double Trouble',
+      desc: 'Destroy both escape pods ejected from the same mothership, in one run.',
+      progress: () => '',
+      check: () => podBroodFlag
+    },
+    score15k: {
+      shipIndex: 10,
+      label: 'Score Chaser',
+      desc: 'Score 15,000 points in a single run.',
+      progress: () => '',
+      check: () => score >= 15000
+    },
+    level20: {
+      shipIndex: 11,
+      label: 'Marathon',
+      desc: 'Reach level 20 in a single run.',
+      progress: () => '',
+      check: () => level >= 20
     }
   };
 
@@ -1083,12 +1350,13 @@
         if (parsed && Array.isArray(parsed.unlockedShips)) {
           // Fill in fields that may not exist in older save versions
           if (typeof parsed.totalAsteroidsDestroyed !== 'number') parsed.totalAsteroidsDestroyed = 0;
+          if (typeof parsed.totalUfosDestroyed !== 'number') parsed.totalUfosDestroyed = 0;
           if (!parsed.achievements || typeof parsed.achievements !== 'object') parsed.achievements = {};
           return parsed;
         }
       }
     } catch (e) { /* localStorage unavailable — fall back to defaults */ }
-    return { highScore: 0, bestLevel: 0, unlockedShips: [0], totalAsteroidsDestroyed: 0, achievements: {} };
+    return { highScore: 0, bestLevel: 0, unlockedShips: [0], totalAsteroidsDestroyed: 0, totalUfosDestroyed: 0, achievements: {} };
   }
   function persistSave() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(saveData)); } catch (e) { /* ignore */ }
@@ -1202,6 +1470,8 @@
   let livesLostThisRun = 0;
   let comboAllFourFlag = false;
   let rayChain5Flag = false;
+  let destroyedBroodIds = new Set();
+  let podBroodFlag = false;
 
   function initGame() {
     ship = newShip();
@@ -1231,6 +1501,8 @@
     livesLostThisRun = 0;
     comboAllFourFlag = false;
     rayChain5Flag = false;
+    destroyedBroodIds = new Set();
+    podBroodFlag = false;
     spawnWave();
     updateHUD();
   }
@@ -1571,15 +1843,15 @@
 
     // UFO movement + firing
     for (const u of ufos) {
-      if (u.tier === 1) {
-        // Escape pods dart around erratically instead of flying a straight line
+      if (u.tier === 1 || u.tier === 0) {
+        // Pods and debris dart around erratically instead of flying a straight line
         u.driftTimer--;
         if (u.driftTimer <= 0) {
           const speed = Math.hypot(u.vx, u.vy) || 2;
           const newAngle = rand(0, Math.PI * 2);
           u.vx = Math.cos(newAngle) * speed;
           u.vy = Math.sin(newAngle) * speed;
-          u.driftTimer = rand(30, 60);
+          u.driftTimer = rand(u.tier === 0 ? 15 : 30, u.tier === 0 ? 30 : 60);
         }
       }
       if (u.ejectTimer > 0) u.ejectTimer--;
@@ -1588,10 +1860,12 @@
       wrap(u);
       u.angle += 0.02;
 
-      u.fireCooldown--;
-      if (u.fireCooldown <= 0) {
-        fireUfoBullet(u);
-        u.fireCooldown = u.tier === 2 ? rand(90, 150) : rand(55, 90);
+      if (u.tier > 0) {
+        u.fireCooldown--;
+        if (u.fireCooldown <= 0) {
+          fireUfoBullet(u);
+          u.fireCooldown = u.tier === 2 ? rand(90, 150) : rand(55, 90);
+        }
       }
     }
 
@@ -1793,18 +2067,29 @@
     const vy = rand(-0.25, 0.25);
     ufos.push({
       x, y, vx, vy, r, tier: 2, angle: 0,
-      fireCooldown: rand(90, 150), driftTimer: 0, ejectTimer: 0
+      fireCooldown: rand(90, 150), driftTimer: 0, ejectTimer: 0, broodId: null
     });
   }
 
-  function spawnEscapePod(x, y, ejectAngle) {
+  function spawnEscapePod(x, y, ejectAngle, broodId) {
     const r = 15;
     const speed = rand(1.6, 2.2);
     ufos.push({
       x, y,
       vx: Math.cos(ejectAngle) * speed, vy: Math.sin(ejectAngle) * speed,
       r, tier: 1, angle: 0,
-      fireCooldown: rand(50, 90), driftTimer: rand(30, 60), ejectTimer: 18 // pop-in visual over 18 frames
+      fireCooldown: rand(50, 90), driftTimer: rand(30, 60), ejectTimer: 18, broodId
+    });
+  }
+
+  function spawnDebris(x, y, ejectAngle) {
+    const r = 9;
+    const speed = rand(2, 2.8);
+    ufos.push({
+      x, y,
+      vx: Math.cos(ejectAngle) * speed, vy: Math.sin(ejectAngle) * speed,
+      r, tier: 0, angle: 0,
+      fireCooldown: Infinity, driftTimer: rand(20, 40), ejectTimer: 18, broodId: null // debris doesn't fire back
     });
   }
 
@@ -1821,20 +2106,38 @@
     SFX.enemyShot();
   }
 
+  let nextBroodId = 0;
+
   function breakUFO(index, powerful) {
     const u = ufos[index];
-    score += u.tier === 2 ? 200 : 150; // UFOs pay better than asteroids — worth hunting
+    const points = u.tier === 2 ? 200 : u.tier === 1 ? 150 : 100;
+    score += points; // UFOs pay better than asteroids — worth hunting
+    saveData.totalUfosDestroyed++;
     updateHUD();
-    spawnExplosion(u.x, u.y, u.tier === 2 ? 26 : 16, '#ff2fd6');
-    triggerShake(u.tier === 2 ? 7 : 4, u.tier === 2 ? 10 : 6);
+    spawnExplosion(u.x, u.y, u.tier === 2 ? 26 : u.tier === 1 ? 16 : 10, '#ff2fd6');
+    triggerShake(u.tier === 2 ? 7 : u.tier === 1 ? 4 : 2, u.tier === 2 ? 10 : u.tier === 1 ? 6 : 4);
     SFX.ufoExplosion(u.tier);
     ufos.splice(index, 1);
 
-    if (!powerful && u.tier === 2) {
+    // "Double Trouble" tracking: flag if both pods from the same mothership get destroyed this run
+    if (u.tier === 1 && u.broodId != null) {
+      if (destroyedBroodIds.has(u.broodId)) podBroodFlag = true;
+      else destroyedBroodIds.add(u.broodId);
+    }
+
+    // Escalating split behavior by level: simple kills early, splits appear at 5, splits-of-splits at 10+
+    if (!powerful && u.tier === 2 && level >= 5) {
       // Mothership destroyed — 2 escape pods eject outward symmetrically
       const angle = rand(0, Math.PI * 2);
-      spawnEscapePod(u.x, u.y, angle);
-      spawnEscapePod(u.x, u.y, angle + Math.PI);
+      const broodId = nextBroodId++;
+      spawnEscapePod(u.x, u.y, angle, broodId);
+      spawnEscapePod(u.x, u.y, angle + Math.PI, broodId);
+      SFX.escapePodEject();
+    } else if (!powerful && u.tier === 1 && level >= 10) {
+      // Escape pod breaks down further — 2 debris pieces scatter
+      const angle = rand(0, Math.PI * 2);
+      spawnDebris(u.x, u.y, angle);
+      spawnDebris(u.x, u.y, angle + Math.PI);
       SFX.escapePodEject();
     }
 
@@ -1865,12 +2168,13 @@
   function drawShip() {
     if (invulnTimer > 0 && Math.floor(invulnTimer / 6) % 2 === 0) return; // blink
     const skin = ship.skin || SHIP_SKINS[0];
+    const hullColor = shipDisplayColor(skin);
     ctx.save();
     ctx.translate(ship.x, ship.y);
     ctx.rotate(ship.angle);
-    ctx.strokeStyle = skin.color;
+    ctx.strokeStyle = hullColor;
     ctx.lineWidth = 2;
-    ctx.shadowColor = skin.color;
+    ctx.shadowColor = hullColor;
     ctx.shadowBlur = 10;
     ctx.beginPath();
     skin.points.forEach(([mx, my], i) => {
@@ -2091,7 +2395,7 @@
       ctx.translate(u.x, u.y);
       const scale = u.ejectTimer > 0 ? Math.max(0.15, 1 - u.ejectTimer / 18) : 1; // pop-in when a pod is freshly ejected
       ctx.scale(scale, scale);
-      const color = u.tier === 2 ? '#ff2fd6' : '#ff6fe0';
+      const color = u.tier === 2 ? '#ff2fd6' : u.tier === 1 ? '#ff6fe0' : '#ffb3f0';
       ctx.strokeStyle = color;
       ctx.shadowColor = color;
       ctx.shadowBlur = 10;
@@ -2169,9 +2473,12 @@
 
   function drawStars() {
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    const t = Date.now() / 1000;
     for (let i = 0; i < starField.length; i++) {
       const s = starField[i];
-      ctx.globalAlpha = s.a;
+      // Gentle twinkle: small, slow brightness drift per star — subtle on purpose
+      const twinkle = Math.sin(t * s.twinkleSpeed + s.phase) * 0.15;
+      ctx.globalAlpha = Math.max(0.1, Math.min(1, s.a + twinkle));
       ctx.fillRect(s.x, s.y, s.size, s.size);
     }
     ctx.globalAlpha = 1;
@@ -2184,7 +2491,9 @@
       starField.push({
         x: rand(0, W), y: rand(0, H),
         size: rand(0.5, 1.8),
-        a: rand(0.2, 0.9)
+        a: rand(0.2, 0.9),
+        phase: rand(0, Math.PI * 2),
+        twinkleSpeed: rand(0.3, 0.8) // slow — a full cycle takes several seconds
       });
     }
   }
@@ -2274,7 +2583,7 @@
     const w = shipPreviewCanvasEl.width, h = shipPreviewCanvasEl.height;
     const skin = SHIP_SKINS[selectedSkinIndex];
     const unlocked = isUnlocked(selectedSkinIndex);
-    const color = unlocked ? skin.color : LOCKED_COLOR;
+    const color = unlocked ? shipDisplayColor(skin) : LOCKED_COLOR;
     const r = Math.min(w, h) * 0.32;
     pctx.clearRect(0, 0, w, h);
     pctx.save();
@@ -2362,8 +2671,8 @@
       <button id="restartBtn">PLAY AGAIN</button>
       <button id="gameOverMenuBtn" class="secondaryBtn">MAIN MENU</button>
     `;
-    document.getElementById('restartBtn').addEventListener('click', startGame);
-    document.getElementById('gameOverMenuBtn').addEventListener('click', returnToMainMenu);
+    document.getElementById('restartBtn').addEventListener('click', () => { SFX.uiTick(); startGame(); });
+    document.getElementById('gameOverMenuBtn').addEventListener('click', () => { SFX.uiTick(); returnToMainMenu(); });
   }
 
   function startGame() {
@@ -2400,16 +2709,41 @@
   }
   document.querySelectorAll('.volumeSlider').forEach(bindVolumeSlider);
 
+  function bindMusicVolumeSlider(el) {
+    el.addEventListener('input', () => {
+      const v = parseInt(el.value, 10) / 100;
+      MUSIC.setVolume(v);
+      document.querySelectorAll('.musicVolumeSlider').forEach((s) => { if (s !== el) s.value = el.value; });
+    });
+  }
+  document.querySelectorAll('.musicVolumeSlider').forEach(bindMusicVolumeSlider);
+
   // ---------- Main menu (re)binding — needed because "quit to menu" restores fresh markup ----------
   function bindMainMenuUI() {
     const startBtn = overlay.querySelector('#startBtn');
     const howToPlayBtn = overlay.querySelector('#howToPlayBtn');
     const achievementsBtn = overlay.querySelector('#achievementsBtn');
     const volSlider = overlay.querySelector('.volumeSlider');
-    if (startBtn) startBtn.addEventListener('click', startGame);
-    if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => howToPlayOverlay.classList.remove('hidden'));
-    if (achievementsBtn) achievementsBtn.addEventListener('click', () => { renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
+    const musicVolSlider = overlay.querySelector('.musicVolumeSlider');
+    if (startBtn) startBtn.addEventListener('click', () => { SFX.uiTick(); startGame(); });
+    if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
+    if (achievementsBtn) achievementsBtn.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
     if (volSlider) bindVolumeSlider(volSlider);
+    if (musicVolSlider) bindMusicVolumeSlider(musicVolSlider);
+
+    const musicMuteBtn = overlay.querySelector('#musicMuteBtn');
+    if (musicMuteBtn) {
+      musicMuteBtn.textContent = MUSIC.isMuted() ? '🔇' : '🎵';
+      musicMuteBtn.classList.toggle('muted', MUSIC.isMuted());
+      musicMuteBtn.addEventListener('click', () => { syncMusicMuteButtons(MUSIC.toggleMute()); SFX.uiTick(); });
+    }
+
+    const sfxMuteBtn = overlay.querySelector('#sfxMuteBtn');
+    if (sfxMuteBtn) {
+      sfxMuteBtn.textContent = SFX.isMuted() ? '🔇' : '🔊';
+      sfxMuteBtn.classList.toggle('muted', SFX.isMuted());
+      sfxMuteBtn.addEventListener('click', () => { syncSfxMuteButtons(SFX.toggleMute()); SFX.uiTick(); });
+    }
 
     shipPreviewCanvasEl = overlay.querySelector('#shipPreviewCanvas');
     shipNameLabelEl = overlay.querySelector('#shipNameLabel');
@@ -2424,6 +2758,18 @@
     if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}`;
   }
   bindMainMenuUI();
+
+  // Audio starts on the very first tap/click/key anywhere on the page — including just landing
+  // on the menu — so both music AND button sound effects are already live before Start is ever pressed.
+  // Uses touchstart (not pointerdown) since iOS Safari's Pointer Events support is unreliable —
+  // same reason the touch controls below use touchstart/mousedown instead of pointer events.
+  function initAudioOnFirstInteraction() {
+    SFX.init();
+    MUSIC.play();
+  }
+  document.addEventListener('touchstart', initAudioOnFirstInteraction, { once: true, passive: true });
+  document.addEventListener('mousedown', initAudioOnFirstInteraction, { once: true });
+  document.addEventListener('keydown', initAudioOnFirstInteraction, { once: true });
 
   function renderAchievements() {
     const listEl = document.getElementById('achievementsList');
@@ -2447,12 +2793,19 @@
 
   const rotateOverlay = document.getElementById('rotateOverlay');
   const rotateDismissBtn = document.getElementById('rotateDismissBtn');
-  rotateDismissBtn.addEventListener('click', () => rotateOverlay.classList.add('dismissed'));
+  rotateDismissBtn.addEventListener('click', () => { SFX.uiTick(); rotateOverlay.classList.add('dismissed'); });
+
+  function syncSfxMuteButtons(isMuted) {
+    document.querySelectorAll('#muteBtn, #sfxMuteBtn, #sfxMuteBtnPause').forEach((btn) => {
+      btn.textContent = isMuted ? '🔇' : '🔊';
+      btn.classList.toggle('muted', isMuted);
+    });
+  }
 
   const muteBtn = document.getElementById('muteBtn');
   muteBtn.addEventListener('click', () => {
-    const isMuted = SFX.toggleMute();
-    muteBtn.textContent = isMuted ? '🔇' : '🔊';
+    syncSfxMuteButtons(SFX.toggleMute());
+    SFX.uiTick();
   });
 
   // ---------- Pause ----------
@@ -2473,14 +2826,37 @@
     if (val) SFX.setThrust(false);
   }
 
-  pauseBtn.addEventListener('click', () => setPaused(!paused));
-  resumeBtn.addEventListener('click', () => setPaused(false));
-  howToPlayBtnPause.addEventListener('click', () => howToPlayOverlay.classList.remove('hidden'));
-  htpBackBtn.addEventListener('click', () => howToPlayOverlay.classList.add('hidden'));
-  achievementsBtnPause.addEventListener('click', () => { renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
-  achBackBtn.addEventListener('click', () => achievementsOverlay.classList.add('hidden'));
+  pauseBtn.addEventListener('click', () => { SFX.uiTick(); setPaused(!paused); });
+  resumeBtn.addEventListener('click', () => { SFX.uiTick(); setPaused(false); });
+  howToPlayBtnPause.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
+  htpBackBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.add('hidden'); });
+  achievementsBtnPause.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
 
-  quitBtn.addEventListener('click', returnToMainMenu);
+  const musicMuteBtnPause = document.getElementById('musicMuteBtnPause');
+  function syncMusicMuteButtons(isMuted) {
+    document.querySelectorAll('#musicMuteBtn, #musicMuteBtnPause').forEach((btn) => {
+      btn.textContent = isMuted ? '🔇' : '🎵';
+      btn.classList.toggle('muted', isMuted);
+    });
+  }
+  musicMuteBtnPause.textContent = MUSIC.isMuted() ? '🔇' : '🎵';
+  musicMuteBtnPause.classList.toggle('muted', MUSIC.isMuted());
+  musicMuteBtnPause.addEventListener('click', () => { syncMusicMuteButtons(MUSIC.toggleMute()); SFX.uiTick(); });
+
+  const sfxMuteBtnPause = document.getElementById('sfxMuteBtnPause');
+  sfxMuteBtnPause.textContent = SFX.isMuted() ? '🔇' : '🔊';
+  sfxMuteBtnPause.classList.toggle('muted', SFX.isMuted());
+  sfxMuteBtnPause.addEventListener('click', () => { syncSfxMuteButtons(SFX.toggleMute()); SFX.uiTick(); });
+
+  // Auto-pause the instant the player leaves — switches tabs, backgrounds the app, alt-tabs, etc.
+  // Deliberately never auto-resumes on return; jumping back into live asteroids unannounced feels bad.
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden) setPaused(true);
+  });
+  window.addEventListener('blur', () => setPaused(true));
+  achBackBtn.addEventListener('click', () => { SFX.uiTick(); achievementsOverlay.classList.add('hidden'); });
+
+  quitBtn.addEventListener('click', () => { SFX.uiTick(); returnToMainMenu(); });
 
   function setInMenu(flag) {
     document.body.classList.toggle('in-menu', flag);
