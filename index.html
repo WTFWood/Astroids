@@ -964,6 +964,12 @@
       escapePodEject() {
         tone(700, 0.1, 'square', 0.15, 1100);
         setTimeout(() => tone(900, 0.08, 'square', 0.12, 1400), 50);
+      },
+      shipRebirth() {
+        // Rising sweep with a couple of sparkly overtones — the "reforming" whoosh
+        tone(160, 0.9, 'sawtooth', 0.2, 520);
+        setTimeout(() => tone(440, 0.3, 'triangle', 0.15, 880), 350);
+        setTimeout(() => tone(660, 0.25, 'triangle', 0.12, 1320), 550);
       }
     };
   })();
@@ -1126,13 +1132,23 @@
 
 
   // ---------- Game State ----------
-  let ship, bullets, asteroids, particles, powerups, floatingTexts, rayBeams, score, lives, level, gameOver, running;
+  let ship, bullets, asteroids, particles, powerups, floatingTexts, rayBeams, shipDebris, impactRings, score, lives, level, gameOver, running;
   let ufos, ufoBullets, ufoSpawnTimer;
   let keys = {};
   let invulnTimer = 0;
 
   // ---------- Juice: screen shake + hit flash ----------
-  let shakeMagnitude = 0, shakeTime = 0, hitFlashAlpha = 0;
+  let shakeMagnitude = 0, shakeTime = 0, hitFlashAlpha = 0, hitConfirmFlash = 0;
+  let deathZoomActive = false, deathZoomTimer = 0, deathZoomX = 0, deathZoomY = 0;
+  let deathZoomTickAccum = 0; // lets the slow-mo speed itself ramp smoothly instead of being fixed
+  const DEATH_ZOOM_DURATION = 150;  // frames of real time for the camera push-in to fully develop (~2.5s)
+
+  // ---------- Rebirth: reverse of the death sequence, played on "Play Again" ----------
+  let rebirthActive = false, rebirthTimer = 0;
+  let shipRebirthPieces = [];
+  let rebirthStartScale = 1, rebirthStartPanX = 0, rebirthStartPanY = 0;
+  const REBIRTH_DURATION = 75; // ~1.25s — hull pieces converge and camera settles back to normal
+
   function triggerShake(magnitude, duration) {
     shakeMagnitude = magnitude;
     shakeTime = duration;
@@ -1166,6 +1182,7 @@
   // was active. Everything else (Shield, Range, Spread, Ray Gun) is universal and stacks with any of them.
   const OVERCHARGE_DURATION = 420;   // 7s
   const OVERCHARGE_RECOIL = 1.1;
+  const NORMAL_RECOIL = 0.12; // small kick on every shot — barely noticeable while moving, felt when stationary
   const RAPIDFIRE_DURATION = 480;    // 8s
   const RAPIDFIRE_COOLDOWN = 120;    // ms between shots (vs 220 normal)
   const PIERCING_DURATION = 480;     // 8s
@@ -1187,84 +1204,84 @@
   // unlocked by specific achievements instead of just leveling, so there's more than one axis to chase.
   const SHIP_SKINS = [
     {
-      name: 'INTERCEPTOR', color: '#6ff2ff',
+      name: 'INTERCEPTOR', color: '#6ff2ff', trailColors: ['#8ff5ff', '#ffffff'],
       points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
       hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
       desc: 'Balanced all-rounder. No surprises.',
       unlock: { type: 'default' }
     },
     {
-      name: 'VIPER', color: '#ff6f6f',
+      name: 'VIPER', color: '#ff6f6f', trailColors: ['#ff6f6f', '#ffb347'],
       points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
       hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
       desc: 'Fast and twitchy — but a bigger target.',
       unlock: { type: 'level', value: 5 }
     },
     {
-      name: 'TITAN', color: '#6fffb0',
+      name: 'TITAN', color: '#6fffb0', trailColors: ['#8fffc0', '#d9ff70'],
       points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
       hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
       desc: 'Slow and bulky. Starts every run with 1 shield charge.',
       unlock: { type: 'level', value: 10 }
     },
     {
-      name: 'PHANTOM', color: '#c9a4ff',
+      name: 'PHANTOM', color: '#c9a4ff', trailColors: ['#c9a4ff', '#ff9ee8'],
       points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
       hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
       desc: 'Small hitbox, hard to hit — no armor to fall back on.',
       unlock: { type: 'level', value: 15 }
     },
     {
-      name: 'INTERCEPTOR CHROME', color: '#dff4ff',
+      name: 'INTERCEPTOR CHROME', color: '#dff4ff', trailColors: ['#ffffff', '#dff4ff'],
       points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
       hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
       desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'destroy500' }
     },
     {
-      name: 'VIPER NOIR', color: '#ff2f5f',
+      name: 'VIPER NOIR', color: '#ff5478', trailColors: ['#ff5478', '#ff2f5f'],
       points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
       hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
       desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'level5NoDeath' }
     },
     {
-      name: 'TITAN GOLD', color: '#ffd23f',
+      name: 'TITAN GOLD', color: '#ffdd70', trailColors: ['#ffdd70', '#ffb347'],
       points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
       hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
       desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'allFourActive' }
     },
     {
-      name: 'PHANTOM SPECTRAL', color: '#e0b3ff',
+      name: 'PHANTOM SPECTRAL', color: '#e0b3ff', trailColors: ['#e0b3ff', '#8dfcff'],
       points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
       hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
       desc: 'Cosmetic recolor of Phantom. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'rayChain5' }
     },
     {
-      name: 'INTERCEPTOR NOVA', color: '#ffb347',
+      name: 'INTERCEPTOR NOVA', color: '#ffb347', trailColors: ['#ffb347', '#ffdd70'],
       points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
       hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
       desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'ufoHunter' }
     },
     {
-      name: 'VIPER BLAZE', color: '#ff5e1a',
+      name: 'VIPER BLAZE', color: '#ff8f52', trailColors: ['#ff8f52', '#ffb347'],
       points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
       hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
       desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'podBrood' }
     },
     {
-      name: 'TITAN PLATINUM', color: '#c8d6e5',
+      name: 'TITAN PLATINUM', color: '#c8d6e5', trailColors: ['#c8d6e5', '#ffffff'],
       points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
       hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
       desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'score15k' }
     },
     {
-      name: 'PHANTOM PRISM', color: '#b3f0ff', shimmer: true,
+      name: 'PHANTOM PRISM', color: '#b3f0ff', shimmer: true, trailColors: ['#b3f0ff', '#ffb3f0'],
       points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
       hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
       desc: 'Cosmetic recolor of Phantom — shimmers through colors. Same handling, different shine.',
@@ -1480,12 +1497,21 @@
     powerups = [];
     floatingTexts = [];
     rayBeams = [];
+    shipDebris = [];
+    impactRings = [];
     ufos = [];
     ufoBullets = [];
     ufoSpawnTimer = Math.floor(rand(600, 900)); // first UFO shows up 10-15s in, gives an opening breather
     shakeMagnitude = 0;
     shakeTime = 0;
     hitFlashAlpha = 0;
+    hitConfirmFlash = 0;
+    deathZoomActive = false;
+    deathZoomTimer = 0;
+    deathZoomTickAccum = 0;
+    rebirthActive = false;
+    rebirthTimer = 0;
+    shipRebirthPieces = [];
     score = 0;
     lives = 3;
     level = 1;
@@ -1574,12 +1600,19 @@
     for (let i = 0; i < pelletCount; i++) {
       const t = pelletCount === 1 ? 0 : (i / (pelletCount - 1)) - 0.5; // -0.5 .. 0.5
       const shotAngle = ship.angle + t * totalSpread;
+
+      // Cone effect: only the dead-center pellet keeps full range. The further a pellet's
+      // angle sits from center, the faster it fizzles out — reads as a cone, not a wall of
+      // equally-lethal pellets, which is what was making a maxed Spread stack so overbearing.
+      const edgeFactor = pelletCount > 1 ? Math.abs(t) * 2 : 0; // 0 at center, 1 at the outer edge
+      const coneLife = Math.max(14, Math.round(bulletLife * (1 - edgeFactor * 0.55)));
+
       bullets.push({
         x: ship.x + Math.cos(shotAngle) * ship.r,
         y: ship.y + Math.sin(shotAngle) * ship.r,
         vx: Math.cos(shotAngle) * 7 + ship.vx,
         vy: Math.sin(shotAngle) * 7 + ship.vy,
-        life: bulletLife,
+        life: coneLife,
         r: isOvercharge ? 4 : isPiercing ? 3 : 2,
         overcharged: isOvercharge,
         pierce: isPiercing ? PIERCE_HITS : 0
@@ -1590,6 +1623,11 @@
       // Recoil kicks the ship backward, opposite the shot direction (once per trigger pull)
       ship.vx -= Math.cos(ship.angle) * OVERCHARGE_RECOIL;
       ship.vy -= Math.sin(ship.angle) * OVERCHARGE_RECOIL;
+    } else {
+      // A much smaller kick on ordinary shots too — mostly imperceptible while you're already
+      // moving fast, but gives firing some weight when you're sitting still.
+      ship.vx -= Math.cos(ship.angle) * NORMAL_RECOIL;
+      ship.vy -= Math.sin(ship.angle) * NORMAL_RECOIL;
     }
 
     SFX.laser(isOvercharge);
@@ -1683,9 +1721,79 @@
     }
   }
 
+  // Quick expanding ring right where a bullet connects — a small, cheap confirmation hit
+  // separate from the bigger burst that plays when the target actually gets destroyed.
+  // "big" gets a much larger, longer-lived ring for Overcharge — differs only in SIZE, the
+  // line stays just as thin as everything else so it doesn't clash with the clean linework look.
+  function spawnImpactRing(x, y, color, big) {
+    impactRings.push({
+      x, y,
+      life: big ? 28 : 16,
+      maxLife: big ? 28 : 16,
+      color: color || '#ffffff',
+      maxRadius: big ? 115 : 32,
+      radius: 2, // eases toward maxRadius each frame rather than growing at a flat linear rate
+      big: !!big
+    });
+  }
+
+  // Afterburner: small fading flame particles trailing off the engine nozzle while thrusting
+  function spawnThrustTrail() {
+    if (Math.random() < 0.45) return; // thin out the stream — was spawning every single frame
+    const skin = ship.skin || SHIP_SKINS[0];
+    const trailColors = skin.trailColors || ['#ffb347', '#ff6f3f'];
+    const backX = ship.x - Math.cos(ship.angle) * ship.r * 0.85;
+    const backY = ship.y - Math.sin(ship.angle) * ship.r * 0.85;
+    const spread = rand(-0.55, 0.55); // wide cone so it fans out instead of stacking into a line
+    const kickAngle = ship.angle + Math.PI + spread;
+    const speed = rand(0.7, 1.7);
+    particles.push({
+      x: backX + rand(-2.5, 2.5),
+      y: backY + rand(-2.5, 2.5),
+      vx: Math.cos(kickAngle) * speed + ship.vx * 0.25,
+      vy: Math.sin(kickAngle) * speed + ship.vy * 0.25,
+      life: rand(9, 15),
+      maxLife: 15,
+      size: rand(1.2, 2.4),
+      color: Math.random() < 0.5 ? trailColors[0] : trailColors[1]
+    });
+  }
+
   // ---------- Floating score popups (bonus points from maxed/banked powerups) ----------
   function spawnFloatingText(x, y, text, color) {
     floatingTexts.push({ x, y, text, color: color || '#ffffff', life: 90, maxLife: 90 });
+  }
+
+  // Ship death: break the hull into its own edges and send them tumbling outward,
+  // rather than a generic particle burst — reads as "the ship itself" falling apart.
+  function spawnShipDebris(x, y, angle, skin, r) {
+    const pts = skin.points;
+    const cos = Math.cos(angle), sin = Math.sin(angle);
+    for (let i = 0; i < pts.length; i++) {
+      const p1 = pts[i];
+      const p2 = pts[(i + 1) % pts.length];
+      const lx1 = p1[0] * r, ly1 = p1[1] * r;
+      const lx2 = p2[0] * r, ly2 = p2[1] * r;
+      const wx1 = x + lx1 * cos - ly1 * sin, wy1 = y + lx1 * sin + ly1 * cos;
+      const wx2 = x + lx2 * cos - ly2 * sin, wy2 = y + lx2 * sin + ly2 * cos;
+      const midx = (wx1 + wx2) / 2, midy = (wy1 + wy2) / 2;
+      const dx = midx - x, dy = midy - y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const speed = rand(1.4, 3.2);
+      shipDebris.push({
+        // segment endpoints stored relative to their own midpoint, so each piece can tumble around its center
+        dx1: wx1 - midx, dy1: wy1 - midy,
+        dx2: wx2 - midx, dy2: wy2 - midy,
+        x: midx, y: midy,
+        vx: (dx / dist) * speed + ship.vx * 0.3,
+        vy: (dy / dist) * speed + ship.vy * 0.3,
+        rot: 0,
+        angularVel: rand(-0.15, 0.15),
+        life: rand(40, 60),
+        maxLife: 60,
+        color: skin.color
+      });
+    }
   }
 
   // ---------- Update ----------
@@ -1715,6 +1823,7 @@
     if (thrusting) {
       ship.vx += Math.cos(ship.angle) * ship.thrustPower;
       ship.vy += Math.sin(ship.angle) * ship.thrustPower;
+      spawnThrustTrail();
     }
     SFX.setThrust(thrusting);
     ship.vx *= ship.friction;
@@ -1729,6 +1838,7 @@
     ship.x += ship.vx;
     ship.y += ship.vy;
     wrap(ship);
+    updateStarParallax();
 
     if (invulnTimer > 0) invulnTimer--;
 
@@ -1816,6 +1926,27 @@
       if (rayBeams[i].life <= 0) rayBeams.splice(i, 1);
     }
 
+    // Bullet impact rings — ease outward toward maxRadius rather than growing linearly,
+    // so it decelerates like a real shockwave instead of scaling at a flat constant rate
+    for (let i = impactRings.length - 1; i >= 0; i--) {
+      const r = impactRings[i];
+      r.life--;
+      r.radius += (r.maxRadius - r.radius) * 0.12;
+      if (r.life <= 0) impactRings.splice(i, 1);
+    }
+
+    // Ship hull debris — tumbles and drifts outward, slowing slightly, then fades
+    for (let i = shipDebris.length - 1; i >= 0; i--) {
+      const d = shipDebris[i];
+      d.x += d.vx;
+      d.y += d.vy;
+      d.vx *= 0.985;
+      d.vy *= 0.985;
+      d.rot += d.angularVel;
+      d.life--;
+      if (d.life <= 0) shipDebris.splice(i, 1);
+    }
+
     // Bullet-asteroid collisions
     for (let i = asteroids.length - 1; i >= 0; i--) {
       const a = asteroids[i];
@@ -1823,6 +1954,9 @@
         const b = bullets[j];
         if (dist(a.x, a.y, b.x, b.y) < a.r) {
           const powerful = !!b.overcharged;
+          spawnImpactRing(b.x, b.y, powerful ? '#ff7a4d' : b.pierce ? '#4dc9ff' : '#ffffff', powerful);
+          triggerShake(powerful ? 7 : 3, powerful ? 10 : 6);
+          hitConfirmFlash = powerful ? 0.25 : 0.15;
           breakAsteroid(i, powerful);
           if (b.pierce && b.pierce > 0) {
             b.pierce--; // piercing bullet survives and keeps traveling
@@ -1886,6 +2020,9 @@
         const b = bullets[j];
         if (dist(u.x, u.y, b.x, b.y) < u.r) {
           const powerful = !!b.overcharged;
+          spawnImpactRing(b.x, b.y, powerful ? '#ff7a4d' : b.pierce ? '#4dc9ff' : '#ffffff', powerful);
+          triggerShake(powerful ? 7 : 3, powerful ? 10 : 6);
+          hitConfirmFlash = powerful ? 0.25 : 0.15;
           breakUFO(i, powerful);
           if (b.pierce && b.pierce > 0) {
             b.pierce--;
@@ -1962,6 +2099,7 @@
     // Juice: shake and hit-flash decay
     if (shakeTime > 0) shakeTime--;
     if (hitFlashAlpha > 0) hitFlashAlpha = Math.max(0, hitFlashAlpha - 0.04);
+    if (hitConfirmFlash > 0) hitConfirmFlash = Math.max(0, hitConfirmFlash - 0.09);
 
     // Wave clear
     if (asteroids.length === 0) {
@@ -2114,7 +2252,7 @@
     score += points; // UFOs pay better than asteroids — worth hunting
     saveData.totalUfosDestroyed++;
     updateHUD();
-    spawnExplosion(u.x, u.y, u.tier === 2 ? 26 : u.tier === 1 ? 16 : 10, '#ff2fd6');
+    spawnExplosion(u.x, u.y, u.tier === 2 ? 26 : u.tier === 1 ? 16 : 10, '#ff6fe8');
     triggerShake(u.tier === 2 ? 7 : u.tier === 1 ? 4 : 2, u.tier === 2 ? 10 : u.tier === 1 ? 6 : 4);
     SFX.ufoExplosion(u.tier);
     ufos.splice(index, 1);
@@ -2152,20 +2290,107 @@
     livesLostThisRun++;
     updateHUD();
     spawnExplosion(ship.x, ship.y, 25, '#ff6f6f');
+    spawnShipDebris(ship.x, ship.y, ship.angle, ship.skin, ship.r);
     triggerShake(9, 14);
     hitFlashAlpha = 0.35;
     SFX.shipExplosion();
     if (lives <= 0) {
       gameOver = true;
-      setTimeout(showGameOver, 800);
+      deathZoomActive = true;
+      deathZoomTimer = 0;
+      deathZoomTickAccum = 0;
+      deathZoomX = ship.x;
+      deathZoomY = ship.y;
+      // Card appears partway through the (now slower) zoom/slow-mo, not after it — the
+      // explosion keeps playing underneath it rather than the two feeling disconnected.
+      setTimeout(showGameOver, 1400);
     } else {
       ship = newShip();
       invulnTimer = 150;
     }
   }
 
+  // Runs instead of the normal update() during the death-zoom window — keeps the explosion,
+  // debris, and shake animating (at half speed, for a slow-motion feel) while everything
+  // else in the world stays frozen so attention stays on the ship falling apart.
+  function updateDeathZoom() {
+    deathZoomTimer++;
+    const rawProgress = Math.min(1, deathZoomTimer / DEATH_ZOOM_DURATION);
+    // Time dilation: freeze almost completely right at the moment of impact, then ease up
+    // to a normal slow-motion pace as the camera finishes pushing in on the wreckage.
+    const startInterval = 14; // near-frozen the instant the ship dies
+    const endInterval = 3;    // settles into steady slow-motion once fully zoomed in
+    const interval = startInterval - (startInterval - endInterval) * rawProgress;
+    deathZoomTickAccum += 1 / interval;
+
+    if (deathZoomTickAccum >= 1) {
+      deathZoomTickAccum -= 1;
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vx *= 0.97;
+        p.vy *= 0.97;
+        p.life--;
+        if (p.life <= 0) particles.splice(i, 1);
+      }
+      for (let i = shipDebris.length - 1; i >= 0; i--) {
+        const d = shipDebris[i];
+        d.x += d.vx;
+        d.y += d.vy;
+        d.vx *= 0.985;
+        d.vy *= 0.985;
+        d.rot += d.angularVel;
+        d.life--;
+        if (d.life <= 0) shipDebris.splice(i, 1);
+      }
+      if (shakeTime > 0) shakeTime--;
+      if (hitFlashAlpha > 0) hitFlashAlpha = Math.max(0, hitFlashAlpha - 0.04);
+    }
+  }
+
   // ---------- Draw ----------
+  function drawShipDebris() {
+    ctx.lineWidth = 2;
+    for (const d of shipDebris) {
+      ctx.save();
+      ctx.translate(d.x, d.y);
+      ctx.rotate(d.rot);
+      ctx.globalAlpha = Math.max(0, d.life / d.maxLife);
+      ctx.strokeStyle = d.color;
+      ctx.shadowColor = d.color;
+      ctx.shadowBlur = 8;
+      ctx.beginPath();
+      ctx.moveTo(d.dx1, d.dy1);
+      ctx.lineTo(d.dx2, d.dy2);
+      ctx.stroke();
+      ctx.restore();
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  function drawShipRebirthPieces(t) {
+    ctx.lineWidth = 2;
+    for (const p of shipRebirthPieces) {
+      const x = p.startX + (p.targetX - p.startX) * t;
+      const y = p.startY + (p.targetY - p.startY) * t;
+      const rot = p.startRot * (1 - t); // spins down to aligned as it arrives
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(rot);
+      ctx.strokeStyle = p.color;
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 10;
+      ctx.beginPath();
+      ctx.moveTo(p.dx1, p.dy1);
+      ctx.lineTo(p.dx2, p.dy2);
+      ctx.stroke();
+      ctx.restore();
+    }
+  }
+
   function drawShip() {
+    if (deathZoomActive || rebirthActive) return; // ship is destroyed / not yet reassembled
     if (invulnTimer > 0 && Math.floor(invulnTimer / 6) % 2 === 0) return; // blink
     const skin = ship.skin || SHIP_SKINS[0];
     const hullColor = shipDisplayColor(skin);
@@ -2173,9 +2398,10 @@
     ctx.translate(ship.x, ship.y);
     ctx.rotate(ship.angle);
     ctx.strokeStyle = hullColor;
-    ctx.lineWidth = 2;
+    ctx.lineWidth = 1.7;
+    ctx.globalAlpha = 0.9;
     ctx.shadowColor = hullColor;
-    ctx.shadowBlur = 10;
+    ctx.shadowBlur = 7;
     ctx.beginPath();
     skin.points.forEach(([mx, my], i) => {
       const x = mx * ship.r, y = my * ship.r;
@@ -2183,6 +2409,7 @@
     });
     ctx.closePath();
     ctx.stroke();
+    ctx.globalAlpha = 1;
 
     const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting;
     if (thrusting) {
@@ -2201,7 +2428,7 @@
       const pulse = 1 + Math.sin(Date.now() / 120) * 0.05;
       ctx.strokeStyle = '#6fffb0';
       ctx.shadowColor = '#6fffb0';
-      ctx.shadowBlur = 14;
+      ctx.shadowBlur = 10;
       ctx.lineWidth = 2;
       // one ring per charge, nested outward; a lone remaining charge pulses softly as a low warning
       for (let c = 0; c < shieldCharges; c++) {
@@ -2220,7 +2447,7 @@
       const ringColor = POWERUP_COLORS[weaponMode] || '#ff7a4d';
       ctx.strokeStyle = ringColor;
       ctx.shadowColor = ringColor;
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 9;
       ctx.lineWidth = 2;
       ctx.globalAlpha = weaponModeTimer < 90 && Math.floor(weaponModeTimer / 8) % 2 === 0 ? 0.3 : 0.7;
       ctx.beginPath();
@@ -2338,10 +2565,14 @@
     ctx.save();
     ctx.translate(a.x, a.y);
     ctx.rotate(a.angle);
-    ctx.strokeStyle = '#c9c9d8';
-    ctx.lineWidth = 2;
-    ctx.shadowColor = '#8888aa';
-    ctx.shadowBlur = 6;
+
+    // Near-white translucent outline (not flat opaque grey) + a soft glow that's a DIFFERENT,
+    // dimmer cyan tint rather than matching the stroke exactly — reads as backlit rather than
+    // "glowing in its own color," which is what gives it that crisper, more crystalline look.
+    ctx.strokeStyle = 'rgba(224,238,255,0.85)';
+    ctx.lineWidth = 1.5;
+    ctx.shadowColor = 'rgba(141,242,255,0.3)';
+    ctx.shadowBlur = 8;
     ctx.beginPath();
     const vertCount = a.verts.length;
     for (let i = 0; i <= vertCount; i++) {
@@ -2354,6 +2585,24 @@
     }
     ctx.closePath();
     ctx.stroke();
+    ctx.shadowBlur = 0;
+
+    // Faint internal fracture line, derived from this asteroid's own vertex data so each one
+    // gets a slightly different crack instead of a repeated identical pattern.
+    const idxA = 1 % vertCount;
+    const idxB = Math.floor(vertCount / 2) % vertCount;
+    const angA = (idxA / vertCount) * Math.PI * 2;
+    const angB = (idxB / vertCount) * Math.PI * 2;
+    const rA = a.r * a.verts[idxA] * 0.5;
+    const rB = a.r * a.verts[idxB] * 0.5;
+    ctx.strokeStyle = 'rgba(141,242,255,0.12)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(Math.cos(angA) * rA, Math.sin(angA) * rA);
+    ctx.lineTo(0, 0);
+    ctx.lineTo(Math.cos(angB) * rB, Math.sin(angB) * rB);
+    ctx.stroke();
+
     ctx.restore();
   }
 
@@ -2379,8 +2628,8 @@
   }
 
   function drawUfoBullets() {
-    ctx.fillStyle = '#ff3355';
-    ctx.shadowColor = '#ff3355';
+    ctx.fillStyle = '#ff7085';
+    ctx.shadowColor = '#ff7085';
     ctx.shadowBlur = 8;
     for (const b of ufoBullets) {
       ctx.beginPath();
@@ -2395,11 +2644,12 @@
       ctx.translate(u.x, u.y);
       const scale = u.ejectTimer > 0 ? Math.max(0.15, 1 - u.ejectTimer / 18) : 1; // pop-in when a pod is freshly ejected
       ctx.scale(scale, scale);
-      const color = u.tier === 2 ? '#ff2fd6' : u.tier === 1 ? '#ff6fe0' : '#ffb3f0';
+      const color = u.tier === 2 ? '#ff6fe8' : u.tier === 1 ? '#ff8fe8' : '#ffb3f0';
       ctx.strokeStyle = color;
       ctx.shadowColor = color;
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 2;
+      ctx.shadowBlur = 7;
+      ctx.lineWidth = 1.7;
+      ctx.globalAlpha = 0.9;
       const r = u.r;
       // saucer hull
       ctx.beginPath();
@@ -2415,6 +2665,7 @@
       ctx.moveTo(0, r * 0.15); ctx.lineTo(0, r * 0.35);
       ctx.moveTo(r * 0.5, r * 0.05); ctx.lineTo(r * 0.5, r * 0.25);
       ctx.stroke();
+      ctx.globalAlpha = 1;
       ctx.restore();
     }
   }
@@ -2423,9 +2674,14 @@
     for (const p of particles) {
       ctx.globalAlpha = Math.max(p.life / p.maxLife, 0);
       ctx.fillStyle = p.color;
-      ctx.fillRect(p.x - 1.5, p.y - 1.5, 3, 3);
+      ctx.shadowColor = p.color;
+      ctx.shadowBlur = 6;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size || 1.5, 0, Math.PI * 2);
+      ctx.fill();
     }
     ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
   }
 
   function drawFloatingTexts() {
@@ -2449,7 +2705,7 @@
     ctx.lineWidth = 2;
     for (const rb of rayBeams) {
       ctx.globalAlpha = Math.max(rb.life / rb.maxLife, 0);
-      ctx.shadowBlur = 10;
+      ctx.shadowBlur = 8;
       ctx.beginPath();
       ctx.moveTo(rb.points[0].x, rb.points[0].y);
       for (let i = 0; i < rb.points.length - 1; i++) {
@@ -2471,6 +2727,31 @@
     ctx.shadowBlur = 0;
   }
 
+  function drawImpactRings() {
+    for (const r of impactRings) {
+      ctx.globalAlpha = Math.max(0, r.life / r.maxLife);
+      ctx.strokeStyle = r.color;
+      ctx.shadowColor = r.color;
+      ctx.shadowBlur = r.big ? 8 : 3; // much lighter than the rest of the game's glow — reads crisper
+      ctx.lineWidth = 1.5; // always thin, on purpose — big rings differ only in size, not weight
+      ctx.beginPath();
+      ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
+  }
+
+  // Soft radial wash behind everything — adds a little atmospheric depth instead of
+  // pure flat black, without being bright enough to compete with anything on top of it.
+  function drawVignette() {
+    const grd = ctx.createRadialGradient(W * 0.5, H * 0.45, 0, W * 0.5, H * 0.45, Math.max(W, H) * 0.7);
+    grd.addColorStop(0, 'rgba(30,55,80,0.10)');
+    grd.addColorStop(1, 'rgba(0,0,0,0.35)');
+    ctx.fillStyle = grd;
+    ctx.fillRect(0, 0, W, H);
+  }
+
   function drawStars() {
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     const t = Date.now() / 1000;
@@ -2488,40 +2769,98 @@
   function initStars() {
     starField = [];
     for (let i = 0; i < 120; i++) {
+      const size = rand(0.5, 1.8);
       starField.push({
         x: rand(0, W), y: rand(0, H),
-        size: rand(0.5, 1.8),
+        size,
         a: rand(0.2, 0.9),
         phase: rand(0, Math.PI * 2),
-        twinkleSpeed: rand(0.3, 0.8) // slow — a full cycle takes several seconds
+        twinkleSpeed: rand(0.3, 0.8), // slow — a full cycle takes several seconds
+        parallax: (size / 1.8) * 0.5 // bigger/brighter stars sit "closer" and drift more — cheap depth illusion
       });
     }
   }
   initStars();
   window.addEventListener('resize', initStars);
 
+  // Streams the starfield past the ship based on its velocity — the classic "flying through
+  // space" cue. Stars nearer to the ship (larger, per their parallax factor) drift faster.
+  function updateStarParallax() {
+    for (const s of starField) {
+      s.x -= ship.vx * s.parallax;
+      s.y -= ship.vy * s.parallax;
+      if (s.x < 0) s.x += W;
+      else if (s.x > W) s.x -= W;
+      if (s.y < 0) s.y += H;
+      else if (s.y > H) s.y -= H;
+    }
+  }
+
   function draw() {
+    // Clear the whole canvas in screen space FIRST, before any transform — otherwise once
+    // the death-zoom camera pans away from wherever the ship died (especially near an edge),
+    // the old fixed clear rectangle moves/scales right along with it and stops covering the
+    // full screen, leaving stale pixels behind that smear across frames.
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, W, H);
+
     ctx.save();
     if (shakeTime > 0) {
       const dx = (Math.random() - 0.5) * shakeMagnitude;
       const dy = (Math.random() - 0.5) * shakeMagnitude;
       ctx.translate(dx, dy);
     }
-    ctx.clearRect(-20, -20, W + 40, H + 40);
+    if (deathZoomActive) {
+      // Ease toward the final zoom/pan rather than linear, so the push feels like it's
+      // settling into place instead of moving at a constant rate the whole time.
+      const rawProgress = Math.min(1, deathZoomTimer / DEATH_ZOOM_DURATION);
+      const progress = 1 - Math.pow(1 - rawProgress, 2); // ease-out
+      const scale = 1 + progress * 0.8;
+      // Camera pushes IN on the death point AND pans it toward screen center — a true
+      // "zoom into" rather than just magnifying in place around wherever it happened.
+      const panX = deathZoomX + (W / 2 - deathZoomX) * progress;
+      const panY = deathZoomY + (H / 2 - deathZoomY) * progress;
+      ctx.translate(panX, panY);
+      ctx.scale(scale, scale);
+      ctx.translate(-deathZoomX, -deathZoomY);
+    } else if (rebirthActive) {
+      // Mirror image of the death zoom — eases back OUT from wherever it left off to a
+      // normal centered view, arriving right as the hull finishes reassembling.
+      const t = Math.min(1, rebirthTimer / REBIRTH_DURATION);
+      const eased = 1 - Math.pow(1 - t, 3); // ease-out cubic, settles crisply
+      const scale = rebirthStartScale + (1 - rebirthStartScale) * eased;
+      const panX = rebirthStartPanX + (W / 2 - rebirthStartPanX) * eased;
+      const panY = rebirthStartPanY + (H / 2 - rebirthStartPanY) * eased;
+      ctx.translate(panX, panY);
+      ctx.scale(scale, scale);
+      ctx.translate(-W / 2, -H / 2);
+    }
+    drawVignette();
     drawStars();
     drawParticles();
     drawPowerups();
     drawBullets();
     drawUfoBullets();
     drawRayBeams();
+    drawImpactRings();
     for (const a of asteroids) drawAsteroid(a);
     drawUFOs();
+    drawShipDebris();
+    if (rebirthActive) {
+      const t = Math.min(1, rebirthTimer / REBIRTH_DURATION);
+      const eased = 1 - Math.pow(1 - t, 3);
+      drawShipRebirthPieces(eased);
+    }
     drawShip();
     drawFloatingTexts();
     ctx.restore();
 
     if (hitFlashAlpha > 0) {
       ctx.fillStyle = `rgba(255,60,60,${hitFlashAlpha})`;
+      ctx.fillRect(0, 0, W, H);
+    }
+    if (hitConfirmFlash > 0) {
+      ctx.fillStyle = `rgba(255,255,255,${hitConfirmFlash})`;
       ctx.fillRect(0, 0, W, H);
     }
   }
@@ -2561,6 +2900,7 @@
   }
   function drawMenuBackground() {
     ctx.clearRect(0, 0, W, H);
+    drawVignette();
     drawStars();
     for (const a of menuAsteroids) drawAsteroid(a);
   }
@@ -2591,7 +2931,7 @@
     pctx.rotate(previewAngle);
     pctx.strokeStyle = color;
     pctx.shadowColor = color;
-    pctx.shadowBlur = unlocked ? 12 : 4;
+    pctx.shadowBlur = unlocked ? 8 : 4;
     pctx.lineWidth = 2.5;
     pctx.beginPath();
     skin.points.forEach(([mx, my], i) => {
@@ -2644,7 +2984,9 @@
 
 
   function showGameOver() {
-    running = false;
+    // Deliberately NOT setting running=false or deathZoomActive=false here — the explosion
+    // and debris keep animating in slow motion behind the game-over card instead of the
+    // screen hard-cutting to the idle menu background the instant this card appears.
     SFX.gameOver();
     setInMenu(true);
 
@@ -2671,7 +3013,7 @@
       <button id="restartBtn">PLAY AGAIN</button>
       <button id="gameOverMenuBtn" class="secondaryBtn">MAIN MENU</button>
     `;
-    document.getElementById('restartBtn').addEventListener('click', () => { SFX.uiTick(); startGame(); });
+    document.getElementById('restartBtn').addEventListener('click', () => { SFX.uiTick(); playAgainWithRebirth(); });
     document.getElementById('gameOverMenuBtn').addEventListener('click', () => { SFX.uiTick(); returnToMainMenu(); });
   }
 
@@ -2681,6 +3023,72 @@
     tryLockLandscape(); // best-effort; silently no-ops where unsupported (e.g. iOS Safari)
     setInMenu(false);
     overlay.classList.add('hidden');
+    initGame();
+    running = true;
+  }
+
+  // "Play Again" from the game-over screen: despawn everything on screen, reverse the death
+  // zoom back out to normal, and reassemble the ship's hull pieces at the spawn point before
+  // actually starting the new run — the mirror image of how it fell apart.
+  function playAgainWithRebirth() {
+    SFX.init();
+    tryLockLandscape();
+    setInMenu(false);
+    overlay.classList.add('hidden');
+
+    particles = [];
+    shipDebris = [];
+    rayBeams = [];
+    impactRings = [];
+    floatingTexts = [];
+    ufos = [];
+    ufoBullets = [];
+    bullets = [];
+    asteroids = [];
+    powerups = [];
+
+    // Capture wherever the death-zoom camera currently sits, so the zoom-out picks up
+    // smoothly from that exact spot instead of popping to a fixed state.
+    const rawProgress = Math.min(1, deathZoomTimer / DEATH_ZOOM_DURATION);
+    const easedProgress = 1 - Math.pow(1 - rawProgress, 2);
+    rebirthStartScale = deathZoomActive ? 1 + easedProgress * 0.8 : 1;
+    rebirthStartPanX = deathZoomActive ? deathZoomX + (W / 2 - deathZoomX) * easedProgress : W / 2;
+    rebirthStartPanY = deathZoomActive ? deathZoomY + (H / 2 - deathZoomY) * easedProgress : H / 2;
+    deathZoomActive = false;
+
+    // Scatter the hull pieces around the spawn point, then animate them converging back in
+    const skin = SHIP_SKINS[selectedSkinIndex];
+    const r = 14 * skin.hitFactor;
+    const targetX = W / 2, targetY = H / 2, targetAngle = -Math.PI / 2;
+    const pts = skin.points;
+    const cos = Math.cos(targetAngle), sin = Math.sin(targetAngle);
+    shipRebirthPieces = [];
+    for (let i = 0; i < pts.length; i++) {
+      const p1 = pts[i], p2 = pts[(i + 1) % pts.length];
+      const lx1 = p1[0] * r, ly1 = p1[1] * r, lx2 = p2[0] * r, ly2 = p2[1] * r;
+      const wx1 = targetX + lx1 * cos - ly1 * sin, wy1 = targetY + lx1 * sin + ly1 * cos;
+      const wx2 = targetX + lx2 * cos - ly2 * sin, wy2 = targetY + lx2 * sin + ly2 * cos;
+      const midx = (wx1 + wx2) / 2, midy = (wy1 + wy2) / 2;
+      const scatterAngle = rand(0, Math.PI * 2);
+      const scatterDist = rand(130, 260);
+      shipRebirthPieces.push({
+        dx1: wx1 - midx, dy1: wy1 - midy, dx2: wx2 - midx, dy2: wy2 - midy,
+        startX: midx + Math.cos(scatterAngle) * scatterDist,
+        startY: midy + Math.sin(scatterAngle) * scatterDist,
+        targetX: midx, targetY: midy,
+        startRot: rand(-Math.PI, Math.PI),
+        color: skin.color
+      });
+    }
+
+    SFX.shipRebirth();
+    rebirthActive = true;
+    rebirthTimer = 0;
+  }
+
+  function finalizeRebirth() {
+    rebirthActive = false;
+    shipRebirthPieces = [];
     initGame();
     running = true;
   }
@@ -2866,6 +3274,7 @@
     setPaused(false);
     running = false;
     gameOver = false;
+    deathZoomActive = false;
     SFX.setThrust(false);
     setInMenu(true);
     overlay.innerHTML = mainMenuHTML;
@@ -2874,16 +3283,46 @@
   }
 
   // ---------- Main Loop ----------
-  function loop() {
-    if (running && !gameOver && !paused) {
-      update();
+  // Fixed-timestep accumulator: requestAnimationFrame fires at the DISPLAY's refresh rate,
+  // which varies (60Hz on most phones, but often 120/144/165Hz on desktop monitors). Without
+  // this, every game.update() call was tied 1:1 to rAF ticks, so the whole game genuinely ran
+  // faster on higher-refresh displays — not a perception thing, an actual simulation-speed bug.
+  // This runs the simulation at a fixed 60 steps/second always, and renders once per real frame.
+  const SIM_STEP_MS = 1000 / 60;
+  const MAX_CATCHUP_MS = 250; // caps the catch-up burst after the tab was backgrounded/throttled
+  let lastFrameTime = null;
+  let simAccumulator = 0;
+
+  function loop(now) {
+    if (lastFrameTime === null) lastFrameTime = now;
+    let frameDelta = now - lastFrameTime;
+    lastFrameTime = now;
+    if (frameDelta > MAX_CATCHUP_MS) frameDelta = MAX_CATCHUP_MS;
+    simAccumulator += frameDelta;
+
+    while (simAccumulator >= SIM_STEP_MS) {
+      simAccumulator -= SIM_STEP_MS;
+      if (running && !gameOver && !paused) {
+        update();
+      } else if (running && rebirthActive) {
+        rebirthTimer++;
+        if (rebirthTimer >= REBIRTH_DURATION) {
+          finalizeRebirth();
+        }
+      } else if (running && gameOver && deathZoomActive) {
+        updateDeathZoom();
+      } else if (!running) {
+        updateMenuField();
+        updateShipPreview();
+      }
+    }
+
+    // Render once per actual display frame regardless of simulation rate, so motion still
+    // looks smooth on high-refresh screens even though the sim itself ticks at a fixed rate.
+    if (running) {
       draw();
-    } else if (running && (gameOver || paused)) {
-      draw();
-    } else if (!running) {
-      updateMenuField();
+    } else {
       drawMenuBackground();
-      updateShipPreview();
       drawShipPreview();
     }
     requestAnimationFrame(loop);
@@ -2892,7 +3331,7 @@
   // init idle background before start
   setInMenu(true);
   running = false;
-  loop();
+  requestAnimationFrame(loop);
 })();
 </script>
 </body>
