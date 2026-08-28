@@ -592,22 +592,24 @@
     position:absolute; inset:0; z-index:45; display:flex; align-items:center; justify-content:center;
     color:#8feaff; text-align:center; overflow:hidden;
     background:
-      linear-gradient(rgba(38,154,255,.035) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(38,154,255,.035) 1px, transparent 1px),
-      radial-gradient(circle at 50% 46%, rgba(15,95,188,.16), rgba(2,10,28,.44) 54%, rgba(0,2,12,.58));
-    background-size:30px 30px,30px 30px,auto;
-    backdrop-filter:blur(4px) saturate(1.15);
+      linear-gradient(rgba(65,184,255,.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(65,184,255,.04) 1px, transparent 1px),
+      radial-gradient(circle at 22% 20%, rgba(31,174,255,.15), transparent 34%),
+      radial-gradient(circle at 82% 82%, rgba(255,39,188,.10), transparent 36%),
+      linear-gradient(180deg, rgba(4,12,34,.22), rgba(5,5,22,.38));
+    background-size:30px 30px,30px 30px,auto,auto,auto;
+    backdrop-filter:blur(2.5px) saturate(1.22);
   }
   /* Holographic system-window transition: transparent blue glass over the live arena. */
   #buildUpgradeOverlay::before {
     content:''; position:absolute; inset:-20%; pointer-events:none; opacity:0;
-    background:radial-gradient(circle at center, rgba(83,193,255,.50) 0%, rgba(21,112,255,.14) 22%, rgba(0,0,0,0) 60%);
+    background:radial-gradient(circle at center, rgba(126,224,255,.44) 0%, rgba(48,118,255,.15) 24%, rgba(255,45,190,.08) 42%, rgba(0,0,0,0) 66%);
     transform:scale(.35);
   }
   #buildUpgradeOverlay::after {
     content:''; position:absolute; left:-12%; right:-12%; top:50%; height:2px; pointer-events:none; opacity:0;
-    background:linear-gradient(90deg, transparent, rgba(186,238,255,.95), #31a8ff, rgba(186,238,255,.95), transparent);
-    box-shadow:0 0 16px #31a8ff, 0 0 48px rgba(25,126,255,.72);
+    background:linear-gradient(90deg, transparent, rgba(76,205,255,.25), #89ecff, #6b78ff, #ff49c7, rgba(76,205,255,.25), transparent);
+    box-shadow:0 0 14px #45cfff, 0 0 32px rgba(92,96,255,.55), 0 0 44px rgba(255,49,190,.22);
   }
   #buildUpgradeOverlay.mutation-enter { animation:mutationBackdropIn .50s ease-out both; }
   #buildUpgradeOverlay.mutation-enter::before { animation:mutationPulse .58s cubic-bezier(.15,.75,.2,1) both; }
@@ -648,9 +650,14 @@
   }
   .upgradePanel {
     position:relative; z-index:1; width:min(780px,92vw); padding:24px 26px 26px;
-    border:1px solid rgba(86,190,255,.72);
-    background:linear-gradient(145deg, rgba(5,30,78,.72), rgba(3,18,52,.58));
-    box-shadow:inset 0 0 28px rgba(40,145,255,.12), 0 0 30px rgba(17,117,255,.16);
+    border:1px solid rgba(105,214,255,.74);
+    background:
+      linear-gradient(135deg, rgba(8,34,83,.67), rgba(16,17,64,.55) 58%, rgba(47,10,67,.42));
+    box-shadow:
+      inset 0 0 28px rgba(40,145,255,.11),
+      inset 0 -18px 34px rgba(255,38,185,.035),
+      0 0 24px rgba(17,150,255,.18),
+      0 0 44px rgba(255,38,185,.055);
     clip-path:polygon(0 15px,15px 0,calc(100% - 15px) 0,100% 15px,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 calc(100% - 15px));
     overflow:hidden;
   }
@@ -679,8 +686,9 @@
   .upgradeChoices { position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,1fr); gap:13px; }
   .upgradeChoice {
     position:relative; min-height:132px; padding:15px 15px 14px;
-    border:1px solid rgba(74,176,255,.42); border-left:2px solid rgba(116,217,255,.76);
-    background:linear-gradient(150deg, rgba(8,48,104,.64), rgba(4,26,70,.42));
+    border:1px solid rgba(74,176,255,.42); border-left:2px solid rgba(116,217,255,.78);
+    border-bottom-color:rgba(255,67,196,.22);
+    background:linear-gradient(150deg, rgba(8,48,104,.60), rgba(13,23,75,.46) 66%, rgba(54,9,69,.28));
     color:#d9f8ff; cursor:pointer; font-family:inherit; text-align:left;
     clip-path:polygon(0 8px,8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);
     box-shadow:inset 0 0 18px rgba(45,142,255,.07);
@@ -691,9 +699,9 @@
     background:linear-gradient(90deg,#9eeaff,transparent); opacity:.65;
   }
   .upgradeChoice:hover, .upgradeChoice:active {
-    transform:translateY(-2px); border-color:#8bdcff;
-    background:linear-gradient(150deg, rgba(13,69,140,.78), rgba(6,35,88,.56));
-    box-shadow:inset 0 0 24px rgba(50,157,255,.12),0 0 18px rgba(36,139,255,.15);
+    transform:translateY(-2px); border-color:#8be8ff; border-bottom-color:rgba(255,86,207,.68);
+    background:linear-gradient(150deg, rgba(13,69,140,.72), rgba(16,30,92,.58) 66%, rgba(72,12,86,.40));
+    box-shadow:inset 0 0 24px rgba(50,157,255,.12),0 0 17px rgba(36,171,255,.17),0 0 24px rgba(255,48,194,.08);
   }
   .upgradeChoice b {
     display:block; font-size:12px; letter-spacing:1.2px; margin-bottom:9px;
@@ -913,6 +921,67 @@
     align-items: flex-end;
     padding: 18px;
     pointer-events: none;
+    z-index: 12;
+  }
+  #leftCluster, #rightCluster {
+    display: flex;
+    align-items: flex-end;
+    pointer-events: none;
+  }
+
+  /* Directional virtual joystick. The direction of the knob is the direction
+     the ship tries to face; distance from center controls thrust amount. */
+  #moveJoystick {
+    --joy-size: 124px;
+    --knob-size: 50px;
+    pointer-events: auto;
+    position: relative;
+    width: var(--joy-size);
+    height: var(--joy-size);
+    border-radius: 50%;
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    border: 2px solid rgba(111,242,255,.48);
+    background:
+      radial-gradient(circle at center, rgba(111,242,255,.10) 0 13%, transparent 14%),
+      radial-gradient(circle at center, transparent 0 43%, rgba(111,242,255,.10) 44% 46%, transparent 47%),
+      rgba(4,10,20,.34);
+    box-shadow:
+      inset 0 0 22px rgba(111,242,255,.08),
+      0 0 18px rgba(111,242,255,.10);
+  }
+  #moveJoystick::before,
+  #moveJoystick::after {
+    content:'';
+    position:absolute;
+    pointer-events:none;
+    opacity:.26;
+    background:#6ff2ff;
+  }
+  #moveJoystick::before { left:50%; top:12%; bottom:12%; width:1px; transform:translateX(-50%); }
+  #moveJoystick::after { top:50%; left:12%; right:12%; height:1px; transform:translateY(-50%); }
+  #joystickKnob {
+    position:absolute;
+    left:50%; top:50%;
+    width:var(--knob-size);
+    height:var(--knob-size);
+    border-radius:50%;
+    transform:translate(-50%,-50%);
+    border:2px solid rgba(111,242,255,.82);
+    background:radial-gradient(circle at 38% 32%, rgba(255,255,255,.20), rgba(111,242,255,.12) 38%, rgba(5,17,31,.88) 75%);
+    box-shadow:0 0 16px rgba(111,242,255,.30), inset 0 0 12px rgba(111,242,255,.12);
+    pointer-events:none;
+    transition:box-shadow .08s ease, border-color .08s ease;
+    will-change:transform;
+  }
+  #moveJoystick.active {
+    border-color:rgba(111,242,255,.78);
+    box-shadow:inset 0 0 24px rgba(111,242,255,.12),0 0 22px rgba(111,242,255,.18);
+  }
+  #moveJoystick.active #joystickKnob {
+    border-color:#b7fbff;
+    box-shadow:0 0 22px rgba(111,242,255,.48), inset 0 0 14px rgba(111,242,255,.18);
   }
   .ctrlBtn {
     pointer-events: auto;
@@ -927,12 +996,10 @@
     align-items: center;
     justify-content: center;
     margin: 6px;
+    touch-action:none;
   }
   .ctrlBtn:active {
     background: rgba(111,242,255,0.3);
-  }
-  #leftCluster, #rightCluster {
-    display: flex;
   }
   #fireBtn {
     width: 84px;
@@ -1155,6 +1222,7 @@
     #muteBtn, #pauseBtn { right:7px; transform:scale(.88); transform-origin:top right; }
     #pauseBtn { top:45px; }
     #controls { padding:10px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); }
+    #moveJoystick { --joy-size:clamp(96px,29vw,118px); --knob-size:clamp(40px,12vw,48px); }
     .ctrlBtn { width:clamp(48px,16vw,62px); height:clamp(48px,16vw,62px); margin:3px; font-size:20px; }
     #fireBtn { width:clamp(62px,20vw,76px); height:clamp(62px,20vw,76px); font-size:12px; }
   }
@@ -1196,6 +1264,7 @@
     .buildTag { display:none; }
     .htpPanel, .settingsPanel, .upgradePanel { max-height:88vh; }
     #controls { padding:7px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
+    #moveJoystick { --joy-size:96px; --knob-size:40px; }
     .ctrlBtn { width:50px; height:50px; margin:2px; font-size:18px; }
     #fireBtn { width:62px; height:62px; font-size:11px; }
   }
@@ -1253,9 +1322,9 @@
 
   <div id="controls">
     <div id="leftCluster">
-      <div class="ctrlBtn" id="btnLeft">&#8634;</div>
-      <div class="ctrlBtn" id="btnThrust">&#9650;</div>
-      <div class="ctrlBtn" id="btnRight">&#8635;</div>
+      <div id="moveJoystick" role="application" aria-label="Movement joystick">
+        <div id="joystickKnob"></div>
+      </div>
     </div>
     <div id="rightCluster">
       <div class="ctrlBtn" id="fireBtn">FIRE</div>
@@ -1321,7 +1390,7 @@
       <h2>HOW TO PLAY</h2>
       <div class="htpSection">
         <h3>Controls</h3>
-        <p>Keyboard: Rotate with ◀ ▶ or A/D. Thrust: ▲ or W. Hold SPACE to fire.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire.<br>Touch: Use the on-screen buttons. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
+        <p>Keyboard: Rotate with ◀ ▶ or A/D. Thrust: ▲ or W. Hold SPACE to fire.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire.<br>Touch: Drag the left joystick in the direction you want to fly — push farther from center for more thrust. Hold FIRE on the right to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
@@ -2005,7 +2074,7 @@
   let hitStopFrames = 0; // brief total freeze on big kills, right before the shake — the "punch" beat
 
   // ---------- Juice: screen shake + hit flash ----------
-  let shakeMagnitude = 0, shakeTime = 0, hitFlashAlpha = 0, hitConfirmFlash = 0;
+  let shakeMagnitude = 0, shakeTime = 0, hitFlashAlpha = 0, hitConfirmFlash = 0, upgradeFlashAlpha = 0;
   let deathZoomActive = false, deathZoomTimer = 0, deathZoomX = 0, deathZoomY = 0;
   let deathZoomTickAccum = 0; // lets the slow-mo speed itself ramp smoothly instead of being fixed
   const DEATH_ZOOM_DURATION = 150;  // frames of real time for the camera push-in to fully develop (~2.5s)
@@ -2616,6 +2685,7 @@
     podBroodFlag = false;
     mouseActive = false;
     mouseThrust = false;
+    resetTouchJoystick();
     spawnWave();
     updateHUD();
   }
@@ -2673,14 +2743,74 @@
     el.addEventListener('mouseleave', (e) => { onUp(); });
   }
 
-  const btnLeft = document.getElementById('btnLeft');
-  const btnRight = document.getElementById('btnRight');
-  const btnThrust = document.getElementById('btnThrust');
+  const moveJoystick = document.getElementById('moveJoystick');
+  const joystickKnob = document.getElementById('joystickKnob');
   const fireBtn = document.getElementById('fireBtn');
 
-  bindHold(btnLeft, () => ship.turningLeft = true, () => ship.turningLeft = false);
-  bindHold(btnRight, () => ship.turningRight = true, () => ship.turningRight = false);
-  bindHold(btnThrust, () => ship.thrusting = true, () => ship.thrusting = false);
+  // Touch joystick state is intentionally separate from the desktop mouse layer.
+  // Direction controls heading; displacement from center controls thrust strength.
+  let touchJoystickActive = false;
+  let touchJoystickId = null;
+  let touchJoystickAngle = -Math.PI / 2;
+  let touchJoystickMagnitude = 0;
+  const JOYSTICK_DEADZONE = 0.12;
+
+  function resetTouchJoystick() {
+    touchJoystickActive = false;
+    touchJoystickId = null;
+    touchJoystickMagnitude = 0;
+    moveJoystick.classList.remove('active');
+    joystickKnob.style.transform = 'translate(-50%, -50%)';
+  }
+
+  function updateTouchJoystick(clientX, clientY) {
+    const rect = moveJoystick.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    let dx = clientX - cx;
+    let dy = clientY - cy;
+    const maxRadius = Math.max(1, rect.width * 0.5 - joystickKnob.offsetWidth * 0.5 - 4);
+    const rawDist = Math.hypot(dx, dy);
+    const clampedDist = Math.min(rawDist, maxRadius);
+    if (rawDist > 0.001) {
+      dx = dx / rawDist * clampedDist;
+      dy = dy / rawDist * clampedDist;
+      touchJoystickAngle = Math.atan2(dy, dx);
+    }
+    touchJoystickMagnitude = Math.max(0, Math.min(1, clampedDist / maxRadius));
+    joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  }
+
+  moveJoystick.addEventListener('touchstart', (e) => {
+    if (touchJoystickId !== null) return;
+    const t = e.changedTouches[0];
+    if (!t) return;
+    e.preventDefault();
+    touchJoystickId = t.identifier;
+    touchJoystickActive = true;
+    moveJoystick.classList.add('active');
+    updateTouchJoystick(t.clientX, t.clientY);
+  }, {passive:false});
+
+  moveJoystick.addEventListener('touchmove', (e) => {
+    if (touchJoystickId === null) return;
+    const t = Array.from(e.changedTouches).find(touch => touch.identifier === touchJoystickId) ||
+              Array.from(e.touches).find(touch => touch.identifier === touchJoystickId);
+    if (!t) return;
+    e.preventDefault();
+    updateTouchJoystick(t.clientX, t.clientY);
+  }, {passive:false});
+
+  function finishJoystickTouch(e) {
+    if (touchJoystickId === null) return;
+    const ended = Array.from(e.changedTouches).some(touch => touch.identifier === touchJoystickId);
+    if (!ended) return;
+    e.preventDefault();
+    resetTouchJoystick();
+  }
+  moveJoystick.addEventListener('touchend', finishJoystickTouch, {passive:false});
+  moveJoystick.addEventListener('touchcancel', finishJoystickTouch, {passive:false});
+
   bindHold(fireBtn, () => { fireHeld = true; fireBullet(); }, () => { fireHeld = false; });
 
   // ---------- Mouse controls (PC) ----------
@@ -2921,10 +3051,9 @@
       }
     }
 
-    // Ship rotation — two modes:
-    // • Mouse active: snap toward cursor with an eased angular velocity so it still
-    //   feels physical (no instant teleport snap) rather than a hard set.
-    // • Keyboard/touch: original eased left/right input.
+    // Ship rotation — desktop mouse, touch joystick, or keyboard.
+    // Mouse behavior is intentionally unchanged. The joystick uses the same eased chase feel,
+    // but targets a screen-space direction instead of a cursor position.
     if (mouseActive) {
       const targetAngle = Math.atan2(mousePos.y - ship.y, mousePos.x - ship.x);
       // Shortest angular delta in [-π, π]
@@ -2937,8 +3066,16 @@
       ship.angularVelocity += delta * turnStrength;
       ship.angularVelocity = Math.max(-ship.maxAngular * 3, Math.min(ship.maxAngular * 3, ship.angularVelocity));
       ship.angularVelocity *= 0.75; // dampen so it settles instead of oscillating
+    } else if (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE) {
+      let delta = touchJoystickAngle - ship.angle;
+      while (delta > Math.PI) delta -= Math.PI * 2;
+      while (delta < -Math.PI) delta += Math.PI * 2;
+      const touchTurnStrength = 0.20;
+      ship.angularVelocity += delta * touchTurnStrength;
+      ship.angularVelocity = Math.max(-ship.maxAngular * 3, Math.min(ship.maxAngular * 3, ship.angularVelocity));
+      ship.angularVelocity *= 0.72;
     } else {
-      // Original keyboard/touch rotation
+      // Keyboard rotation remains available on desktop / keyboard-equipped tablets.
       let turnInput = 0;
       if (keys['arrowleft'] || keys['a'] || ship.turningLeft) turnInput -= 1;
       if (keys['arrowright'] || keys['d'] || ship.turningRight) turnInput += 1;
@@ -2953,11 +3090,13 @@
     }
     ship.angle += ship.angularVelocity;
 
-    // Thrust — keyboard/touch OR right-click mouse
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || mouseThrust;
+    // Thrust — keyboard/right-click are unchanged; touch joystick adds analog thrust.
+    const joystickThrust = touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE;
+    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || mouseThrust || joystickThrust;
     if (thrusting) {
-      ship.vx += Math.cos(ship.angle) * ship.thrustPower;
-      ship.vy += Math.sin(ship.angle) * ship.thrustPower;
+      const thrustScale = joystickThrust ? Math.max(0.28, touchJoystickMagnitude) : 1;
+      ship.vx += Math.cos(ship.angle) * ship.thrustPower * thrustScale;
+      ship.vy += Math.sin(ship.angle) * ship.thrustPower * thrustScale;
       spawnThrustTrail();
     }
     SFX.setThrust(thrusting);
@@ -3240,6 +3379,7 @@
     if (shakeTime > 0) shakeTime--;
     if (hitFlashAlpha > 0) hitFlashAlpha = Math.max(0, hitFlashAlpha - 0.04);
     if (hitConfirmFlash > 0) hitConfirmFlash = Math.max(0, hitConfirmFlash - 0.09);
+    if (upgradeFlashAlpha > 0) upgradeFlashAlpha = Math.max(0, upgradeFlashAlpha - 0.035);
 
     // Wave clear: a short arcade beat instead of instantly dumping the next field in.
     if (!testMode && !upgradeChoosing && !evolutionChoosing && asteroids.length === 0 && !ufos.some(u=>u.boss) && waveTransitionTimer === 0) beginWaveClear();
@@ -3646,7 +3786,7 @@
     ctx.stroke();
     ctx.globalAlpha = 1;
 
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || mouseThrust;
+    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || mouseThrust || (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
     if (thrusting) {
       ctx.strokeStyle = '#ffb347';
       ctx.shadowColor = '#ffb347';
@@ -4122,6 +4262,15 @@
       ctx.fillStyle = `rgba(255,255,255,${hitConfirmFlash})`;
       ctx.fillRect(0, 0, W, H);
     }
+    if (upgradeFlashAlpha > 0) {
+      // Upgrade milestone flash: synthwave cyan + magenta, kept separate from the red damage flash.
+      const pulse = ctx.createLinearGradient(0, 0, W, H);
+      pulse.addColorStop(0, `rgba(38,198,255,${upgradeFlashAlpha * 0.95})`);
+      pulse.addColorStop(0.52, `rgba(76,92,255,${upgradeFlashAlpha * 0.62})`);
+      pulse.addColorStop(1, `rgba(255,45,190,${upgradeFlashAlpha * 0.70})`);
+      ctx.fillStyle = pulse;
+      ctx.fillRect(0, 0, W, H);
+    }
     drawMouseReticle();
   }
 
@@ -4271,8 +4420,8 @@
     upgradeBuildLabel.textContent=`${currentWeapon.name} // LEVEL ${level} CLEARED`;
     upgradeChoicesEl.innerHTML=shuffled.map((u,i)=>{const cur=upgradeLevel(u.id),next=cur+1;return `<button class="upgradeChoice" data-id="${u.id}" style="color:${currentWeapon.color}"><b>${i+1}. ${u.name} // RANK ${next}</b><span>${u.desc}<br><small>RANK ${cur}/${u.maxRank||1}</small></span></button>`}).join('');
     upgradeChoicesEl.querySelectorAll('.upgradeChoice').forEach(btn=>btn.addEventListener('click',()=>chooseUpgrade(btn.dataset.id)));
-    // Punch into the mutation screen instead of hard-cutting from the last gameplay frame.
-    hitFlashAlpha=Math.max(hitFlashAlpha,.26); triggerShake(5,8); SFX.mutationReady();
+    // Punch into the upgrade screen instead of hard-cutting from the last gameplay frame.
+    upgradeFlashAlpha=Math.max(upgradeFlashAlpha,.20); triggerShake(4.5,7); SFX.mutationReady();
     buildUpgradeOverlay.classList.remove('hidden','mutation-enter');
     void buildUpgradeOverlay.offsetWidth; // restart CSS animation reliably on every mutation screen
     buildUpgradeOverlay.classList.add('mutation-enter');
