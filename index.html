@@ -26,8 +26,9 @@
   canvas {
     display: block;
     background: #05050a;
-    cursor: crosshair;
+    cursor: none;
   }
+  body.in-menu canvas { cursor: default; }
   #hud {
     position: absolute;
     top: 12px; left: 12px; right: 56px;
@@ -109,7 +110,7 @@
   .secondaryBtn:active {
     background: rgba(111,242,255,0.2);
   }
-  #howToPlayOverlay, #pauseOverlay, #achievementsOverlay, #shopOverlay {
+  #howToPlayOverlay, #pauseOverlay, #achievementsOverlay, #shopOverlay, #settingsOverlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     display: flex;
@@ -122,7 +123,7 @@
     text-shadow: 0 0 10px rgba(111,242,255,0.8);
     z-index: 25;
   }
-  #howToPlayOverlay, #achievementsOverlay, #shopOverlay { z-index: 30; }
+  #howToPlayOverlay, #achievementsOverlay, #shopOverlay, #settingsOverlay { z-index: 30; }
   .htpPanel {
     max-width: 340px;
     width: 86vw;
@@ -345,6 +346,15 @@
     background: currentColor;
     box-shadow: 0 0 8px currentColor;
   }
+  #bossStatus {
+    position:absolute; top:88px; left:50%; transform:translateX(-50%);
+    width:min(430px,62vw); text-align:center; pointer-events:none; z-index:7;
+    opacity:0; transition:opacity .18s ease;
+  }
+  #bossStatus.active { opacity:1; }
+  #bossName { font-size:11px; letter-spacing:3px; color:#ff6f6f; text-shadow:0 0 10px rgba(255,111,111,.7); margin-bottom:5px; }
+  #bossTrack { height:6px; border:1px solid rgba(255,111,111,.45); background:rgba(255,255,255,.035); overflow:hidden; box-shadow:0 0 12px rgba(255,111,111,.12); }
+  #bossFill { height:100%; width:100%; background:#ff6f6f; box-shadow:0 0 10px #ff6f6f; transition:width .08s linear; }
   #levelBanner {
     position: absolute;
     top: 38%;
@@ -548,6 +558,161 @@
     gap: 14px;
     flex-shrink: 0;
   }
+  .menuActions .secondaryBtn {
+    margin-top: 0;
+    width: 210px;
+  }
+  #testGroundBtn {
+    border-color: rgba(245,255,77,0.48);
+    color: #f5ff4d;
+    text-shadow: 0 0 8px rgba(245,255,77,0.35);
+    background: rgba(245,255,77,0.035);
+  }
+  #testGroundBtn:active {
+    background: rgba(245,255,77,0.14);
+  }
+
+  .weaponSelect {
+    margin-top: 10px;
+    width: 230px;
+    padding-top: 9px;
+    border-top: 1px solid rgba(111,242,255,0.16);
+    text-align: center;
+  }
+  .weaponSelectTitle { font-size: 9px; letter-spacing: 3px; opacity: .45; margin-bottom: 6px; }
+  .weaponSelectRow { display:flex; align-items:center; justify-content:center; gap:10px; }
+  .weaponArrowBtn {
+    width:26px; height:26px; border-radius:50%; border:1px solid rgba(255,255,255,.25);
+    background:rgba(255,255,255,.03); color:currentColor; cursor:pointer; font-family:inherit;
+  }
+  .weaponNameLabel { min-width:120px; font-size:12px; letter-spacing:2px; font-weight:bold; }
+  .weaponDescLabel { font-size:9px; line-height:1.35; opacity:.58; margin-top:5px; min-height:24px; }
+  .weaponStatsLabel { font-size:8px; letter-spacing:1px; opacity:.72; margin-top:5px; white-space:pre; }
+  #buildUpgradeOverlay {
+    position:absolute; inset:0; z-index:45; display:flex; align-items:center; justify-content:center;
+    color:#8feaff; text-align:center; overflow:hidden;
+    background:
+      linear-gradient(rgba(38,154,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(38,154,255,.035) 1px, transparent 1px),
+      radial-gradient(circle at 50% 46%, rgba(15,95,188,.16), rgba(2,10,28,.44) 54%, rgba(0,2,12,.58));
+    background-size:30px 30px,30px 30px,auto;
+    backdrop-filter:blur(4px) saturate(1.15);
+  }
+  /* Holographic system-window transition: transparent blue glass over the live arena. */
+  #buildUpgradeOverlay::before {
+    content:''; position:absolute; inset:-20%; pointer-events:none; opacity:0;
+    background:radial-gradient(circle at center, rgba(83,193,255,.50) 0%, rgba(21,112,255,.14) 22%, rgba(0,0,0,0) 60%);
+    transform:scale(.35);
+  }
+  #buildUpgradeOverlay::after {
+    content:''; position:absolute; left:-12%; right:-12%; top:50%; height:2px; pointer-events:none; opacity:0;
+    background:linear-gradient(90deg, transparent, rgba(186,238,255,.95), #31a8ff, rgba(186,238,255,.95), transparent);
+    box-shadow:0 0 16px #31a8ff, 0 0 48px rgba(25,126,255,.72);
+  }
+  #buildUpgradeOverlay.mutation-enter { animation:mutationBackdropIn .50s ease-out both; }
+  #buildUpgradeOverlay.mutation-enter::before { animation:mutationPulse .58s cubic-bezier(.15,.75,.2,1) both; }
+  #buildUpgradeOverlay.mutation-enter::after { animation:mutationScan .46s ease-out both; }
+  #buildUpgradeOverlay.mutation-enter .upgradePanel { animation:mutationPanelPunch .48s cubic-bezier(.16,.88,.22,1.16) both; }
+  #buildUpgradeOverlay.mutation-enter .upgradeChoice { opacity:0; animation:mutationCardIn .32s ease-out forwards; }
+  #buildUpgradeOverlay.mutation-enter .upgradeChoice:nth-child(1) { animation-delay:.20s; }
+  #buildUpgradeOverlay.mutation-enter .upgradeChoice:nth-child(2) { animation-delay:.27s; }
+  #buildUpgradeOverlay.mutation-enter .upgradeChoice:nth-child(3) { animation-delay:.34s; }
+  @keyframes mutationBackdropIn {
+    0% { opacity:0; backdrop-filter:blur(0px); }
+    30% { opacity:1; }
+    100% { opacity:1; backdrop-filter:blur(4px) saturate(1.15); }
+  }
+  @keyframes mutationPulse {
+    0% { opacity:0; transform:scale(.22); }
+    18% { opacity:1; }
+    100% { opacity:0; transform:scale(1.72); }
+  }
+  @keyframes mutationScan {
+    0% { opacity:0; transform:translateY(-150px) scaleX(.35); }
+    18% { opacity:1; }
+    100% { opacity:0; transform:translateY(150px) scaleX(1.18); }
+  }
+  @keyframes mutationPanelPunch {
+    0% { opacity:0; transform:translateY(18px) scale(.86); filter:blur(6px); }
+    52% { opacity:1; transform:translateY(-2px) scale(1.018); filter:blur(0); }
+    100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+  }
+  @keyframes mutationCardIn {
+    from { opacity:0; transform:translateY(18px) scale(.95); filter:blur(2px); }
+    to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+  }
+  @keyframes systemScanline {
+    0% { transform:translateY(-22px); opacity:0; }
+    18% { opacity:.34; }
+    100% { transform:translateY(180px); opacity:0; }
+  }
+  .upgradePanel {
+    position:relative; z-index:1; width:min(780px,92vw); padding:24px 26px 26px;
+    border:1px solid rgba(86,190,255,.72);
+    background:linear-gradient(145deg, rgba(5,30,78,.72), rgba(3,18,52,.58));
+    box-shadow:inset 0 0 28px rgba(40,145,255,.12), 0 0 30px rgba(17,117,255,.16);
+    clip-path:polygon(0 15px,15px 0,calc(100% - 15px) 0,100% 15px,100% calc(100% - 15px),calc(100% - 15px) 100%,15px 100%,0 calc(100% - 15px));
+    overflow:hidden;
+  }
+  .upgradePanel::before {
+    content:''; position:absolute; inset:7px; pointer-events:none;
+    border:1px solid rgba(93,202,255,.18);
+    clip-path:inherit;
+  }
+  .upgradePanel::after {
+    content:''; position:absolute; pointer-events:none; left:0; right:0; top:0; height:20px;
+    background:linear-gradient(180deg, transparent, rgba(73,182,255,.16), transparent);
+    animation:systemScanline 2.6s linear infinite;
+  }
+  .upgradePanel h2 {
+    position:relative; z-index:1; font-size:21px; letter-spacing:5px; margin-bottom:6px;
+    color:#b7f1ff; text-shadow:0 0 9px rgba(78,187,255,.85),0 0 22px rgba(35,117,255,.45);
+  }
+  .upgradePanel h2::before {
+    content:'SYSTEM // UPGRADE ACCESS'; display:block; margin-bottom:5px;
+    font-size:8px; letter-spacing:4px; color:#58bfff; opacity:.74;
+  }
+  .upgradePanel .sub {
+    position:relative; z-index:1; font-size:10px; color:#79cfff; opacity:.72;
+    letter-spacing:2.5px; margin-bottom:20px;
+  }
+  .upgradeChoices { position:relative; z-index:1; display:grid; grid-template-columns:repeat(3,1fr); gap:13px; }
+  .upgradeChoice {
+    position:relative; min-height:132px; padding:15px 15px 14px;
+    border:1px solid rgba(74,176,255,.42); border-left:2px solid rgba(116,217,255,.76);
+    background:linear-gradient(150deg, rgba(8,48,104,.64), rgba(4,26,70,.42));
+    color:#d9f8ff; cursor:pointer; font-family:inherit; text-align:left;
+    clip-path:polygon(0 8px,8px 0,100% 0,100% calc(100% - 8px),calc(100% - 8px) 100%,0 100%);
+    box-shadow:inset 0 0 18px rgba(45,142,255,.07);
+    transition:transform .13s ease, border-color .13s ease, background .13s ease, box-shadow .13s ease;
+  }
+  .upgradeChoice::before {
+    content:''; position:absolute; top:0; left:0; width:36%; height:1px;
+    background:linear-gradient(90deg,#9eeaff,transparent); opacity:.65;
+  }
+  .upgradeChoice:hover, .upgradeChoice:active {
+    transform:translateY(-2px); border-color:#8bdcff;
+    background:linear-gradient(150deg, rgba(13,69,140,.78), rgba(6,35,88,.56));
+    box-shadow:inset 0 0 24px rgba(50,157,255,.12),0 0 18px rgba(36,139,255,.15);
+  }
+  .upgradeChoice b {
+    display:block; font-size:12px; letter-spacing:1.2px; margin-bottom:9px;
+    color:#aeefff; text-shadow:0 0 7px rgba(78,187,255,.55);
+  }
+  .upgradeChoice span { font-size:10px; line-height:1.48; color:#c8eaff; opacity:.82; }
+  .upgradeChoice small { color:#6fc8ff; opacity:.78; }
+  #heatTrack { height:3px; margin-top:4px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); overflow:hidden; display:none; }
+  #heatFill { height:100%; width:0%; background:#ff4da6; box-shadow:0 0 8px #ff4da6; }
+  @media (orientation: landscape) and (max-height: 420px) {
+    .weaponSelect { width:170px; margin-top:5px; padding-top:5px; }
+    .weaponDescLabel { display:none; }
+    .weaponStatsLabel { font-size:7px; }
+    .upgradePanel { padding:12px; }
+    .upgradePanel h2 { font-size:15px; margin-bottom:2px; }
+    .upgradePanel .sub { margin-bottom:8px; }
+    .upgradeChoice { min-height:86px; padding:9px; }
+  }
+
   .menuIconRow {
     display: flex;
     gap: 10px;
@@ -570,6 +735,41 @@
   .menuIconBtn:active {
     background: rgba(111,242,255,0.25);
     border-color: rgba(111,242,255,0.8);
+  }
+  .uiIcon { width: 18px; height: 18px; display: block; pointer-events: none; }
+  .menuIconBtn .uiIcon { width: 20px; height: 20px; }
+  #muteBtn .uiIcon, #pauseBtn .uiIcon { width: 17px; height: 17px; }
+  .musicToggleBtn .uiIcon { width: 13px; height: 13px; }
+  .achIcon .uiIcon { width: 18px; height: 18px; }
+  .gameOverCallout .uiIcon { display: inline-block; vertical-align: -3px; margin-right: 6px; }
+  #achievementToast {
+    position: absolute;
+    top: 92px;
+    left: 50%;
+    transform: translate(-50%, -12px) scale(0.96);
+    min-width: 280px;
+    max-width: min(520px, 84vw);
+    padding: 10px 18px;
+    border: 1px solid rgba(111,255,176,0.55);
+    background: rgba(3,12,12,0.88);
+    color: #6fffb0;
+    text-align: center;
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-shadow: 0 0 9px rgba(111,255,176,0.65);
+    box-shadow: 0 0 22px rgba(111,255,176,0.10);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 18;
+    transition: opacity .18s ease, transform .18s ease;
+  }
+  #achievementToast.show { opacity: 1; transform: translate(-50%, 0) scale(1); }
+  #achievementToast .uiIcon { display: inline-block; vertical-align: -4px; margin-right: 6px; }
+  #achievementToast .toastSub { display: block; margin-top: 3px; font-size: 9px; opacity: .62; letter-spacing: 1px; }
+  #levelBanner.clear {
+    color: #6fffb0;
+    text-shadow: 0 0 18px rgba(111,255,176,0.85);
+    font-size: 24px;
   }
   #startBtn:disabled, .lockedBtn {
     opacity: 0.35;
@@ -636,6 +836,7 @@
     .menuLayout { padding: 0 16px 0 3vw; gap: 2vw; }
     #startBtn, #restartBtn { padding: 8px 22px; font-size: 13px; width: 150px; }
     .secondaryBtn { padding: 7px 18px; font-size: 11px; }
+    .menuActions .secondaryBtn { width: 150px; }
     .menuIconBtn { width: 34px; height: 34px; font-size: 14px; }
     .menuIconRow { gap: 8px; }
     #shipPreviewCanvas { width: 56px; height: 56px; }
@@ -647,7 +848,7 @@
     .musicToggleBtn { width: 22px; height: 22px; font-size: 10px; }
   }
   .hidden { display: none !important; }
-  body.in-menu #hud, body.in-menu #muteBtn, body.in-menu #pauseBtn, body.in-menu #controls, body.in-menu #levelIndicator, body.in-menu #weaponStatus {
+  body.in-menu #hud, body.in-menu #muteBtn, body.in-menu #pauseBtn, body.in-menu #controls, body.in-menu #levelIndicator, body.in-menu #weaponStatus, body.in-menu #bossStatus, body.in-menu #achievementToast {
     display: none !important;
   }
   #levelIndicator {
@@ -678,8 +879,16 @@
     padding: 20px;
   }
   .rotateIcon {
-    font-size: 56px;
+    width: 34px; height: 56px;
+    border: 2px solid #6ff2ff;
+    border-radius: 6px;
+    box-shadow: 0 0 12px rgba(111,242,255,.45);
+    position: relative;
     animation: rotatePhone 1.6s ease-in-out infinite;
+  }
+  .rotateIcon::after {
+    content: ''; position: absolute; bottom: 5px; left: 50%; transform: translateX(-50%);
+    width: 4px; height: 4px; border: 1px solid #6ff2ff; border-radius: 50%;
   }
   @keyframes rotatePhone {
     0%, 100% { transform: rotate(0deg); }
@@ -737,12 +946,279 @@
   #fireBtn:active {
     background: rgba(255,111,111,0.3);
   }
+
+  /* ---------- Main menu cleanup: one identity column + one loadout panel ---------- */
+  .menuLayout {
+    display:grid;
+    grid-template-columns:minmax(300px, .9fr) minmax(430px, 1.1fr);
+    align-items:center;
+    width:min(1180px, 94vw);
+    height:100%;
+    margin:0 auto;
+    padding:32px 0;
+    gap:clamp(30px, 6vw, 86px);
+  }
+  .menuTitleBlock { text-align:left; min-width:0; }
+  .menuEyebrow {
+    font-size:9px; letter-spacing:4px; color:#6ff2ff; opacity:.45; margin-bottom:12px;
+  }
+  .menuTitle { font-size:clamp(48px, 7vw, 88px); letter-spacing:7px; }
+  .menuSubtitle { max-width:520px; font-size:11px; letter-spacing:4px; line-height:1.8; }
+  .menuStats {
+    display:inline-flex; margin-top:22px; padding:8px 12px;
+    border-left:2px solid rgba(111,242,255,.58);
+    background:linear-gradient(90deg,rgba(111,242,255,.07),transparent);
+    font-size:10px; opacity:.62;
+  }
+  .loadoutPanel {
+    position:relative; min-width:0; max-width:560px; width:100%; justify-self:end;
+    padding:20px 22px 18px;
+    border:1px solid rgba(111,242,255,.38);
+    background:linear-gradient(145deg,rgba(4,20,36,.78),rgba(3,9,18,.68));
+    box-shadow:inset 0 0 30px rgba(50,190,255,.04);
+    clip-path:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);
+  }
+  .loadoutPanel::before {
+    content:''; position:absolute; left:0; top:0; width:84px; height:2px;
+    background:#6ff2ff; box-shadow:0 0 10px rgba(111,242,255,.75);
+  }
+  .loadoutSection { min-width:0; }
+  .loadoutHeader {
+    display:flex; align-items:center; gap:9px; margin-bottom:10px;
+    font-size:9px; letter-spacing:3px; color:#8aeaff; opacity:.66; text-align:left;
+  }
+  .loadoutHeader span { color:#fff; opacity:.38; font-size:8px; }
+  .loadoutDivider { height:1px; margin:14px 0 13px; background:linear-gradient(90deg,transparent,rgba(111,242,255,.28),transparent); }
+  .shipPreview { display:flex; width:100%; align-items:center; gap:4px; }
+  .shipPreviewRow { gap:18px; }
+  .shipHoloRing {
+    position:relative; width:118px; height:118px; display:grid; place-items:center; border-radius:50%;
+    background:radial-gradient(circle,rgba(111,242,255,.065),transparent 61%);
+    border:1px solid rgba(111,242,255,.10);
+  }
+  .shipHoloRing::after {
+    content:''; position:absolute; inset:8px; border-radius:50%; border:1px dashed rgba(111,242,255,.13);
+    animation:holoRingSpin 14s linear infinite;
+  }
+  @keyframes holoRingSpin { to { transform:rotate(360deg); } }
+  #shipPreviewCanvas { width:112px; height:112px; position:relative; z-index:1; }
+  .shipNameLabel { font-size:15px; letter-spacing:3px; margin-top:3px; }
+  .shipDescLabel { max-width:360px; min-height:27px; font-size:10px; line-height:1.45; }
+  .shipStatsLabel {
+    width:min(360px,100%); margin-top:8px; padding:8px 10px;
+    font-size:9px; line-height:1.55; background:rgba(111,242,255,.025);
+    border:1px solid rgba(111,242,255,.09); text-align:center; white-space:pre-wrap;
+  }
+  .weaponSelect { width:100%; margin:0; padding:0; border:0; }
+  .weaponSelectTitle { display:none; }
+  .weaponSelectRow { gap:14px; }
+  .weaponNameLabel { min-width:180px; font-size:14px; letter-spacing:3px; }
+  .weaponDescLabel { max-width:410px; min-height:28px; margin:6px auto 0; font-size:10px; line-height:1.45; }
+  .weaponStatsLabel {
+    margin:7px auto 0; padding:7px 9px; width:min(410px,100%);
+    border:1px solid rgba(255,255,255,.07); background:rgba(255,255,255,.018);
+    font-size:8.5px; white-space:pre-wrap;
+  }
+  .menuActions {
+    margin-top:16px; display:grid; grid-template-columns:1fr 1fr; gap:9px 10px;
+  }
+  #startBtn, .menuActions .secondaryBtn { width:100%; min-width:0; margin:0; }
+  #startBtn { font-size:15px; }
+  .menuIconRow {
+    grid-column:1 / -1; justify-content:flex-end; gap:8px; padding-top:3px;
+  }
+  .menuIconBtn { width:36px; height:36px; }
+  .buildTag { left:18px; bottom:12px; opacity:.22; }
+  .menuVolume { display:none !important; }
+  .settingsPanel { max-width:390px; }
+  .settingsPanel .volumeRow { width:100%; max-width:310px; margin:0 auto 16px; }
+  .settingsKicker { font-size:8px; letter-spacing:4px; opacity:.5; margin-bottom:6px; }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    .menuLayout { width:min(1120px,95vw); padding:12px 0; gap:28px; grid-template-columns:minmax(280px,.78fr) minmax(430px,1.22fr); }
+    .menuTitle { font-size:clamp(38px,6vw,62px); }
+    .menuEyebrow { margin-bottom:7px; }
+    .menuStats { margin-top:12px; }
+    .loadoutPanel { padding:12px 18px 10px; }
+    .shipHoloRing { width:82px; height:82px; }
+    #shipPreviewCanvas { width:78px; height:78px; }
+    .shipDescLabel { min-height:0; }
+    .shipStatsLabel { margin-top:4px; padding:4px 8px; line-height:1.35; }
+    .loadoutDivider { margin:8px 0; }
+    .weaponDescLabel { min-height:0; margin-top:3px; }
+    .weaponStatsLabel { margin-top:4px; padding:4px 7px; }
+    .menuActions { margin-top:9px; }
+    #startBtn, .menuActions .secondaryBtn { padding:8px 15px; }
+    .menuIconBtn { width:31px; height:31px; }
+  }
+
+
+  /* ---------- Responsive / modular UI pass ---------- */
+  #overlay,
+  #howToPlayOverlay, #pauseOverlay, #achievementsOverlay, #shopOverlay, #settingsOverlay,
+  #buildUpgradeOverlay, #bossEvolutionOverlay {
+    max-width: 100%;
+  }
+
+  /* Let menu/overlays reflow rather than clip on short or narrow screens. */
+  #overlay { overflow-y:auto; overflow-x:hidden; }
+  .menuLayout {
+    height:auto;
+    min-height:100%;
+    padding:max(18px, env(safe-area-inset-top)) max(14px, env(safe-area-inset-right)) max(18px, env(safe-area-inset-bottom)) max(14px, env(safe-area-inset-left));
+  }
+  .loadoutPanel, .menuTitleBlock, .shipPreview, .weaponSelect { min-width:0; }
+  .menuStats { max-width:100%; flex-wrap:wrap; white-space:normal; line-height:1.45; }
+  .shipDescLabel, .weaponDescLabel { overflow-wrap:anywhere; }
+  .htpPanel, .settingsPanel, .upgradePanel {
+    width:min(92vw, 720px);
+    max-height:min(82vh, 720px);
+    overflow:auto;
+    -webkit-overflow-scrolling:touch;
+  }
+  .upgradeChoices {
+    grid-template-columns:repeat(3,minmax(0,1fr));
+  }
+
+  /* Settings toggle */
+  .settingOptionRow {
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:14px;
+    width:100%;
+    max-width:330px;
+    margin:4px auto 18px;
+    padding:11px 12px;
+    border:1px solid rgba(111,242,255,.18);
+    background:rgba(111,242,255,.035);
+    text-align:left;
+  }
+  .settingOptionCopy { min-width:0; }
+  .settingOptionLabel { display:block; font-size:11px; letter-spacing:1.5px; color:#b8f6ff; }
+  .settingOptionDesc { display:block; margin-top:4px; font-size:9px; line-height:1.4; opacity:.55; }
+  .settingToggle {
+    flex:0 0 auto;
+    min-width:72px;
+    min-height:38px;
+    padding:0 12px;
+    border:1px solid rgba(111,242,255,.38);
+    background:rgba(111,242,255,.06);
+    color:#7f8c95;
+    font:inherit;
+    font-size:10px;
+    letter-spacing:2px;
+    cursor:pointer;
+  }
+  .settingToggle[aria-pressed="true"] {
+    color:#6ff2ff;
+    border-color:rgba(111,242,255,.78);
+    background:rgba(111,242,255,.14);
+    box-shadow:inset 0 0 14px rgba(111,242,255,.08),0 0 12px rgba(111,242,255,.09);
+  }
+
+  /* Standard phone / narrow tablet: stack the loadout vertically. */
+  @media (max-width:700px) {
+    .menuLayout {
+      display:flex;
+      flex-direction:column;
+      justify-content:flex-start;
+      align-items:stretch;
+      width:100%;
+      gap:16px;
+      padding:18px 14px 28px;
+    }
+    .menuTitleBlock { width:100%; text-align:center; }
+    .menuEyebrow { font-size:7px; letter-spacing:2.4px; margin-bottom:7px; }
+    .menuTitle { font-size:clamp(34px,13vw,58px); letter-spacing:clamp(3px,1.8vw,6px); }
+    .menuSubtitle { margin:7px auto 0; font-size:9px; letter-spacing:2.2px; line-height:1.5; }
+    .menuStats { display:flex; justify-content:center; margin:12px auto 0; font-size:8.5px; }
+    .loadoutPanel { justify-self:auto; max-width:none; padding:15px 13px 14px; }
+    .shipHoloRing { width:92px; height:92px; }
+    #shipPreviewCanvas { width:88px; height:88px; }
+    .shipPreviewRow { gap:10px; }
+    .shipNameLabel { font-size:13px; }
+    .shipDescLabel, .weaponDescLabel { max-width:100%; font-size:9.5px; }
+    .shipStatsLabel, .weaponStatsLabel { width:100%; font-size:8px; }
+    .weaponNameLabel { min-width:0; flex:1; font-size:12px; }
+    .weaponSelectRow { width:100%; }
+    .menuActions { grid-template-columns:1fr; }
+    .menuIconRow { grid-column:1; justify-content:center; }
+    #startBtn, .menuActions .secondaryBtn { min-height:44px; }
+    .buildTag { display:none; }
+    .upgradeChoices { grid-template-columns:1fr; }
+    .upgradeChoice { min-height:100px; }
+    #hud { left:8px; right:46px; top:8px; font-size:13px; }
+    #scoreDisplay { font-size:11px; }
+    #livesDisplay { font-size:10px; }
+    #levelIndicator { top:9px; font-size:10px; letter-spacing:2px; }
+    #muteBtn, #pauseBtn { right:7px; transform:scale(.88); transform-origin:top right; }
+    #pauseBtn { top:45px; }
+    #controls { padding:10px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); }
+    .ctrlBtn { width:clamp(48px,16vw,62px); height:clamp(48px,16vw,62px); margin:3px; font-size:20px; }
+    #fireBtn { width:clamp(62px,20vw,76px); height:clamp(62px,20vw,76px); font-size:12px; }
+  }
+
+  /* Phone landscape: keep two columns, but aggressively compact vertical content. */
+  @media (orientation:landscape) and (max-height:500px) {
+    .menuLayout {
+      display:grid;
+      grid-template-columns:minmax(190px,.72fr) minmax(350px,1.28fr);
+      width:100%;
+      min-height:100%;
+      gap:clamp(14px,3vw,28px);
+      padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));
+    }
+    .menuTitleBlock { text-align:left; }
+    .menuEyebrow { font-size:6.5px; letter-spacing:2px; margin-bottom:4px; }
+    .menuTitle { font-size:clamp(30px,7vw,50px); letter-spacing:3px; }
+    .menuSubtitle { font-size:7.5px; letter-spacing:1.8px; line-height:1.4; }
+    .menuStats { margin-top:8px; padding:5px 8px; font-size:7.5px; }
+    .loadoutPanel { padding:8px 12px 8px; }
+    .loadoutHeader { margin-bottom:4px; font-size:7px; }
+    .loadoutDivider { margin:5px 0; }
+    .shipPreview { gap:1px; }
+    .shipHoloRing { width:64px; height:64px; }
+    #shipPreviewCanvas { width:60px; height:60px; }
+    .shipPreviewRow { gap:8px; }
+    .shipArrowBtn, .weaponArrowBtn { width:26px; height:26px; min-width:26px; }
+    .shipNameLabel { font-size:10px; margin-top:0; }
+    .shipDescLabel { font-size:7.5px; min-height:0; line-height:1.25; }
+    .shipStatsLabel { margin-top:2px; padding:2px 5px; font-size:6.8px; line-height:1.2; }
+    .weaponNameLabel { min-width:130px; font-size:10px; }
+    .weaponDescLabel { margin-top:2px; min-height:0; font-size:7.5px; line-height:1.25; }
+    .weaponStatsLabel { margin-top:2px; padding:2px 5px; font-size:6.8px; line-height:1.2; }
+    .menuActions { margin-top:5px; gap:5px; }
+    #startBtn, .menuActions .secondaryBtn { min-height:32px; padding:5px 10px; font-size:9px; }
+    .menuIconRow { padding-top:0; gap:5px; }
+    .menuIconBtn { width:28px; height:28px; }
+    .menuIconBtn .uiIcon { width:15px; height:15px; }
+    .buildTag { display:none; }
+    .htpPanel, .settingsPanel, .upgradePanel { max-height:88vh; }
+    #controls { padding:7px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
+    .ctrlBtn { width:50px; height:50px; margin:2px; font-size:18px; }
+    #fireBtn { width:62px; height:62px; font-size:11px; }
+  }
+
+  /* Very small portrait devices if the player dismisses the landscape recommendation. */
+  @media (max-width:430px) and (orientation:portrait) {
+    .menuLayout { padding-top:14px; }
+    .menuEyebrow { display:none; }
+    .menuTitle { font-size:clamp(31px,14vw,50px); }
+    .menuSubtitle { font-size:8px; }
+    .shipHoloRing { width:80px; height:80px; }
+    #shipPreviewCanvas { width:76px; height:76px; }
+    .loadoutPanel { padding:12px 10px; }
+    .settingOptionRow { align-items:flex-start; }
+    .settingToggle { min-width:64px; }
+  }
+
 </style>
 </head>
 <body>
 <div id="gameWrap">
   <div id="rotateOverlay">
-    <div class="rotateIcon">📱</div>
+    <div class="rotateIcon" aria-hidden="true"></div>
     <p>This game plays best in landscape.<br>Rotate your device to continue.</p>
     <button id="rotateDismissBtn" class="secondaryBtn">Continue Anyway</button>
   </div>
@@ -759,15 +1235,21 @@
       <span id="rayGunDisplay"></span>
     </div>
   </div>
+  <div id="achievementToast"></div>
   <div id="weaponStatus">
     <div id="weaponStatusText"></div>
     <div id="weaponTimerTrack"><div id="weaponTimerFill"></div></div>
+    <div id="heatTrack"><div id="heatFill"></div></div>
+  </div>
+  <div id="bossStatus">
+    <div id="bossName">BOSS</div>
+    <div id="bossTrack"><div id="bossFill"></div></div>
   </div>
   <div id="levelIndicator">LEVEL 1</div>
 
   <div id="levelBanner"></div>
-  <div id="muteBtn">🔊</div>
-  <div id="pauseBtn">⏸</div>
+  <div id="muteBtn" aria-label="Toggle sound effects"></div>
+  <div id="pauseBtn" aria-label="Pause"></div>
 
   <div id="controls">
     <div id="leftCluster">
@@ -782,43 +1264,56 @@
 
   <div id="overlay">
     <div class="menuLayout">
-      <div class="menuTitleBlock">
+      <section class="menuTitleBlock">
+        <div class="menuEyebrow">DEEP SPACE COMBAT // ROGUELITE</div>
         <h1 class="menuTitle">ASTEROIDS</h1>
-        <div class="menuSubtitle">SURVIVE THE FIELD</div>
-        <div class="menuStats" id="menuStats">BEST SCORE 0   ·   TOP LEVEL 0   ·   ⚙ 0</div>
-      </div>
-      <div class="shipPreview">
-        <div class="shipPreviewRow">
-          <button id="shipPrevBtn" class="shipArrowBtn" type="button">◀</button>
-          <canvas id="shipPreviewCanvas" width="90" height="90"></canvas>
-          <button id="shipNextBtn" class="shipArrowBtn" type="button">▶</button>
+        <div class="menuSubtitle">CHOOSE A HULL. CHOOSE A BUILD. SURVIVE.</div>
+        <div class="menuStats" id="menuStats">BEST SCORE 0   ·   TOP LEVEL 0   ·   SALVAGE 0</div>
+      </section>
+
+      <section class="loadoutPanel" aria-label="Loadout selection">
+        <div class="loadoutSection hullSection">
+          <div class="loadoutHeader"><span>01</span> HULL</div>
+          <div class="shipPreview">
+            <div class="shipPreviewRow">
+              <button id="shipPrevBtn" class="shipArrowBtn" type="button" aria-label="Previous hull">◀</button>
+              <div class="shipHoloRing"><canvas id="shipPreviewCanvas" width="112" height="112"></canvas></div>
+              <button id="shipNextBtn" class="shipArrowBtn" type="button" aria-label="Next hull">▶</button>
+            </div>
+            <div class="shipNameLabel" id="shipNameLabel">INTERCEPTOR</div>
+            <div class="shipDescLabel" id="shipDescLabel">Balanced all-rounder. No surprises.</div>
+            <div class="shipStatsLabel" id="shipStatsLabel"></div>
+          </div>
         </div>
-        <div class="shipNameLabel" id="shipNameLabel">INTERCEPTOR</div>
-        <div class="shipDescLabel" id="shipDescLabel">Balanced all-rounder. No surprises.</div>
-        <div class="shipStatsLabel" id="shipStatsLabel"></div>
-      </div>
-      <div class="menuActions">
-        <button id="startBtn">START</button>
-        <div class="menuIconRow">
-          <button id="howToPlayBtn" class="menuIconBtn" type="button" title="How To Play">📖</button>
-          <button id="achievementsBtn" class="menuIconBtn" type="button" title="Achievements">🏆</button>
-          <button id="shopBtn" class="menuIconBtn" type="button" title="Shop">⚙</button>
+
+        <div class="loadoutDivider"></div>
+
+        <div class="loadoutSection buildSection">
+          <div class="loadoutHeader"><span>02</span> WEAPON BUILD</div>
+          <div class="weaponSelect">
+            <div class="weaponSelectRow">
+              <button id="weaponPrevBtn" class="weaponArrowBtn" type="button" aria-label="Previous weapon">◀</button>
+              <div class="weaponNameLabel" id="weaponNameLabel">LONGBOW</div>
+              <button id="weaponNextBtn" class="weaponArrowBtn" type="button" aria-label="Next weapon">▶</button>
+            </div>
+            <div class="weaponDescLabel" id="weaponDescLabel"></div>
+            <div class="weaponStatsLabel" id="weaponStatsLabel"></div>
+          </div>
         </div>
-      </div>
+
+        <div class="menuActions">
+          <button id="startBtn">START RUN</button>
+          <button id="testGroundBtn" class="secondaryBtn" type="button">TEST GROUND</button>
+          <div class="menuIconRow">
+            <button id="howToPlayBtn" class="menuIconBtn" type="button" title="How To Play" aria-label="How To Play"></button>
+            <button id="achievementsBtn" class="menuIconBtn" type="button" title="Achievements" aria-label="Achievements"></button>
+            <button id="shopBtn" class="menuIconBtn" type="button" title="Salvage Vault" aria-label="Salvage Vault"></button>
+            <button id="settingsBtn" class="menuIconBtn" type="button" title="Settings" aria-label="Settings"></button>
+          </div>
+        </div>
+      </section>
     </div>
-    <div class="menuVolume">
-      <div class="volumeRow">
-        <button id="musicMuteBtn" class="musicToggleBtn" type="button" title="Toggle music">🎵</button>
-        <span class="volLabel">MUSIC</span>
-        <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
-      </div>
-      <div class="volumeRow">
-        <button id="sfxMuteBtn" class="musicToggleBtn" type="button" title="Toggle sound effects">🔊</button>
-        <span class="volLabel">SFX</span>
-        <input type="range" class="volumeSlider" min="0" max="100" value="35">
-      </div>
-    </div>
-    <div class="buildTag">BETA BUILD — AUG 25</div>
+    <div class="buildTag">WEAPON BUILDS / ROGUELITE — AUG 27</div>
   </div>
 
   <div id="howToPlayOverlay" class="hidden">
@@ -826,54 +1321,39 @@
       <h2>HOW TO PLAY</h2>
       <div class="htpSection">
         <h3>Controls</h3>
-        <p>Keyboard: Rotate with ◀ ▶ or A/D. Thrust: ▲ or W. Fire: SPACE.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Right-click to thrust, left-click to fire.<br>Touch: Use the on-screen buttons. Your ship wraps around the screen edges.</p>
+        <p>Keyboard: Rotate with ◀ ▶ or A/D. Thrust: ▲ or W. Hold SPACE to fire.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire.<br>Touch: Use the on-screen buttons. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
         <p>Each ship has a different hitbox size and handling — bigger ships are easier to hit but often faster or tougher. Some unlock by reaching a level, others by completing a specific achievement — check the Achievements screen from the main menu.</p>
       </div>
       <div class="htpSection">
-        <h3>Utility powerups (stack with anything, including each other)</h3>
-        <div class="powerRow">
-          <span class="powerIcon shieldColor">🛡</span>
-          <div><b>Shield</b>Stacks up to 3 charges. Each hit breaks one charge instead of costing a life. Charges don't expire — only hits use them up.</div>
-        </div>
-        <div class="powerRow">
-          <span class="powerIcon rangeColor">⇢</span>
-          <div><b>Range</b>Stacks up to 5. Each stack sends your bullets further before they fizzle out.</div>
-        </div>
-        <div class="powerRow">
-          <span class="powerIcon spreadColor">⋔</span>
-          <div><b>Spread</b>Stacks up to 5. Each stack adds a pellet fired in a fan. Combos with any weapon mode below — pairing it with Overcharge turns your shots into a short-range shotgun blast.</div>
-        </div>
-        <div class="powerRow">
-          <span class="powerIcon raygunColor">☇</span>
-          <div><b>Ray Gun</b>Stacks up to 5. Passive auto-turret — automatically chains a single lightning bolt between nearby small asteroids within a fixed radius of your ship, no aiming needed. Each stack lets the chain bounce one hop further.</div>
-        </div>
+        <h3>Weapon builds</h3>
+        <p>Pick a weapon build before the run. Your ship and weapon are separate choices, so any hull can pair with any build.</p>
+        <div class="powerRow"><span class="powerIcon" style="color:#74e8ff">➹</span><div><b style="color:#74e8ff">Longbow</b>Hard-hitting precision rail shot. Very long range, slow cadence, high recoil, and penetration. Missing hurts.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ffd36f">⋔</span><div><b style="color:#ffd36f">Scattergun</b>Short-range cone of pellets. Devastating up close, weak at distance, and the recoil becomes part of your movement.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ff7a4d">◆</span><div><b style="color:#ff7a4d">Rocket Pod</b>Slow one-shot rocket with a heavy blast radius. Excellent against packed fields; poor when enemies are spread out.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ff4da6">»</span><div><b style="color:#ff4da6">Cycler</b>High fire rate and low per-shot power. Builds heat while held down and temporarily overheats if you get greedy.</div></div>
       </div>
       <div class="htpSection">
-        <h3>Weapon modes (only one active at a time)</h3>
-        <p>These replace each other — grabbing a new one drops whatever you were running. Pick your playstyle.</p>
-        <div class="powerRow">
-          <span class="powerIcon overchargeColor">⚡</span>
-          <div><b>Overcharge</b>Bullets fully destroy any asteroid in one hit, no splitting. Every shot kicks your ship backward.</div>
-        </div>
-        <div class="powerRow">
-          <span class="powerIcon rapidfireColor">»</span>
-          <div><b>Rapid Fire</b>Timed. Nearly doubles your fire rate.</div>
-        </div>
-        <div class="powerRow">
-          <span class="powerIcon piercingColor">➹</span>
-          <div><b>Piercing</b>Timed. Bullets punch through up to 2 extra asteroids instead of stopping at the first.</div>
-        </div>
+        <h3>Run upgrades</h3>
+        <p>Upgrade windows appear twice per 10-level sector — after levels 3 and 7, then again after 13 and 17, 23 and 27, and so on. Choose 1 of 3 build-specific upgrades. Core upgrades can rank up repeatedly with diminishing gains, while every 10th-level boss awards a separate weapon EVOLUTION.</p>
+      </div>
+      <div class="htpSection">
+        <h3>Universal pickups</h3>
+        <p>Weapon-defining powerups are gone. Shields remain as a simple survival pickup so your build stays readable and focused.</p>
       </div>
       <div class="htpSection">
         <h3>Levels</h3>
-        <p>Every level adds more, faster asteroids. Every 5th level is a hard checkpoint — extra asteroids and a speed spike, no warning needed.</p>
+        <p>Levels 5, 15, 25, etc. are special threat waves with different field compositions. Every 10th level is a boss fight. Clearing the Level 10 boss secures the run's salvage cash-out; dying before then recovers only 50%.</p>
+      </div>
+      <div class="htpSection">
+        <h3>Test Ground</h3>
+        <p>Sandbox mode for mechanic testing. Any ship can be used. Press 1–4 to swap instantly between Longbow, Scattergun, Rocket Pod, and Cycler with max upgrade ranks and boss evolutions enabled. Targets and shields restock automatically. Test Ground never awards achievements, unlocks, salvage, or permanent stat progress.</p>
       </div>
       <div class="htpSection">
         <h3>Enemies</h3>
-        <p>A UFO mothership drifts in periodically and fires wide, sloppy shots. UFOs drop powerups far more often than asteroids, so they're worth hunting down. Before level 5, a mothership just dies when destroyed. From level 5 on, killing it ejects two escape pods — smaller, faster, and far more accurate. From level 10 on, destroying a pod breaks it down into two more debris pieces on top of that.</p>
+        <p>UFO pressure rises with the run. Early motherships are simple threats; later fields introduce Gunner, Hunter, and Carrier variants that fire faster, pursue you, or deploy pods. Every 10th level replaces the normal field with a boss encounter.</p>
       </div>
       <button id="htpBackBtn" class="secondaryBtn">BACK</button>
     </div>
@@ -890,22 +1370,58 @@
 
   <div id="shopOverlay" class="hidden">
     <div class="htpPanel">
-      <h2>SHOP</h2>
-      <p class="htpIntro" id="shopBalance">⚙ SALVAGE: 0</p>
+      <h2>SALVAGE VAULT</h2>
+      <p class="htpIntro" id="shopBalance">SALVAGE: 0</p>
       <div id="shopList"></div>
       <button id="shopBackBtn" class="secondaryBtn">BACK</button>
+    </div>
+  </div>
+
+  <div id="settingsOverlay" class="hidden">
+    <div class="htpPanel settingsPanel">
+      <div class="settingsKicker">SYSTEM CONFIGURATION</div>
+      <h2>SETTINGS</h2>
+      <p class="htpIntro">Audio and arena behavior. Changes are saved on this device.</p>
+      <div class="volumeRow">
+        <button id="musicMuteBtnSettings" class="musicToggleBtn" type="button" title="Toggle music" aria-label="Toggle music"></button>
+        <span class="volLabel">MUSIC</span>
+        <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
+      </div>
+      <div class="volumeRow">
+        <button id="sfxMuteBtnSettings" class="musicToggleBtn" type="button" title="Toggle sound effects" aria-label="Toggle sound effects"></button>
+        <span class="volLabel">SFX</span>
+        <input type="range" class="volumeSlider" min="0" max="100" value="35">
+      </div>
+      <div class="settingOptionRow">
+        <div class="settingOptionCopy">
+          <span class="settingOptionLabel">CONTAINMENT WALLS</span>
+          <span class="settingOptionDesc">Keep the ship inside the arena. OFF uses classic edge wrapping.</span>
+        </div>
+        <button id="containmentToggle" class="settingToggle" type="button" aria-pressed="false">OFF</button>
+      </div>
+      <button id="settingsBackBtn" class="secondaryBtn">BACK</button>
+    </div>
+  </div>
+
+
+
+  <div id="buildUpgradeOverlay" class="hidden">
+    <div class="upgradePanel">
+      <h2>CHOOSE AN UPGRADE</h2>
+      <div class="sub" id="upgradeBuildLabel">BUILD EVOLUTION</div>
+      <div class="upgradeChoices" id="upgradeChoices"></div>
     </div>
   </div>
 
   <div id="pauseOverlay" class="hidden">
     <h1>PAUSED</h1>
     <div class="volumeRow">
-      <button id="musicMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle music">🎵</button>
+      <button id="musicMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle music" aria-label="Toggle music"></button>
       <span class="volLabel">MUSIC</span>
       <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
     </div>
     <div class="volumeRow">
-      <button id="sfxMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle sound effects">🔊</button>
+      <button id="sfxMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle sound effects" aria-label="Toggle sound effects"></button>
       <span class="volLabel">SFX</span>
       <input type="range" class="volumeSlider" min="0" max="100" value="35">
     </div>
@@ -918,13 +1434,60 @@
 
 <script>
 (function() {
+  // This game uses right-click as gameplay input. Cancel ONLY the browser's context-menu
+  // default action. Do not stop propagation and do not intercept pointer/mouse down/up events:
+  // preventing a right-button pointerdown can suppress the compatibility mouse events the game
+  // itself relies on for thrust/aiming in some browsers.
+  function killNativeContextMenu(e) {
+    if (!e) return false;
+    if (e.cancelable) e.preventDefault();
+    // Only contextmenu is stopped. We intentionally leave mousedown/mouseup/mousemove
+    // completely alone so right-click thrust and mouse aiming keep their known-good behavior.
+    if (typeof e.stopImmediatePropagation === 'function') e.stopImmediatePropagation();
+    else if (typeof e.stopPropagation === 'function') e.stopPropagation();
+    return false;
+  }
+  window.addEventListener('contextmenu', killNativeContextMenu, { capture: true, passive: false });
+  document.addEventListener('contextmenu', killNativeContextMenu, { capture: true, passive: false });
+  document.documentElement.oncontextmenu = killNativeContextMenu;
+  document.body.oncontextmenu = killNativeContextMenu;
+
   const canvas = document.getElementById('game');
+  const gameWrapEl = document.getElementById('gameWrap');
+
+  // Target-level fallback for browsers/file-preview shells that can bypass or retarget
+  // the global contextmenu path. This deliberately does NOT touch down/up/move events.
+  canvas.addEventListener('contextmenu', killNativeContextMenu, { capture: true, passive: false });
+  if (gameWrapEl) gameWrapEl.addEventListener('contextmenu', killNativeContextMenu, { capture: true, passive: false });
+  canvas.addEventListener('auxclick', (e) => {
+    if (e.button === 2 && e.cancelable) e.preventDefault();
+  }, { passive: false });
+
+  // Fullscreen can change the effective event root in Chromium/file-preview shells. Re-attach
+  // the exact same contextmenu-only guard directly to whatever element entered fullscreen.
+  // No pointer/mouse down/up/move listeners are added here.
+  let guardedFullscreenEl = null;
+  function refreshFullscreenContextGuard() {
+    const fsEl = document.fullscreenElement || document.webkitFullscreenElement || null;
+    if (guardedFullscreenEl && guardedFullscreenEl !== fsEl) {
+      guardedFullscreenEl.removeEventListener('contextmenu', killNativeContextMenu, true);
+    }
+    guardedFullscreenEl = fsEl;
+    if (guardedFullscreenEl) {
+      guardedFullscreenEl.removeEventListener('contextmenu', killNativeContextMenu, true);
+      guardedFullscreenEl.addEventListener('contextmenu', killNativeContextMenu, { capture: true, passive: false });
+      guardedFullscreenEl.oncontextmenu = killNativeContextMenu;
+    }
+  }
+  document.addEventListener('fullscreenchange', refreshFullscreenContextGuard);
+  document.addEventListener('webkitfullscreenchange', refreshFullscreenContextGuard);
   const ctx = canvas.getContext('2d');
   const overlay = document.getElementById('overlay');
   const mainMenuHTML = overlay.innerHTML; // pristine copy, restored on "quit to menu"
   const howToPlayOverlay = document.getElementById('howToPlayOverlay');
   const achievementsOverlay = document.getElementById('achievementsOverlay');
   const shopOverlay = document.getElementById('shopOverlay');
+  const settingsOverlay = document.getElementById('settingsOverlay');
   const pauseOverlay = document.getElementById('pauseOverlay');
   const scoreDisplay = document.getElementById('scoreDisplay');
   const livesDisplay = document.getElementById('livesDisplay');
@@ -935,8 +1498,42 @@
   const weaponStatusText = document.getElementById('weaponStatusText');
   const weaponTimerTrack = document.getElementById('weaponTimerTrack');
   const weaponTimerFill = document.getElementById('weaponTimerFill');
+  const heatTrack = document.getElementById('heatTrack');
+  const heatFill = document.getElementById('heatFill');
+  const bossStatus = document.getElementById('bossStatus');
+  const bossName = document.getElementById('bossName');
+  const bossFill = document.getElementById('bossFill');
+  const buildUpgradeOverlay = document.getElementById('buildUpgradeOverlay');
+  const upgradeChoicesEl = document.getElementById('upgradeChoices');
+  const upgradeBuildLabel = document.getElementById('upgradeBuildLabel');
   const levelIndicator = document.getElementById('levelIndicator');
   const levelBanner = document.getElementById('levelBanner');
+
+  function uiIcon(name, muted = false) {
+    const common = `class="uiIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"`;
+    const icons = {
+      help: `<svg ${common}><circle cx="12" cy="12" r="9"/><path d="M9.6 9a2.6 2.6 0 1 1 4.2 2c-1.2.8-1.8 1.4-1.8 2.7"/><path d="M12 17.2h.01"/></svg>`,
+      trophy: `<svg ${common}><path d="M8 4h8v4.5c0 3-1.7 5-4 5s-4-2-4-5V4Z"/><path d="M8 6H5v1.5c0 2 1.2 3.3 3.2 3.7M16 6h3v1.5c0 2-1.2 3.3-3.2 3.7M12 13.5V18M9 20h6"/></svg>`,
+      salvage: `<svg ${common}><path d="M12 3 19 7v10l-7 4-7-4V7l7-4Z"/><path d="m9 9 6 6M15 9l-6 6"/></svg>`,
+      music: `<svg ${common}><path d="M9 18V6l9-2v12"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="15.5" cy="16" r="2.5"/></svg>`,
+      speaker: `<svg ${common}><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="M16 9c1 .8 1.5 1.8 1.5 3S17 14.2 16 15"/><path d="M18.5 6.5c1.7 1.5 2.5 3.3 2.5 5.5s-.8 4-2.5 5.5"/></svg>`,
+      speakerOff: `<svg ${common}><path d="M4 10v4h4l5 4V6L8 10H4Z"/><path d="m17 9 4 6M21 9l-4 6"/></svg>`,
+      pause: `<svg ${common}><path d="M9 6v12M15 6v12"/></svg>`,
+      play: `<svg ${common}><path d="m9 6 9 6-9 6V6Z"/></svg>`,
+      lock: `<svg ${common}><rect x="6" y="10" width="12" height="9" rx="2"/><path d="M9 10V8a3 3 0 0 1 6 0v2"/></svg>`,
+      check: `<svg ${common}><circle cx="12" cy="12" r="9"/><path d="m8 12 2.5 2.5L16 9"/></svg>`,
+      lab: `<svg ${common}><path d="M9 3h6M10 3v5l-5 9a2 2 0 0 0 1.8 3h10.4A2 2 0 0 0 19 17l-5-9V3"/><path d="M7.5 15h9"/><path d="M9.3 12h5.4"/></svg>`,
+      settings: `<svg ${common}><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6V21h-4v-.1a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H3v-4h.1a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1a1.7 1.7 0 0 0 1.9.3A1.7 1.7 0 0 0 10 3V3h4v.1a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9A1.7 1.7 0 0 0 21 10h.1v4H21a1.7 1.7 0 0 0-1.6 1Z"/></svg>`
+    };
+    return icons[muted && name === 'speaker' ? 'speakerOff' : name] || '';
+  }
+
+  function applyCoreIcons() {
+    const mute = document.getElementById('muteBtn');
+    const pause = document.getElementById('pauseBtn');
+    if (mute) mute.innerHTML = uiIcon('speaker', SFX && SFX.isMuted ? SFX.isMuted() : false);
+    if (pause) pause.innerHTML = uiIcon(paused ? 'play' : 'pause');
+  }
 
   let W, H;
 
@@ -988,6 +1585,25 @@
     if (obj.x > PLAY_X + PLAY_W + obj.r) obj.x = PLAY_X - obj.r;
     if (obj.y < PLAY_Y - obj.r) obj.y = PLAY_Y + PLAY_H + obj.r;
     if (obj.y > PLAY_Y + PLAY_H + obj.r) obj.y = PLAY_Y - obj.r;
+  }
+
+  // Player-only boundary behavior. Other entities keep classic Asteroids wrapping.
+  // With Containment Walls enabled, the ship collides with the arena edge and bounces inward.
+  function applyPlayerBoundary(obj) {
+    if (!gameSettings.containmentWalls) {
+      wrap(obj);
+      return;
+    }
+    const minX = PLAY_X + obj.r;
+    const maxX = PLAY_X + PLAY_W - obj.r;
+    const minY = PLAY_Y + obj.r;
+    const maxY = PLAY_Y + PLAY_H - obj.r;
+    const bounce = 0.42;
+
+    if (obj.x < minX) { obj.x = minX; if (obj.vx < 0) obj.vx = -obj.vx * bounce; }
+    else if (obj.x > maxX) { obj.x = maxX; if (obj.vx > 0) obj.vx = -obj.vx * bounce; }
+    if (obj.y < minY) { obj.y = minY; if (obj.vy < 0) obj.vy = -obj.vy * bounce; }
+    else if (obj.y > maxY) { obj.y = maxY; if (obj.vy > 0) obj.vy = -obj.vy * bounce; }
   }
 
   // ---------- Audio ----------
@@ -1077,9 +1693,39 @@
         const target = (on && !muted) ? 0.08 : 0;
         thrustGain.gain.setTargetAtTime(target, ctx.currentTime, 0.08);
       },
-      laser(overcharged) {
-        tone(overcharged ? 300 : 620, overcharged ? 0.14 : 0.09, 'square', overcharged ? 0.22 : 0.12, overcharged ? 110 : 280);
+      weaponFire(type, heatRatio=0) {
+        // Less 'arcade beep', more layered transient + body. Still fully procedural WebAudio.
+        if(type==='sniper'){
+          noiseBurst(.035,.22,6200);                    // rail crack
+          tone(1450,.028,'square',.07,520);             // electrical snap
+          tone(118,.17,'sine',.18,46);                  // chesty recoil body
+          setTimeout(()=>tone(310,.07,'triangle',.055,150),18);
+        } else if(type==='shotgun'){
+          noiseBurst(.13,.30,2600);                     // broad blast
+          tone(92,.16,'sine',.23,42);                   // low punch
+          setTimeout(()=>noiseBurst(.07,.10,900),24);   // mechanical tail
+        } else if(type==='rocket'){
+          noiseBurst(.11,.17,1350);                     // ignition wash
+          tone(135,.22,'sawtooth',.20,52);              // launch motor
+          tone(54,.18,'sine',.12,34);
+        } else {
+          const h=Math.max(0,Math.min(1,heatRatio));
+          noiseBurst(.022,.075,4200);                   // crisp action
+          tone(510-h*90,.038,'triangle',.085,360-h*55); // heats into a lower, meaner chatter
+          if(h>.65) tone(105,.035,'sine',.035,80);
+        }
       },
+      rocketBlast(){ noiseBurst(.42,.48,760); tone(82,.34,'sine',.28,28); setTimeout(()=>noiseBurst(.16,.16,1800),32); },
+      overheat(){ tone(160,.35,'square',.18,70); },
+      ready(){ tone(420,.10,'triangle',.12,760); },
+      mutationReady(){
+        // Run-milestone cue: low impact first, then a restrained synthetic rise into the choice screen.
+        noiseBurst(.12,.18,1200);
+        tone(78,.28,'sine',.24,34);
+        setTimeout(()=>tone(280,.11,'triangle',.08,620),55);
+        setTimeout(()=>tone(620,.15,'triangle',.09,1040),125);
+      },
+      upgrade(){ tone(330,.10,'triangle',.12,520); setTimeout(()=>tone(520,.13,'triangle',.13,820),80); },
       explosion(size, powerful) {
         const dur = size === 3 ? 0.45 : size === 2 ? 0.32 : 0.22;
         const freq = size === 3 ? 500 : size === 2 ? 900 : 1400;
@@ -1134,6 +1780,27 @@
         tone(700, 0.1, 'square', 0.15, 1100);
         setTimeout(() => tone(900, 0.08, 'square', 0.12, 1400), 50);
       },
+      achievement() {
+        tone(660, 0.12, 'triangle', 0.16, 880);
+        setTimeout(() => tone(880, 0.16, 'triangle', 0.16, 1320), 90);
+      },
+      waveClear() {
+        tone(360, 0.12, 'square', 0.12, 520);
+        setTimeout(() => tone(520, 0.12, 'square', 0.10, 720), 90);
+      },
+      ufoAlert() {
+        tone(170, 0.16, 'sawtooth', 0.12, 120);
+        setTimeout(() => tone(230, 0.12, 'square', 0.08, 170), 100);
+      },
+      bossAlert() {
+        noiseBurst(.18,.14,700); tone(78,.52,'sawtooth',.22,42);
+        setTimeout(()=>tone(118,.28,'square',.13,72),190);
+        setTimeout(()=>tone(78,.38,'sawtooth',.18,38),420);
+      },
+      bossShot() { noiseBurst(.045,.10,2200); tone(126,.10,'sawtooth',.13,76); },
+      bossHit() { noiseBurst(.045,.12,2500); tone(74,.07,'sine',.10,45); },
+      bossDown() { noiseBurst(.75,.55,620); tone(68,.72,'sawtooth',.30,24); setTimeout(()=>noiseBurst(.30,.26,1500),110); },
+      evolution() { tone(220,.12,'sine',.12,440); setTimeout(()=>tone(440,.16,'triangle',.15,880),90); setTimeout(()=>tone(880,.20,'triangle',.14,1320),200); },
       shipRebirth() {
         // Rising sweep with a couple of sparkly overtones — the "reforming" whoosh
         tone(160, 0.9, 'sawtooth', 0.2, 520);
@@ -1156,6 +1823,7 @@
     let ctx = null, masterGain = null;
     let playing = false, muted = false;
     let desiredVolume = 0.22;
+    let intensity = 0; // 0..3, rises every five levels
     const tempo = 108;
     let nextNoteTime = 0, currentStep = 0, timerId = null;
     const lookaheadMs = 25, scheduleAheadTime = 0.12;
@@ -1261,11 +1929,14 @@
       if (stepInBar % 4 === 0) kick(time);
       if (stepInBar === 4 || stepInBar === 12) snare(time);
       if (stepInBar % 2 === 0) hihat(time, stepInBar % 4 === 0 ? 0.16 : 0.09);
+      if (intensity >= 1 && stepInBar % 4 === 2) hihat(time, 0.07);
       if (stepInBar % 2 === 0) bassNote(chord.bass, time, secondsPer16th() * 1.8);
+      if (intensity >= 3 && stepInBar === 14) bassNote(chord.bass * 2, time, secondsPer16th() * 1.2);
       if (stepInBar === 0) padChord(chord.notes, time, (60 / tempo) * 4 * 0.95);
 
       const arpFreq = chord.notes[step % chord.notes.length] * 2;
       arpNote(arpFreq, time, secondsPer16th() * 0.8);
+      if (intensity >= 2 && stepInBar % 4 === 3) arpNote(arpFreq * 2, time, secondsPer16th() * 0.55);
     }
 
     function scheduler() {
@@ -1295,6 +1966,13 @@
       setVolume(v) {
         desiredVolume = Math.max(0, Math.min(1, v));
         if (masterGain && ctx && !muted) masterGain.gain.setTargetAtTime(desiredVolume, ctx.currentTime, 0.05);
+      },
+      setIntensity(v) { intensity = Math.max(0, Math.min(3, v | 0)); },
+      punchDuck() {
+        if (!masterGain || !ctx || muted) return;
+        masterGain.gain.cancelScheduledValues(ctx.currentTime);
+        masterGain.gain.setTargetAtTime(desiredVolume * 0.25, ctx.currentTime, 0.015);
+        setTimeout(() => { if (!muted && masterGain && ctx) masterGain.gain.setTargetAtTime(desiredVolume, ctx.currentTime, 0.05); }, 120);
       }
     };
   })();
@@ -1310,6 +1988,19 @@
   let mousePos = { x: 0, y: 0 };
   let mouseActive = false;   // has the mouse moved since this run started?
   let mouseThrust = false;   // right button held
+  let fireHeld = false;      // pointer/touch autofire; keyboard space is tracked in keys
+  let reticleKick = 0;       // hit-confirm contraction animation
+  let waveTransitionTimer = 0;
+  const WAVE_CLEAR_DELAY = 48; // 0.8s breather between fields
+  let currentWaveKind = 'NORMAL';
+  let pendingEvolution = false;
+  let evolutionChoosing = false;
+  let bossDefeatsThisRun = 0;
+  let bossSequence = 0;
+  let achievementPollTimer = 0;
+  let testMode = false;
+  let testGroundMaintenanceTimer = 0;
+  const TEST_GROUND_MAINTENANCE = 90; // restock sandbox every ~1.5s
   let invulnTimer = 0;
   let hitStopFrames = 0; // brief total freeze on big kills, right before the shake — the "punch" beat
 
@@ -1326,51 +2017,124 @@
   const REBIRTH_DURATION = 75; // ~1.25s — hull pieces converge and camera settles back to normal
 
   function triggerShake(magnitude, duration) {
-    shakeMagnitude = magnitude;
-    shakeTime = duration;
+    shakeMagnitude = Math.max(shakeMagnitude, magnitude);
+    shakeTime = Math.max(shakeTime, duration);
+  }
+
+  // Weapon-specific impact feedback. This restores the crunchy flash/shake from the early build
+  // without making the Cycler's high fire rate nauseating.
+  function applyWeaponHitFeedback(b, bossHit = false) {
+    const id = b && b.weapon ? b.weapon : currentWeapon.id;
+    let shake = 2.2, frames = 4, flash = 0.075;
+    if (id === 'sniper') { shake = 5.8; frames = 8; flash = 0.18; }
+    else if (id === 'shotgun') { shake = 4.6; frames = 6; flash = 0.13; }
+    else if (id === 'rocket') { shake = 8.5; frames = 12; flash = 0.20; }
+    else if (id === 'rapid') { shake = 1.35; frames = 3; flash = 0.045; }
+    if (bossHit) { shake *= 1.12; frames += 2; flash *= 1.12; }
+    triggerShake(shake, frames);
+    hitConfirmFlash = Math.max(hitConfirmFlash, flash);
+    reticleKick = Math.max(reticleKick, id === 'rapid' ? 0.45 : 1);
   }
 
   // ---------- UFO enemies ----------
   // Mothership (tier 2) drifts in slow, fires wide/inaccurate shots. When destroyed it
   // ejects 2 escape pods (tier 1) — faster, erratic, more accurate, worth less alone.
-  const UFO_MAX_CONCURRENT = 3;
-  const UFO_SPAWN_MIN = 900;   // frames (~15s) until next spawn, minimum
-  const UFO_SPAWN_MAX = 1500;  // frames (~25s), maximum
-  const UFO_POWERUP_DROP_CHANCE = 0.35; // UFOs are rarer and worth hunting — much better odds than asteroids
+  const UFO_POWERUP_DROP_CHANCE = 0.35;
+  function ufoMaxConcurrent() { return Math.min(6, 2 + Math.floor(level / 10)); }
+  function ufoSpawnWindow() {
+    // Pressure ramps mostly through enemy presence/behavior instead of infinite asteroid speed.
+    const min = Math.max(360, 900 - level * 18);
+    const max = Math.max(620, 1450 - level * 24);
+    return [min, Math.max(min + 120, max)];
+  }
 
-  // ---------- Powerup config ----------
-  // One roll per destroyed asteroid decides IF anything drops; a second weighted
-  // pick decides WHAT. Much easier to keep rare than the old cascading-chance version.
-  const POWERUP_DROP_CHANCE = 0.10; // ~10% of destroyed asteroids drop something
-  const POWERUP_WEIGHTS = { shield: 3, range: 3, spread: 3, raygun: 2, overcharge: 2, rapidfire: 2, piercing: 2 };
-  const SHIELD_MAX_CHARGES = 3;      // shield doesn't expire — it stacks and depletes on hits
-  const RANGE_MAX_STACKS = 5;
-  const RANGE_LIFE_PER_STACK = 8;    // extra bullet-life frames per stack (was 20 — max stack was covering almost a full screen width)
-  const SPREAD_MAX_STACKS = 5;       // universal utility now — stacks alongside anything, including weapon modes
-
-  // Ray Gun: passive auto-turret that zaps small (size-1) asteroids on its own, no aiming needed.
-  // Each stack lets it zap one more target per volley — stacks alongside everything else.
-  const RAYGUN_MAX_STACKS = 5;
-  const RAYGUN_COOLDOWN = 100;  // frames between auto-zap volleys (~1.7s)
-  const RAYGUN_RANGE = 110;     // px — only targets small asteroids within this radius
-
-  // "Weapon mode" powerups are mutually exclusive — picking one up replaces whichever
-  // was active. Everything else (Shield, Range, Spread, Ray Gun) is universal and stacks with any of them.
-  const OVERCHARGE_DURATION = 420;   // 7s
-  const OVERCHARGE_RECOIL = 1.1;
-  const NORMAL_RECOIL = 0.12; // small kick on every shot — barely noticeable while moving, felt when stationary
-  const RAPIDFIRE_DURATION = 480;    // 8s
-  const RAPIDFIRE_COOLDOWN = 120;    // ms between shots (vs 220 normal)
-  const PIERCING_DURATION = 480;     // 8s
-  const PIERCE_HITS = 2;             // extra asteroids a piercing bullet can punch through
-
+  // ---------- Weapon builds + simple universal pickups ----------
+  const POWERUP_DROP_CHANCE = 0.055;
+  const SHIELD_MAX_CHARGES = 3;
+  const NORMAL_RECOIL = 0.12;
   let shieldCharges = 0;
-  let rangeLevel = 0;
-  let spreadLevel = 0;    // now a universal stack, always active — not tied to weaponMode
-  let rayGunLevel = 0;
-  let rayGunCooldown = 0;
-  let weaponMode = 'normal'; // 'normal' | 'overcharge' | 'rapidfire' | 'piercing'
-  let weaponModeTimer = 0;   // frames remaining for timed modes; unused for 'normal'
+  // Legacy fields are kept inert so older save/achievement code remains migration-safe.
+  let rangeLevel = 0, spreadLevel = 0, rayGunLevel = 0, rayGunCooldown = 0;
+  let weaponMode = 'normal', weaponModeTimer = 0;
+
+  const WEAPON_BUILDS = [
+    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration.', stats:'POWER █████   RATE ██░░░   RANGE ████░', cooldown:620, speed:13.5, life:50, recoil:0.72 },
+    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Short cone, heavy recoil, brutal crowd control.', stats:'POWER ████░   RATE ███░░   RANGE █░░░░', cooldown:430, speed:8.2, life:21, recoil:1.05 },
+    { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, punishes packed targets.', stats:'POWER █████   RATE █░░░░   RANGE ████░', cooldown:980, speed:5.1, life:110, recoil:1.35 },
+    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Tiny rounds build heat and can overheat the weapon.', stats:'POWER ██░░░   RATE █████   RANGE ███░░', cooldown:92, speed:8.8, life:56, recoil:0.04 }
+  ];
+  let selectedWeaponIndex = 0;
+  let currentWeapon = WEAPON_BUILDS[0];
+  let runUpgradeState = {};
+  let runUpgradeCount = 0;
+  let upgradeChoosing = false;
+  let weaponHeat = 0;
+  let weaponOverheated = false;
+  let rocketMultiKillFlag = false;
+
+  const BUILD_UPGRADES = {
+    sniper: [
+      {id:'railPierce', name:'RAIL CAPACITOR', desc:'+1 penetration per rank.', maxRank:5},
+      {id:'hypervelocity', name:'HYPERVELOCITY', desc:'+10% projectile speed and +8% range per rank.', maxRank:4},
+      {id:'heavyCore', name:'HEAVY CORE', desc:'Harder impact and larger rail core; recoil also rises.', maxRank:3},
+      {id:'quickCycle', name:'QUICK CYCLE', desc:'12% faster follow-up shots per rank.', maxRank:4},
+      {id:'deadeye', name:'DEADEYE', desc:'+10% rail-shot score per rank.', maxRank:4}
+    ],
+    shotgun: [
+      {id:'extraPellets', name:'DOUBLE LOAD', desc:'+2 pellets per rank.', maxRank:4},
+      {id:'tightChoke', name:'TIGHT CHOKE', desc:'Tighter cone and slightly longer range per rank.', maxRank:4},
+      {id:'sawedOff', name:'SAWED-OFF', desc:'Massive close-range punch and recoil; shorter range.', maxRank:1},
+      {id:'fastPump', name:'FAST PUMP', desc:'13% faster blast cadence per rank.', maxRank:4},
+      {id:'flechette', name:'FLECHETTES', desc:'Center pellets pierce extra targets; +1 pierce per rank.', maxRank:3}
+    ],
+    rocket: [
+      {id:'bigWarhead', name:'HEAVY WARHEAD', desc:'+18% blast radius per rank.', maxRank:4},
+      {id:'cluster', name:'CLUSTER BURST', desc:'Explosion throws 6 micro-fragments outward.', maxRank:1},
+      {id:'proximity', name:'PROXIMITY FUSE', desc:'Rocket detonates when it passes close to a target.', maxRank:1},
+      {id:'fastLoader', name:'FAST LOADER', desc:'14% faster rocket reload per rank.', maxRank:4},
+      {id:'booster', name:'BOOSTER MOTOR', desc:'+12% rocket speed per rank.', maxRank:4}
+    ],
+    rapid: [
+      {id:'cooling', name:'COOLING FINS', desc:'+30% cooling per rank.', maxRank:4},
+      {id:'twin', name:'TWIN BARREL', desc:'Alternating twin rounds with slight lateral spread.', maxRank:1},
+      {id:'hotLoad', name:'HOT LOAD', desc:'Medium/small targets vaporize, but heat generation rises.', maxRank:1},
+      {id:'deepMag', name:'DEEP MAG', desc:'+15% heat capacity per rank.', maxRank:4},
+      {id:'spinUp', name:'SPIN-UP', desc:'Sustained fire ramps substantially faster.', maxRank:1}
+    ]
+  };
+
+  const BUILD_EVOLUTIONS = {
+    sniper: [
+      {id:'railDriver', name:'RAIL DRIVER', desc:'Rail shots become heavier boss-breakers with +1 penetration, but cycle 14% slower.', maxRank:3},
+      {id:'marksmanCore', name:'MARKSMAN CORE', desc:'Cleaner cycling, less recoil, and bonus score on every precision shot.', maxRank:3}
+    ],
+    shotgun: [
+      {id:'breacher', name:'BREACHER CORE', desc:'Point-blank pellets gain brutal large-target damage and stronger recoil.', maxRank:3},
+      {id:'flechetteArray', name:'FLECHETTE ARRAY', desc:'Extends effective range and grants every pellet limited penetration.', maxRank:3}
+    ],
+    rocket: [
+      {id:'swarmPod', name:'SWARM POD', desc:'Launch 3 smaller rockets in a fan. Smaller blasts, dramatically better coverage.', maxRank:3},
+      {id:'siegeWarhead', name:'SIEGE WARHEAD', desc:'One slower rocket with a massive blast and boss damage, but a longer reload.', maxRank:3}
+    ],
+    rapid: [
+      {id:'gatlingCore', name:'GATLING CORE', desc:'Spin-up reaches a much faster fire rate, but heat climbs harder at full speed.', maxRank:3},
+      {id:'plasmaCycler', name:'PLASMA CYCLER', desc:'Larger, harder rounds with stronger impact; slightly slower base cadence.', maxRank:3}
+    ]
+  };
+
+  function upgradeLevel(id) { return runUpgradeState[id] || 0; }
+  function setWeaponBuild(index, allUpgrades=false) {
+    selectedWeaponIndex = (index + WEAPON_BUILDS.length) % WEAPON_BUILDS.length;
+    currentWeapon = WEAPON_BUILDS[selectedWeaponIndex];
+    weaponHeat = 0; weaponOverheated = false;
+    if (allUpgrades) {
+      runUpgradeState = {};
+      BUILD_UPGRADES[currentWeapon.id].forEach(u => runUpgradeState[u.id] = u.maxRank || 1);
+      BUILD_EVOLUTIONS[currentWeapon.id].forEach(u => runUpgradeState[u.id] = u.maxRank || 1);
+      runUpgradeCount = BUILD_UPGRADES[currentWeapon.id].reduce((n,u)=>n+(u.maxRank||1),0) + BUILD_EVOLUTIONS[currentWeapon.id].reduce((n,u)=>n+(u.maxRank||1),0);
+    }
+    updateHUD();
+  }
 
   // ---------- Ship skins ----------
   // points are hull outline vertices as [x,y] multipliers of ship.r, nose pointing along +x.
@@ -1382,84 +2146,84 @@
     {
       name: 'INTERCEPTOR', color: '#6ff2ff', trailColors: ['#8ff5ff', '#ffffff'],
       points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
-      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
+      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, maxSpeedMult: 1.0, startShield: 0,
       desc: 'Balanced all-rounder. No surprises.',
       unlock: { type: 'default' }
     },
     {
       name: 'VIPER', color: '#ff6f6f', trailColors: ['#ff6f6f', '#ffb347'],
       points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
-      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
+      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, maxSpeedMult: 1.14, startShield: 0,
       desc: 'Fast and twitchy — but a bigger target.',
       unlock: { type: 'level', value: 5 }
     },
     {
       name: 'TITAN', color: '#6fffb0', trailColors: ['#8fffc0', '#d9ff70'],
       points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
-      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
+      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, maxSpeedMult: 0.86, startShield: 1,
       desc: 'Slow and bulky. Starts every run with 1 shield charge.',
       unlock: { type: 'level', value: 10 }
     },
     {
       name: 'PHANTOM', color: '#c9a4ff', trailColors: ['#c9a4ff', '#ff9ee8'],
       points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
-      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
+      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, maxSpeedMult: 1.05, startShield: 0,
       desc: 'Small hitbox, hard to hit — no armor to fall back on.',
       unlock: { type: 'level', value: 15 }
     },
     {
       name: 'INTERCEPTOR CHROME', color: '#dff4ff', trailColors: ['#ffffff', '#dff4ff'],
       points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
-      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
+      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, maxSpeedMult: 1.0, startShield: 0,
       desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'destroy500' }
     },
     {
       name: 'VIPER NOIR', color: '#ff5478', trailColors: ['#ff5478', '#ff2f5f'],
       points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
-      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
+      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, maxSpeedMult: 1.14, startShield: 0,
       desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'level5NoDeath' }
     },
     {
       name: 'TITAN GOLD', color: '#ffdd70', trailColors: ['#ffdd70', '#ffb347'],
       points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
-      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
+      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, maxSpeedMult: 0.86, startShield: 1,
       desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'allFourActive' }
     },
     {
       name: 'PHANTOM SPECTRAL', color: '#e0b3ff', trailColors: ['#e0b3ff', '#8dfcff'],
       points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
-      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
+      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, maxSpeedMult: 1.05, startShield: 0,
       desc: 'Cosmetic recolor of Phantom. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'rayChain5' }
     },
     {
       name: 'INTERCEPTOR NOVA', color: '#ffb347', trailColors: ['#ffb347', '#ffdd70'],
       points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
-      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, startShield: 0,
+      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, maxSpeedMult: 1.0, startShield: 0,
       desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'ufoHunter' }
     },
     {
       name: 'VIPER BLAZE', color: '#ff8f52', trailColors: ['#ff8f52', '#ffb347'],
       points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
-      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, startShield: 0,
+      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, maxSpeedMult: 1.14, startShield: 0,
       desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'podBrood' }
     },
     {
       name: 'TITAN PLATINUM', color: '#c8d6e5', trailColors: ['#c8d6e5', '#ffffff'],
       points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
-      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, startShield: 1,
+      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, maxSpeedMult: 0.86, startShield: 1,
       desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'score15k' }
     },
     {
       name: 'PHANTOM PRISM', color: '#b3f0ff', shimmer: true, trailColors: ['#b3f0ff', '#ffb3f0'],
       points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
-      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, startShield: 0,
+      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, maxSpeedMult: 1.05, startShield: 0,
       desc: 'Cosmetic recolor of Phantom — shimmers through colors. Same handling, different shine.',
       unlock: { type: 'achievement', id: 'level20' }
     }
@@ -1473,7 +2237,7 @@
 
   // ---------- Achievements ----------
   // Each maps to unlocking one cosmetic ship variant. check() reads live run state and/or
-  // cumulative saveData stats; evaluated once at game-over time in showGameOver().
+  // cumulative saveData stats; evaluated live during runs and once more at game over as a safety net.
   const ACHIEVEMENTS = {
     destroy500: {
       shipIndex: 4,
@@ -1491,17 +2255,17 @@
     },
     allFourActive: {
       shipIndex: 6,
-      label: 'Fully Loaded',
-      desc: 'Have Shield, Range, Spread, and Ray Gun all active at the same time.',
-      progress: () => '',
-      check: () => comboAllFourFlag
+      label: 'Fully Tuned',
+      desc: 'Collect 3 weapon upgrades in a single run.',
+      progress: () => `${Math.min(runUpgradeCount, 3)}/3`,
+      check: () => runUpgradeCount >= 3
     },
     rayChain5: {
       shipIndex: 7,
-      label: 'Chain Reaction',
-      desc: 'Land a 5-target Ray Gun chain in a single volley.',
+      label: 'Rocket Scientist',
+      desc: 'Destroy 4 or more targets with one rocket detonation.',
       progress: () => '',
-      check: () => rayChain5Flag
+      check: () => rocketMultiKillFlag
     },
     ufoHunter: {
       shipIndex: 8,
@@ -1557,47 +2321,40 @@
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(saveData)); } catch (e) { /* ignore */ }
   }
   let saveData = loadSave();
+
+  // ---------- Player settings ----------
+  const SETTINGS_KEY = 'asteroidsSettingsV1';
+  function loadGameSettings() {
+    try {
+      const raw = localStorage.getItem(SETTINGS_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        return { containmentWalls: !!parsed.containmentWalls };
+      }
+    } catch (e) { /* localStorage unavailable */ }
+    return { containmentWalls: false };
+  }
+  function persistGameSettings() {
+    try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(gameSettings)); } catch (e) { /* ignore */ }
+  }
+  const gameSettings = loadGameSettings();
+
   function shopLevel(id) { return saveData.shopLevels[id] || 0; }
   function isUnlocked(idx) { return saveData.unlockedShips.indexOf(idx) !== -1; }
 
-  // ---------- Shop: permanent, account-wide upgrades bought with Salvage ----------
-  // Deliberately kept small for this first pass — groundwork for the roguelite build-choice
-  // system later, not the final economy. Each entry has a per-level cost table and a short
-  // description generator so the UI can show "what you'd get" before buying.
-  const SHOP_UPGRADES = {
-    extraLife: {
-      name: 'Reinforced Hull',
-      maxLevel: 2,
-      costs: [90, 220],
-      desc: (lvl) => `+${lvl} starting life`
-    },
-    extraShield: {
-      name: 'Shield Capacitor',
-      maxLevel: 2,
-      costs: [80, 190],
-      desc: (lvl) => `+${lvl} starting shield charge`
-    },
-    rayGunSpeed: {
-      name: 'Ray Gun Overclock',
-      maxLevel: 3,
-      costs: [70, 150, 260],
-      desc: (lvl) => `Ray Gun fires ${lvl * 8}% faster`
-    },
-    luckyFind: {
-      name: 'Salvage Sense',
-      maxLevel: 3,
-      costs: [70, 150, 260],
-      desc: (lvl) => `+${lvl * 2}% powerup drop chance`
-    },
-    quickTrigger: {
-      name: 'Quick Trigger',
-      maxLevel: 3,
-      costs: [70, 150, 260],
-      desc: (lvl) => `-${lvl * 15}ms base fire cooldown`
-    }
-  };
+  // ---------- Salvage economy ----------
+  // Score converts to salvage slowly enough that permanent upgrades stay meaningful across multiple runs.
+  // Clearing level 10 advances the run to level 11, which marks the first secured cash-out.
+  const SALVAGE_SCORE_DIVISOR = 250;
+  const FIRST_CASHOUT_LEVEL = 10;
+  const FAILED_CASHOUT_RECOVERY = 0.50;
+
+  // ---------- Salvage vault ----------
+  // Raw permanent combat upgrades were removed. Salvage is retained for future cosmetics / sidegrades.
+  const SHOP_UPGRADES = {};
 
   function checkLevelUnlocks(levelReached) {
+    if (testMode) return [];
     const newlyUnlocked = [];
     SHIP_SKINS.forEach((skin, idx) => {
       if (skin.unlock && skin.unlock.type === 'level' && !isUnlocked(idx) && levelReached >= skin.unlock.value) {
@@ -1608,19 +2365,33 @@
     return newlyUnlocked;
   }
 
-  function checkAchievementUnlocks() {
+  function showAchievementToast(label, shipName) {
+    const toast = document.getElementById('achievementToast');
+    if (!toast) return;
+    toast.innerHTML = `${uiIcon('trophy')} ACHIEVEMENT: ${label}<span class="toastSub">SHIP UNLOCKED — ${shipName}</span>`;
+    toast.classList.remove('show');
+    void toast.offsetWidth;
+    toast.classList.add('show');
+    clearTimeout(showAchievementToast._timer);
+    showAchievementToast._timer = setTimeout(() => toast.classList.remove('show'), 2600);
+    SFX.achievement();
+  }
+
+  function checkAchievementUnlocks(live = false) {
+    if (testMode) return [];
     const newlyUnlocked = [];
     Object.keys(ACHIEVEMENTS).forEach((id) => {
-      if (saveData.achievements[id]) return; // already unlocked
+      if (saveData.achievements[id]) return;
       const ach = ACHIEVEMENTS[id];
       if (ach.check()) {
         saveData.achievements[id] = true;
-        if (saveData.unlockedShips.indexOf(ach.shipIndex) === -1) {
-          saveData.unlockedShips.push(ach.shipIndex);
-        }
-        newlyUnlocked.push(SHIP_SKINS[ach.shipIndex].name);
+        const shipName = SHIP_SKINS[ach.shipIndex].name;
+        if (saveData.unlockedShips.indexOf(ach.shipIndex) === -1) saveData.unlockedShips.push(ach.shipIndex);
+        newlyUnlocked.push(shipName);
+        if (live && running && !gameOver) showAchievementToast(ach.label, shipName);
       }
     });
+    if (newlyUnlocked.length) persistSave();
     return newlyUnlocked;
   }
 
@@ -1639,6 +2410,7 @@
       angularAccel: 0.007 * skin.turnMult,
       angularDamping: 0.8,
       thrustPower: 0.14 * skin.thrustMult,
+      maxSpeed: 6.6 * (skin.maxSpeedMult || 1),
       friction: 0.99,
       thrusting: false,
       turningLeft: false,
@@ -1650,7 +2422,7 @@
   function spawnAsteroid(x, y, size) {
     // size: 3 = large, 2 = medium, 1 = small
     const hard = level > 0 && level % 5 === 0;
-    const speedMult = (1 + (level - 1) * 0.05) * (hard ? 1.3 : 1);
+    const speedMult = Math.min(2.15, 1 + (level - 1) * 0.045) * (hard ? 1.16 : 1);
     const speedBase = (0.6 + (3 - size) * 0.35) * speedMult;
     const r = size === 3 ? 50 : size === 2 ? 28 : 14;
     const verts = [];
@@ -1672,31 +2444,111 @@
     };
   }
 
-  function spawnWave() {
-    asteroids = [];
-    const hard = level > 0 && level % 5 === 0;
-    let count = Math.min(3 + Math.floor(level * 1.15), 16);
-    if (hard) count += 4;
-    for (let i = 0; i < count; i++) {
-      let x, y;
-      do {
-        x = rand(PLAY_X, PLAY_X + PLAY_W);
-        y = rand(PLAY_Y, PLAY_Y + PLAY_H);
-      } while (dist(x, y, ship.x, ship.y) < 150);
-      asteroids.push(spawnAsteroid(x, y, 3));
-    }
-    if (hard) ufoSpawnTimer = Math.min(ufoSpawnTimer, 120); // hard levels bring a UFO in fast, on top of everything else
-    showLevelBanner(level, hard);
+  function waveKindForLevel(lvl) {
+    if (lvl % 10 === 0) return 'BOSS';
+    if (lvl % 5 !== 0) return 'NORMAL';
+    const specials=['ASTEROID STORM','HEAVY FIELD','UFO AMBUSH','ELITE FIELD'];
+    return specials[(Math.floor(lvl/5)-1) % specials.length];
   }
 
+  function spawnWave() {
+    asteroids = [];
+    waveTransitionTimer = 0;
+    currentWaveKind = waveKindForLevel(level);
+    MUSIC.setIntensity(Math.min(3, Math.floor(level / 5)));
+
+    const spawnRock=(size, velMult=1)=>{
+      let x,y; do { x=rand(PLAY_X,PLAY_X+PLAY_W); y=rand(PLAY_Y,PLAY_Y+PLAY_H); } while(dist(x,y,ship.x,ship.y)<150);
+      const a=spawnAsteroid(x,y,size); a.vx*=velMult; a.vy*=velMult; asteroids.push(a);
+    };
+
+    if (currentWaveKind === 'BOSS') {
+      for(let i=0;i<Math.min(3+Math.floor(level/20),6);i++) spawnRock(i%2?2:3,.72);
+      spawnBoss();
+    } else if (currentWaveKind === 'ASTEROID STORM') {
+      const count=Math.min(18+Math.floor(level/5),28);
+      for(let i=0;i<count;i++) spawnRock(i%3===0?2:1,1.22);
+    } else if (currentWaveKind === 'HEAVY FIELD') {
+      const count=Math.min(7+Math.floor(level/10),12);
+      for(let i=0;i<count;i++) spawnRock(3,.68);
+    } else if (currentWaveKind === 'UFO AMBUSH') {
+      const count=Math.min(5+Math.floor(level/12),9);
+      for(let i=0;i<count;i++) spawnRock(i%2?2:3,.86);
+      spawnUFOFromEdge(true); spawnUFOFromEdge(true);
+    } else if (currentWaveKind === 'ELITE FIELD') {
+      const count=Math.min(8+Math.floor(level*.55),16);
+      for(let i=0;i<count;i++) spawnRock(3,1.28);
+      spawnUFOFromEdge(true);
+    } else {
+      let count = Math.min(3 + Math.floor(level * 1.05), 16);
+      for (let i=0;i<count;i++) spawnRock(3,1);
+    }
+
+    if (level >= 5 && currentWaveKind !== 'BOSS') {
+      const [mn,mx]=ufoSpawnWindow();
+      ufoSpawnTimer=Math.min(ufoSpawnTimer, Math.floor(rand(mn*.45,mx*.55)));
+    }
+    showLevelBanner(level, currentWaveKind);
+  }
+
+
   let levelBannerTimeout = null;
-  function showLevelBanner(lvl, hard) {
+  function showLevelBanner(lvl, kind) {
     clearTimeout(levelBannerTimeout);
-    levelBanner.textContent = hard ? '⚠ LEVEL ' + lvl + ' ⚠' : 'LEVEL ' + lvl;
-    levelBanner.classList.toggle('hard', hard);
+    const special = kind && kind !== 'NORMAL';
+    if (kind === 'BOSS') levelBanner.textContent = `WARNING // BOSS LEVEL ${lvl}`;
+    else if (special) levelBanner.textContent = `${kind} // LEVEL ${lvl}`;
+    else levelBanner.textContent = 'LEVEL ' + lvl;
+    levelBanner.classList.toggle('hard', !!special);
+    levelBanner.classList.remove('clear');
     levelBanner.classList.add('show');
-    levelBannerTimeout = setTimeout(() => levelBanner.classList.remove('show'), 1700);
-    SFX.levelUp(hard);
+    levelBannerTimeout = setTimeout(() => levelBanner.classList.remove('show'), kind==='BOSS'?2300:1700);
+    if (kind === 'BOSS') SFX.bossAlert(); else SFX.levelUp(!!special);
+  }
+
+  function beginWaveClear() {
+    if (waveTransitionTimer > 0 || gameOver) return;
+    waveTransitionTimer = WAVE_CLEAR_DELAY;
+    invulnTimer = Math.max(invulnTimer, 36);
+    clearTimeout(levelBannerTimeout);
+    if (currentWaveKind === 'BOSS') {
+      levelBanner.textContent = level === FIRST_CASHOUT_LEVEL ? 'BOSS DOWN // SALVAGE SECURED' : 'BOSS DOWN // EVOLUTION READY';
+    } else if (level === FIRST_CASHOUT_LEVEL) {
+      levelBanner.textContent = 'SALVAGE SECURED // CASH-OUT REACHED';
+    } else {
+      levelBanner.textContent = (level + 1) % 5 === 0 ? 'FIELD CLEAR // THREAT RISING' : 'FIELD CLEAR';
+    }
+    levelBanner.classList.remove('hard');
+    levelBanner.classList.add('clear', 'show');
+    SFX.waveClear();
+  }
+
+  // ---------- Test Ground ----------
+  function restockTestGroundGoodies() {
+    if (!powerups.some(p => p.testGround && p.type === 'shield')) {
+      powerups.push({x:PLAY_X+PLAY_W*.5,y:PLAY_Y+PLAY_H*.72,r:13,type:'shield',vx:0,vy:0,angle:0,life:999999,testGround:true});
+    }
+  }
+  function spawnTestTargetPack() {
+    if (asteroids.length >= 7) return;
+    const positions=[[.15,.20,3,.28],[.82,.22,3,.30],[.25,.52,2,.42],[.72,.58,2,.45],[.47,.27,1,.18],[.55,.46,1,.20],[.39,.49,1,.20],[.63,.34,1,.20]];
+    for (const [px,py,size,scale] of positions) { const a=spawnAsteroid(PLAY_X+PLAY_W*px,PLAY_Y+PLAY_H*py,size); a.vx*=scale; a.vy*=scale; a.testGround=true; asteroids.push(a); }
+  }
+  function spawnTestUFO() {
+    if (ufos.some(u=>u.testGround)) return;
+    ufos.push({x:PLAY_X+PLAY_W*.5,y:PLAY_Y+PLAY_H*.16,vx:.5,vy:.08,r:26,tier:2,angle:0,fireCooldown:120,driftTimer:0,ejectTimer:0,broodId:null,testGround:true});
+  }
+  function maintainTestGround() { restockTestGroundGoodies(); spawnTestTargetPack(); spawnTestUFO(); }
+  function configureTestGround() {
+    level=10; lives=99; score=0; shieldCharges=SHIELD_MAX_CHARGES;
+    rangeLevel=spreadLevel=rayGunLevel=0; weaponMode='normal'; weaponModeTimer=0;
+    waveTransitionTimer=0; achievementPollTimer=0; testGroundMaintenanceTimer=0;
+    asteroids=[]; ufos=[]; ufoBullets=[]; powerups=[]; bullets=[]; ufoSpawnTimer=Infinity; invulnTimer=180;
+    setWeaponBuild(selectedWeaponIndex, true);
+    MUSIC.setIntensity(3); maintainTestGround(); clearTimeout(levelBannerTimeout);
+    levelBanner.textContent='TEST GROUND // 1-4 SWITCH BUILDS // MAX UPGRADES + EVOLUTIONS';
+    levelBanner.classList.remove('hard','clear'); levelBanner.classList.add('show');
+    levelBannerTimeout=setTimeout(()=>levelBanner.classList.remove('show'),2600); updateHUD();
   }
 
   // Per-run achievement tracking — reset each game, checked at game-over time
@@ -1717,7 +2569,7 @@
     impactRings = [];
     ufos = [];
     ufoBullets = [];
-    ufoSpawnTimer = Math.floor(rand(600, 900)); // first UFO shows up 10-15s in, gives an opening breather
+    ufoSpawnTimer = Math.floor(rand(520, 760)); // opening breather, then dynamic pressure takes over
     shakeMagnitude = 0;
     shakeTime = 0;
     hitFlashAlpha = 0;
@@ -1730,16 +2582,32 @@
     rebirthTimer = 0;
     shipRebirthPieces = [];
     score = 0;
-    lives = 3 + shopLevel('extraLife');
+    lives = 3;
     level = 1;
     gameOver = false;
     invulnTimer = 120;
-    shieldCharges = (ship.skin.startShield || 0) + shopLevel('extraShield');
+    shieldCharges = (ship.skin.startShield || 0);
     rangeLevel = 0;
     spreadLevel = 0;
     rayGunLevel = 0;
     rayGunCooldown = 0;
     weaponMode = 'normal';
+    currentWeapon = WEAPON_BUILDS[selectedWeaponIndex];
+    runUpgradeState = {};
+    runUpgradeCount = 0;
+    weaponHeat = 0;
+    weaponOverheated = false;
+    rocketMultiKillFlag = false;
+    upgradeChoosing = false;
+    evolutionChoosing = false;
+    pendingEvolution = false;
+    bossDefeatsThisRun = 0;
+    bossSequence = 0;
+    currentWaveKind = 'NORMAL';
+    waveTransitionTimer = 0;
+    achievementPollTimer = 0;
+    fireHeld = false;
+    reticleKick = 0;
     weaponModeTimer = 0;
     livesLostThisRun = 0;
     comboAllFourFlag = false;
@@ -1752,39 +2620,45 @@
     updateHUD();
   }
 
-  const WEAPON_MODE_LABELS = {
-    overcharge: '⚡ OVERCHARGE ',
-    rapidfire: '» RAPID FIRE ',
-    piercing: '➹ PIERCING '
-  };
   function updateHUD() {
-    scoreDisplay.textContent = 'SCORE: ' + score;
-    livesDisplay.textContent = '▲'.repeat(Math.max(lives, 0)) || '—';
-    levelIndicator.textContent = 'LEVEL ' + level;
-    shieldDisplay.textContent = shieldCharges > 0 ? '🛡 x' + shieldCharges : '';
-    rangeDisplay.textContent = rangeLevel > 0 ? '⇢ x' + rangeLevel : '';
-    spreadDisplay.textContent = spreadLevel > 0 ? '⋔ x' + spreadLevel : '';
-    rayGunDisplay.textContent = rayGunLevel > 0 ? '☇ x' + rayGunLevel : '';
-    if (weaponMode !== 'normal') {
-      const total = WEAPON_MODE_DURATIONS[weaponMode] || 1;
-      const pct = Math.max(0, Math.min(1, weaponModeTimer / total));
-      const color = POWERUP_COLORS[weaponMode] || '#ff9a6f';
-      weaponStatusText.textContent = WEAPON_MODE_LABELS[weaponMode] + Math.ceil(weaponModeTimer / 60) + 's';
-      weaponStatusText.style.color = color;
-      weaponTimerTrack.style.color = color; // currentColor feeds the fill + its glow
-      weaponTimerTrack.classList.add('active');
-      weaponTimerFill.style.width = (pct * 100) + '%';
-    } else {
-      weaponStatusText.textContent = '';
-      weaponTimerTrack.classList.remove('active');
-      weaponTimerFill.style.width = '0%';
-    }
+    scoreDisplay.textContent = testMode ? 'TEST SCORE: ' + score : 'SCORE: ' + score;
+    livesDisplay.textContent = testMode ? '∞' : ('▲'.repeat(Math.max(lives, 0)) || '—');
+    levelIndicator.textContent = testMode ? 'TEST GROUND' : 'LEVEL ' + level;
+    shieldDisplay.textContent = shieldCharges > 0 ? '◇ x' + shieldCharges : '';
+    rangeDisplay.textContent = '';
+    spreadDisplay.textContent = '';
+    rayGunDisplay.textContent = '';
+    const w = currentWeapon || WEAPON_BUILDS[selectedWeaponIndex];
+    weaponStatusText.textContent = `${w.name}${runUpgradeCount ? '  //  UPGRADES ' + runUpgradeCount : ''}`;
+    weaponStatusText.style.color = w.color;
+    weaponTimerTrack.classList.remove('active'); weaponTimerFill.style.width='0%';
+    const activeBoss = ufos && ufos.find(u=>u.boss);
+    if (activeBoss) {
+      bossStatus.classList.add('active');
+      bossName.textContent = `${activeBoss.bossName} // ${Math.max(0,Math.ceil(activeBoss.hp))}/${activeBoss.maxHp}`;
+      bossFill.style.width = `${Math.max(0,Math.min(100,activeBoss.hp/activeBoss.maxHp*100))}%`;
+    } else bossStatus.classList.remove('active');
+    if (w.id === 'rapid') {
+      const cap = 100 * (1 + upgradeLevel('deepMag') * .15);
+      heatTrack.style.display='block';
+      heatFill.style.width=Math.min(100,(weaponHeat/cap)*100)+'%';
+      heatFill.style.background = weaponOverheated ? '#ff6f6f' : w.color;
+      heatFill.style.boxShadow = `0 0 8px ${weaponOverheated ? '#ff6f6f' : w.color}`;
+      if (weaponOverheated) weaponStatusText.textContent += '  //  OVERHEATED';
+    } else heatTrack.style.display='none';
   }
 
   // ---------- Input ----------
   window.addEventListener('keydown', (e) => {
     keys[e.key.toLowerCase()] = true;
-    if (e.key === ' ') fireBullet();
+    if (e.key === ' ') { e.preventDefault(); fireBullet(); }
+    if (upgradeChoosing && ['1','2','3'].includes(e.key)) {
+      const btn = upgradeChoicesEl.querySelectorAll('.upgradeChoice')[parseInt(e.key,10)-1];
+      if (btn) { e.preventDefault(); btn.click(); }
+    } else if (testMode && ['1','2','3','4'].includes(e.key)) {
+      e.preventDefault(); setWeaponBuild(parseInt(e.key,10)-1, true);
+      spawnFloatingText(ship.x, ship.y-42, currentWeapon.name, currentWeapon.color); SFX.uiTick();
+    }
   });
   window.addEventListener('keyup', (e) => {
     keys[e.key.toLowerCase()] = false;
@@ -1793,6 +2667,7 @@
   function bindHold(el, onDown, onUp) {
     el.addEventListener('touchstart', (e) => { e.preventDefault(); onDown(); }, {passive:false});
     el.addEventListener('touchend', (e) => { e.preventDefault(); onUp(); }, {passive:false});
+    el.addEventListener('touchcancel', (e) => { e.preventDefault(); onUp(); }, {passive:false});
     el.addEventListener('mousedown', (e) => { e.preventDefault(); onDown(); });
     el.addEventListener('mouseup', (e) => { e.preventDefault(); onUp(); });
     el.addEventListener('mouseleave', (e) => { onUp(); });
@@ -1806,176 +2681,127 @@
   bindHold(btnLeft, () => ship.turningLeft = true, () => ship.turningLeft = false);
   bindHold(btnRight, () => ship.turningRight = true, () => ship.turningRight = false);
   bindHold(btnThrust, () => ship.thrusting = true, () => ship.thrusting = false);
-  fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); fireBullet(); }, {passive:false});
-  fireBtn.addEventListener('mousedown', (e) => { e.preventDefault(); fireBullet(); });
+  bindHold(fireBtn, () => { fireHeld = true; fireBullet(); }, () => { fireHeld = false; });
 
   // ---------- Mouse controls (PC) ----------
   // Mouse movement activates aim-toward-cursor mode. Right-click = thrust, left-click = fire.
-  // Context menu is suppressed on the canvas so right-click doesn't pop a browser menu mid-game.
-  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+  // IMPORTANT: never preventDefault() on pointerdown/mousedown at WINDOW capture phase. Doing so
+  // can suppress the normal mouse stream and break both thrust and cursor aiming. The native
+  // right-click menu is blocked separately via the contextmenu event above.
+
+  // Browsers emit a dedicated dblclick event after two rapid primary clicks. In some
+  // fullscreen/file-preview environments that default action can toggle/escape the view
+  // even though both individual mousedown events were already consumed by the game.
+  // Swallow multi-click defaults only while actively playing; menus keep normal behavior.
+  function suppressGameplayDoubleClick(e) {
+    if (running && !gameOver) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+      return false;
+    }
+  }
+  document.addEventListener('dblclick', suppressGameplayDoubleClick, true);
+  document.addEventListener('click', (e) => {
+    if (running && !gameOver && e.button === 0 && e.detail > 1) {
+      e.preventDefault();
+      e.stopImmediatePropagation();
+    }
+  }, true);
+  canvas.addEventListener('dblclick', suppressGameplayDoubleClick);
 
   canvas.addEventListener('mousemove', (e) => {
     const rect = canvas.getBoundingClientRect();
     mousePos.x = e.clientX - rect.left;
     mousePos.y = e.clientY - rect.top;
     mouseActive = true;
+    // e.buttons is a live bitmask (2 = secondary/right button). Keeping thrust synchronized here
+    // makes rapid right-click / drag sequences robust without consuming any browser mouse events.
+    if (running && !gameOver && !paused) mouseThrust = (e.buttons & 2) !== 0;
   });
 
   canvas.addEventListener('mousedown', (e) => {
     if (!running || gameOver || paused) return;
     e.preventDefault();
-    if (e.button === 0) fireBullet();       // left-click fires
+    if (e.button === 0) { fireHeld = true; fireBullet(); } // hold left-click to autofire
     if (e.button === 2) mouseThrust = true; // right-click thrusts
   });
 
   canvas.addEventListener('mouseup', (e) => {
+    if (e.button === 0) fireHeld = false;
     if (e.button === 2) mouseThrust = false;
   });
+  window.addEventListener('mouseup', (e) => { if (e.button === 0) fireHeld = false; if (e.button === 2) mouseThrust = false; });
 
-  // If the cursor leaves the canvas, release thrust so the ship doesn't fly off uncontrolled.
-  canvas.addEventListener('mouseleave', () => { mouseThrust = false; });
+  // If the cursor leaves the canvas, release pointer-held actions so nothing sticks.
+  canvas.addEventListener('mouseleave', () => { mouseThrust = false; fireHeld = false; });
 
   let lastShot = 0;
-  const SHOTGUN_BLAST_LIFE = 20; // fixed short range for the Spread+Overcharge combo — ignores Range stacks
+  let rapidSpinShots = 0;
+
+  function pushProjectile(angle, speed, life, radius, extra={}) {
+    bullets.push(Object.assign({x:ship.x+Math.cos(angle)*ship.r*1.12,y:ship.y+Math.sin(angle)*ship.r*1.12,vx:Math.cos(angle)*speed+ship.vx,vy:Math.sin(angle)*speed+ship.vy,life,r:radius,trail:true,weapon:currentWeapon.id},extra));
+  }
 
   function fireBullet() {
-    if (gameOver || !running || paused) return;
-    const baseCooldown = 220 - shopLevel('quickTrigger') * 15;
-    const cooldown = weaponMode === 'rapidfire' ? RAPIDFIRE_COOLDOWN : baseCooldown;
-    const now = Date.now();
-    if (now - lastShot < cooldown) return;
-    lastShot = now;
-
-    const isOvercharge = weaponMode === 'overcharge';
-    const isPiercing = weaponMode === 'piercing';
-    const isShotgunBlast = isOvercharge && spreadLevel > 0; // Overcharge + Spread together = short, punchy blast
-
-    const pelletCount = 1 + spreadLevel; // 1, 2, 3, 4, 5, 6 — universal now, combos with any weapon mode
-    const totalSpread = spreadLevel > 0 ? (0.1 + spreadLevel * 0.05) : 0; // radians, fan width
-    const bulletLife = isShotgunBlast ? SHOTGUN_BLAST_LIFE : 60 + rangeLevel * RANGE_LIFE_PER_STACK;
-
-    for (let i = 0; i < pelletCount; i++) {
-      const t = pelletCount === 1 ? 0 : (i / (pelletCount - 1)) - 0.5; // -0.5 .. 0.5
-      const shotAngle = ship.angle + t * totalSpread;
-
-      // Cone effect: only the dead-center pellet keeps full range. The further a pellet's
-      // angle sits from center, the faster it fizzles out — reads as a cone, not a wall of
-      // equally-lethal pellets, which is what was making a maxed Spread stack so overbearing.
-      const edgeFactor = pelletCount > 1 ? Math.abs(t) * 2 : 0; // 0 at center, 1 at the outer edge
-      const coneLife = Math.max(14, Math.round(bulletLife * (1 - edgeFactor * 0.55)));
-
-      bullets.push({
-        x: ship.x + Math.cos(shotAngle) * ship.r,
-        y: ship.y + Math.sin(shotAngle) * ship.r,
-        vx: Math.cos(shotAngle) * 7 + ship.vx,
-        vy: Math.sin(shotAngle) * 7 + ship.vy,
-        life: coneLife,
-        r: isOvercharge ? 4 : isPiercing ? 3 : 2,
-        overcharged: isOvercharge,
-        pierce: isPiercing ? PIERCE_HITS : 0,
-        trail: true
-      });
+    if (gameOver || !running || paused || upgradeChoosing || weaponOverheated) return;
+    const w=currentWeapon; const now=Date.now(); let cooldown=w.cooldown;
+    if (w.id==='sniper') cooldown*=Math.pow(.88,upgradeLevel('quickCycle')) * Math.pow(1.14,upgradeLevel('railDriver')) * Math.pow(.92,upgradeLevel('marksmanCore'));
+    if (w.id==='shotgun') cooldown*=Math.pow(.87,upgradeLevel('fastPump'));
+    if (w.id==='rocket') cooldown*=Math.pow(.86,upgradeLevel('fastLoader')) * Math.pow(1.18,upgradeLevel('siegeWarhead'));
+    if (w.id==='rapid') {
+      if (upgradeLevel('plasmaCycler')) cooldown*=1.08;
+      const maxSpin = upgradeLevel('gatlingCore') ? .58 : .80;
+      if (upgradeLevel('spinUp') || upgradeLevel('gatlingCore')) cooldown*=Math.max(maxSpin,1-Math.min(rapidSpinShots,28)*(upgradeLevel('gatlingCore')?.015:.01));
     }
+    if (now-lastShot<cooldown) return; lastShot=now;
 
-    // Muzzle flash — tiny burst right at the nozzle on every trigger pull, so firing itself
-    // reads clearly even before a shot connects with anything.
-    const muzzleX = ship.x + Math.cos(ship.angle) * ship.r * 1.15;
-    const muzzleY = ship.y + Math.sin(ship.angle) * ship.r * 1.15;
-    for (let m = 0; m < (isOvercharge ? 6 : 3); m++) {
-      particles.push({
-        x: muzzleX, y: muzzleY,
-        vx: Math.cos(ship.angle + rand(-0.35, 0.35)) * rand(0.6, 2.2),
-        vy: Math.sin(ship.angle + rand(-0.35, 0.35)) * rand(0.6, 2.2),
-        life: rand(5, 10), maxLife: 10, size: rand(1, 2.2),
-        color: isOvercharge ? '#ff7a4d' : '#ffffff'
-      });
-    }
-
-    if (isOvercharge) {
-      // Recoil kicks the ship backward, opposite the shot direction (once per trigger pull)
-      ship.vx -= Math.cos(ship.angle) * OVERCHARGE_RECOIL;
-      ship.vy -= Math.sin(ship.angle) * OVERCHARGE_RECOIL;
+    if (w.id==='sniper') {
+      const hv=upgradeLevel('hypervelocity'), hc=upgradeLevel('heavyCore');
+      const speed=w.speed*(1+hv*.10); const life=Math.round(w.life*(1+hv*.08));
+      const marks=upgradeLevel('marksmanCore'), rail=upgradeLevel('railDriver');
+      // Longbow's first asteroid impact is the precision kill. Penetrated follow-up hits
+      // keep traveling but fragment larger rocks normally, creating extra field pressure.
+      pushProjectile(ship.angle,speed,life,2.5+hc*.45,{pierce:1+upgradeLevel('railPierce')+rail,vaporize:true,firstImpactVaporize:true,impactCount:0,heavyCore:hc>0,scoreMult:1+upgradeLevel('deadeye')*.10+marks*.08,bossDamage:6+hc*1.2+rail*2});
+      const recoil=w.recoil*(1+hc*.12)*(1-marks*.08); ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil;
+      spawnMuzzleBurst(7,w.color,.12); triggerShake(2.5,4);
+    } else if (w.id==='shotgun') {
+      const pellets=7+upgradeLevel('extraPellets')*2; const choke=upgradeLevel('tightChoke'); let fan=.46*Math.max(.58,1-choke*.105); let life=Math.round(w.life*(1+choke*.08)); let recoil=w.recoil;
+      if (upgradeLevel('sawedOff')) { fan*=1.18; life=Math.round(life*.66); recoil*=1.45; }
+      const evoRange=upgradeLevel('flechetteArray'); life=Math.round(life*(1+evoRange*.18));
+      for(let i=0;i<pellets;i++){ const t=pellets===1?0:(i/(pellets-1)-.5); pushProjectile(ship.angle+t*fan,w.speed*rand(.94,1.06),Math.round(life*(1-Math.abs(t)*.42)),1.8,{pellet:true,pierce:evoRange+((Math.abs(t)<.18)?upgradeLevel('flechette'):0),bossDamage:.72+upgradeLevel('breacher')*.28}); }
+      ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil; spawnMuzzleBurst(12,w.color,.42); triggerShake(4,6);
+    } else if (w.id==='rocket') {
+      const speed=w.speed*(1+upgradeLevel('booster')*.12)*(upgradeLevel('siegeWarhead')?.84:1); const radius=86*(1+upgradeLevel('bigWarhead')*.18)*(1+upgradeLevel('siegeWarhead')*.20);
+      const swarm=upgradeLevel('swarmPod');
+      const rocketAngles=swarm?[ship.angle-.12,ship.angle,ship.angle+.12]:[ship.angle];
+      rocketAngles.forEach(a=>pushProjectile(a,speed*(swarm?.96:1),w.life,swarm?4.2:5,{rocket:true,blastRadius:radius*(swarm?.72:1),cluster:!!upgradeLevel('cluster'),proximity:!!upgradeLevel('proximity'),bossDamage:(9+upgradeLevel('siegeWarhead')*3)*(swarm?.48:1)}));
+      ship.vx-=Math.cos(ship.angle)*w.recoil*(swarm?1.12:1); ship.vy-=Math.sin(ship.angle)*w.recoil*(swarm?1.12:1); spawnMuzzleBurst(10+(swarm?5:0),w.color,.20); triggerShake(5,7);
     } else {
-      // A much smaller kick on ordinary shots too — mostly imperceptible while you're already
-      // moving fast, but gives firing some weight when you're sitting still.
-      ship.vx -= Math.cos(ship.angle) * NORMAL_RECOIL;
-      ship.vy -= Math.sin(ship.angle) * NORMAL_RECOIL;
+      const twin=!!upgradeLevel('twin'); const heatCap=100*(1+upgradeLevel('deepMag')*.15); let heatPer=(upgradeLevel('hotLoad')?9.6:8);
+      if (upgradeLevel('gatlingCore') && rapidSpinShots>12) heatPer*=1+upgradeLevel('gatlingCore')*.10;
+      const plasma=upgradeLevel('plasmaCycler');
+      const angles=twin?[ship.angle-.025,ship.angle+.025]:[ship.angle]; angles.forEach((a,i)=>pushProjectile(a,w.speed*(plasma?.92:1),w.life,1.55+plasma*.25,{rapid:true,hot:!!upgradeLevel('hotLoad')||plasma>0,barrelSide:twin?(i?1:-1):0,bossDamage:.8+plasma*.25}));
+      weaponHeat+=heatPer; rapidSpinShots++;
+      if (weaponHeat>=heatCap) { weaponHeat=heatCap; weaponOverheated=true; SFX.overheat(); spawnFloatingText(ship.x,ship.y-32,'OVERHEAT','#ff6f6f'); }
+      spawnMuzzleBurst(twin?4:2,w.color,.10);
     }
+    const heatRatio=w.id==='rapid'?weaponHeat/(100*(1+upgradeLevel('deepMag')*.15)):0;
+    SFX.weaponFire(w.id,heatRatio); updateHUD();
+  }
 
-    SFX.laser(isOvercharge);
+  function spawnMuzzleBurst(count,color,spread) {
+    const mx=ship.x+Math.cos(ship.angle)*ship.r*1.2, my=ship.y+Math.sin(ship.angle)*ship.r*1.2;
+    for(let i=0;i<count;i++) particles.push({x:mx,y:my,vx:Math.cos(ship.angle+rand(-spread,spread))*rand(.8,2.8),vy:Math.sin(ship.angle+rand(-spread,spread))*rand(.8,2.8),life:rand(5,12),maxLife:12,size:rand(.8,2.2),color});
   }
 
   // ---------- Powerups ----------
-  const POWERUP_COLORS = {
-    shield: '#6fffb0',
-    range: '#ffd76f',
-    spread: '#c9a4ff',
-    raygun: '#f5ff4d',
-    overcharge: '#ff7a4d',
-    rapidfire: '#ff4da6',
-    piercing: '#4dc9ff'
-  };
-  const WEAPON_MODE_DURATIONS = { overcharge: OVERCHARGE_DURATION, rapidfire: RAPIDFIRE_DURATION, piercing: PIERCING_DURATION };
-  const WEAPON_MODE_TYPES = ['overcharge', 'rapidfire', 'piercing'];
-
-  function spawnPowerup(x, y, type) {
-    powerups.push({
-      x, y,
-      r: 13,
-      type,
-      vx: rand(-0.6, 0.6),
-      vy: rand(-0.6, 0.6),
-      angle: 0,
-      life: 600 // despawns after 10s if uncollected
-    });
+  const POWERUP_COLORS = { shield:'#6fffb0' };
+  function spawnPowerup(x,y,type='shield'){ powerups.push({x,y,r:13,type:'shield',vx:rand(-.5,.5),vy:rand(-.5,.5),angle:0,life:600}); }
+  function collectPowerup(p){
+    if (shieldCharges>=SHIELD_MAX_CHARGES) { score+=60; spawnFloatingText(p.x,p.y-18,'+60 SHIELD MAXED','#6fffb0'); }
+    else { shieldCharges++; spawnFloatingText(ship.x,ship.y-ship.r-20,`SHIELD ${shieldCharges}`,'#6fffb0'); SFX.shieldUp(); }
+    spawnExplosion(p.x,p.y,12,'#6fffb0'); updateHUD();
   }
-
-  const POWERUP_MAX_BONUS = 100;      // awarded when a stackable powerup is already maxed
-  const TIMED_BANK_PER_SECOND = 15;   // per second of remaining time lost when switching weapon modes
-
-  function collectPowerup(p) {
-    let bonus = 0;
-    let bonusLabel = null;
-
-    if (p.type === 'shield') {
-      if (shieldCharges >= SHIELD_MAX_CHARGES) { bonus = POWERUP_MAX_BONUS; bonusLabel = 'SHIELD MAXED'; }
-      else shieldCharges++;
-    } else if (p.type === 'range') {
-      if (rangeLevel >= RANGE_MAX_STACKS) { bonus = POWERUP_MAX_BONUS; bonusLabel = 'RANGE MAXED'; }
-      else rangeLevel++;
-    } else if (p.type === 'spread') {
-      if (spreadLevel >= SPREAD_MAX_STACKS) { bonus = POWERUP_MAX_BONUS; bonusLabel = 'SPREAD MAXED'; }
-      else spreadLevel++;
-    } else if (p.type === 'raygun') {
-      if (rayGunLevel >= RAYGUN_MAX_STACKS) { bonus = POWERUP_MAX_BONUS; bonusLabel = 'RAY GUN MAXED'; }
-      else rayGunLevel++;
-    } else if (WEAPON_MODE_TYPES.indexOf(p.type) !== -1) {
-      if (p.type === weaponMode) {
-        weaponModeTimer = WEAPON_MODE_DURATIONS[p.type]; // refresh the clock
-      } else {
-        // Switching weapon philosophies — bank remaining time instead of just losing it
-        if (weaponMode !== 'normal' && weaponModeTimer > 0) {
-          const secondsLeft = Math.ceil(weaponModeTimer / 60);
-          bonus = secondsLeft * TIMED_BANK_PER_SECOND;
-          bonusLabel = weaponMode.toUpperCase() + ' BANKED';
-        }
-        weaponMode = p.type;
-        weaponModeTimer = WEAPON_MODE_DURATIONS[p.type] || 0;
-      }
-    }
-
-    const color = POWERUP_COLORS[p.type] || '#ffffff';
-    spawnExplosion(p.x, p.y, 14, color);
-    if (p.type === 'shield') SFX.shieldUp(); else SFX.pickup(p.type);
-
-    if (bonus > 0) {
-      score += bonus;
-      spawnFloatingText(p.x, p.y - 18, `+${bonus} ${bonusLabel}`, color);
-      SFX.uiTick();
-    }
-    updateHUD();
-  }
-
 
   // ---------- Particles (explosions) ----------
   function spawnExplosion(x, y, count, color) {
@@ -2068,6 +2894,13 @@
     }
   }
 
+  // Mutation cadence: two build choices per 10-level sector, with the boss evolution as the third major power beat.
+  // 3 / 7 / 10(BOSS), then 13 / 17 / 20(BOSS), etc.
+  function isMutationMilestone(lvl) {
+    const slot = ((lvl % 10) + 10) % 10;
+    return slot === 3 || slot === 7;
+  }
+
   // ---------- Update ----------
   function update() {
     if (gameOver) {
@@ -2075,6 +2908,18 @@
       return;
     }
     if (hitStopFrames > 0) { hitStopFrames--; SFX.setThrust(false); return; }
+
+    if (fireHeld || keys[' ']) fireBullet();
+    if (reticleKick > 0) reticleKick = Math.max(0, reticleKick - 0.12);
+
+    if (waveTransitionTimer > 0) {
+      waveTransitionTimer--;
+      if (waveTransitionTimer === 0) {
+        if (!testMode && pendingEvolution && showEvolutionChoices()) return;
+        if (!testMode && isMutationMilestone(level) && currentWaveKind !== 'BOSS' && showUpgradeChoices()) return;
+        advanceAfterUpgrade();
+      }
+    }
 
     // Ship rotation — two modes:
     // • Mouse active: snap toward cursor with an eased angular velocity so it still
@@ -2120,39 +2965,36 @@
     ship.vy *= ship.friction;
     // cap speed
     const speed = Math.hypot(ship.vx, ship.vy);
-    const maxSpeed = 6.6;
+    const maxSpeed = ship.maxSpeed || 6.6;
     if (speed > maxSpeed) {
       ship.vx = (ship.vx / speed) * maxSpeed;
       ship.vy = (ship.vy / speed) * maxSpeed;
     }
     ship.x += ship.vx;
     ship.y += ship.vy;
-    wrap(ship);
+    applyPlayerBoundary(ship);
     updateStarParallax();
 
     if (invulnTimer > 0) invulnTimer--;
 
-    // Weapon mode countdown (overcharge, rapidfire, piercing — timed and mutually exclusive)
-    if (weaponMode !== 'normal') {
-      weaponModeTimer--;
-      if (weaponModeTimer <= 0) {
-        weaponMode = 'normal';
+    // Build-specific continuous systems.
+    if (currentWeapon.id === 'rapid') {
+      const cool = 0.70 * (1 + upgradeLevel('cooling')*.30);
+      if (!fireHeld && !keys[' ']) rapidSpinShots = Math.max(0, rapidSpinShots - 1);
+      weaponHeat = Math.max(0, weaponHeat - cool);
+      const cap = 100 * (1 + upgradeLevel('deepMag')*.15);
+      if (weaponOverheated && weaponHeat <= cap * .34) { weaponOverheated=false; SFX.ready(); spawnFloatingText(ship.x,ship.y-30,'WEAPON READY',currentWeapon.color); }
+      if (weaponHeat % 5 < cool) updateHUD();
+    } else { weaponHeat=0; weaponOverheated=false; rapidSpinShots=0; }
+    if (!testMode) {
+      achievementPollTimer++;
+      if (achievementPollTimer >= 15) { achievementPollTimer = 0; checkAchievementUnlocks(true); }
+    } else {
+      testGroundMaintenanceTimer++;
+      if (testGroundMaintenanceTimer >= TEST_GROUND_MAINTENANCE) {
+        testGroundMaintenanceTimer = 0;
+        maintainTestGround();
       }
-      if (weaponModeTimer % 15 === 0) updateHUD();
-    }
-
-    // Ray Gun: passive auto-turret, zaps the nearest small asteroids on its own
-    if (rayGunLevel > 0) {
-      if (rayGunCooldown > 0) rayGunCooldown--;
-      else {
-        fireRayGun();
-        rayGunCooldown = Math.round(RAYGUN_COOLDOWN * (1 - shopLevel('rayGunSpeed') * 0.08));
-      }
-    }
-
-    // "Fully Loaded" achievement: all four utility powerups active simultaneously
-    if (!comboAllFourFlag && shieldCharges > 0 && rangeLevel > 0 && spreadLevel > 0 && rayGunLevel > 0) {
-      comboAllFourFlag = true;
     }
 
     // Powerups: drift, wrap, expire, and check pickup
@@ -2176,11 +3018,13 @@
     // Bullets
     for (let i = bullets.length - 1; i >= 0; i--) {
       const b = bullets[i];
-      b.x += b.vx;
-      b.y += b.vy;
-      b.life--;
-      wrap(b);
-      if (b.life <= 0) bullets.splice(i, 1);
+      b.x += b.vx; b.y += b.vy; b.life--; wrap(b);
+      if (b.rocket && b.proximity) {
+        const nearA=asteroids.some(a=>dist(a.x,a.y,b.x,b.y)<a.r+30);
+        const nearU=ufos.some(u=>dist(u.x,u.y,b.x,b.y)<u.r+28);
+        if (nearA||nearU) { explodeRocket(b,i); continue; }
+      }
+      if (b.life <= 0) { if (b.rocket) explodeRocket(b,i); else bullets.splice(i,1); }
     }
 
     // Asteroids
@@ -2237,37 +3081,49 @@
       if (d.life <= 0) shipDebris.splice(i, 1);
     }
 
-    // Bullet-asteroid collisions
-    for (let i = asteroids.length - 1; i >= 0; i--) {
-      const a = asteroids[i];
-      for (let j = bullets.length - 1; j >= 0; j--) {
-        const b = bullets[j];
-        if (dist(a.x, a.y, b.x, b.y) < a.r) {
-          const powerful = !!b.overcharged;
-          spawnImpactRing(b.x, b.y, powerful ? '#ff7a4d' : b.pierce ? '#4dc9ff' : '#ffffff', powerful);
-          triggerShake(powerful ? 7 : 3, powerful ? 10 : 6);
-          hitConfirmFlash = powerful ? 0.25 : 0.15;
-          breakAsteroid(i, powerful);
-          if (b.pierce && b.pierce > 0) {
-            b.pierce--; // piercing bullet survives and keeps traveling
-          } else {
-            bullets.splice(j, 1);
-          }
+    // Player projectile collisions with asteroids
+    for (let i=asteroids.length-1;i>=0;i--) {
+      const a=asteroids[i];
+      for (let j=bullets.length-1;j>=0;j--) {
+        const b=bullets[j];
+        if (dist(a.x,a.y,b.x,b.y) < a.r+b.r) {
+          if (b.rocket) { explodeRocket(b,j); break; }
+          spawnImpactRing(b.x,b.y,currentWeapon.color,!!b.vaporize); applyWeaponHitFeedback(b,false);
+          const scoreBefore=score;
+          const sniperFirstImpact = b.weapon==='sniper' && b.firstImpactVaporize ? (b.impactCount||0)===0 : false;
+          const hardHit = sniperFirstImpact || (b.weapon!=='sniper' && !!b.vaporize) || (!!b.hot && a.size <= 2);
+          breakAsteroid(i,hardHit);
+          if (b.weapon==='sniper' && b.firstImpactVaporize) b.impactCount=(b.impactCount||0)+1;
+          if (b.scoreMult && b.scoreMult!==1) score += Math.floor((score-scoreBefore)*(b.scoreMult-1));
+          updateHUD();
+          if (b.pierce>0) b.pierce--; else bullets.splice(j,1);
           break;
         }
       }
     }
 
     // UFO spawn timer
-    ufoSpawnTimer--;
-    if (ufoSpawnTimer <= 0 && ufos.length < UFO_MAX_CONCURRENT) {
-      spawnUFOFromEdge();
-      ufoSpawnTimer = Math.floor(rand(UFO_SPAWN_MIN, UFO_SPAWN_MAX));
+    if (currentWaveKind !== 'BOSS') {
+      ufoSpawnTimer--;
+      if (ufoSpawnTimer <= 0 && ufos.filter(u=>!u.boss).length < ufoMaxConcurrent()) {
+        spawnUFOFromEdge();
+        const [mn,mx]=ufoSpawnWindow();
+        ufoSpawnTimer = Math.floor(rand(mn,mx));
+      }
     }
 
     // UFO movement + firing
     for (const u of ufos) {
-      if (u.tier === 1 || u.tier === 0) {
+      if (u.boss) {
+        updateBossMovement(u);
+      } else if (u.variant === 'hunter' && u.tier === 2) {
+        const a=Math.atan2(ship.y-u.y,ship.x-u.x); const desired=1.18+Math.min(.6,level*.012);
+        u.vx += (Math.cos(a)*desired-u.vx)*.015; u.vy += (Math.sin(a)*desired-u.vy)*.015;
+      } else if (u.variant === 'carrier' && u.tier === 2) {
+        u.carrierCooldown--;
+        if (u.carrierCooldown<=0 && ufos.filter(x=>x.tier===1).length<4) { spawnEscapePod(u.x,u.y,rand(0,Math.PI*2),null,false); u.carrierCooldown=rand(240,360); SFX.escapePodEject(); }
+      }
+      if (!u.boss && (u.tier === 1 || u.tier === 0)) {
         // Pods and debris dart around erratically instead of flying a straight line
         u.driftTimer--;
         if (u.driftTimer <= 0) {
@@ -2284,11 +3140,11 @@
       wrap(u);
       u.angle += 0.02;
 
-      if (u.tier > 0) {
+      if (u.tier > 0 && !u.boss) {
         u.fireCooldown--;
         if (u.fireCooldown <= 0) {
           fireUfoBullet(u);
-          u.fireCooldown = u.tier === 2 ? rand(90, 150) : rand(55, 90);
+          u.fireCooldown = u.variant==='gunner' ? rand(48,78) : u.variant==='hunter' ? rand(62,92) : u.tier === 2 ? rand(82,135) : rand(50,84);
         }
       }
     }
@@ -2303,22 +3159,16 @@
       if (b.life <= 0) ufoBullets.splice(i, 1);
     }
 
-    // Player bullets vs UFOs
-    for (let i = ufos.length - 1; i >= 0; i--) {
-      const u = ufos[i];
-      for (let j = bullets.length - 1; j >= 0; j--) {
-        const b = bullets[j];
-        if (dist(u.x, u.y, b.x, b.y) < u.r) {
-          const powerful = !!b.overcharged;
-          spawnImpactRing(b.x, b.y, powerful ? '#ff7a4d' : b.pierce ? '#4dc9ff' : '#ffffff', powerful);
-          triggerShake(powerful ? 7 : 3, powerful ? 10 : 6);
-          hitConfirmFlash = powerful ? 0.25 : 0.15;
-          breakUFO(i, powerful);
-          if (b.pierce && b.pierce > 0) {
-            b.pierce--;
-          } else {
-            bullets.splice(j, 1);
-          }
+    // Player projectiles vs UFOs
+    for (let i=ufos.length-1;i>=0;i--) {
+      const u=ufos[i];
+      for (let j=bullets.length-1;j>=0;j--) {
+        const b=bullets[j];
+        if (dist(u.x,u.y,b.x,b.y)<u.r+b.r) {
+          if (b.rocket) { explodeRocket(b,j); break; }
+          spawnImpactRing(b.x,b.y,currentWeapon.color,!!b.vaporize); applyWeaponHitFeedback(b,!!u.boss);
+          if (u.boss) damageBossUFO(i,b.bossDamage||1,b.x,b.y); else breakUFO(i,!!b.vaporize);
+          if (b.pierce>0) b.pierce--; else bullets.splice(j,1);
           break;
         }
       }
@@ -2391,18 +3241,17 @@
     if (hitFlashAlpha > 0) hitFlashAlpha = Math.max(0, hitFlashAlpha - 0.04);
     if (hitConfirmFlash > 0) hitConfirmFlash = Math.max(0, hitConfirmFlash - 0.09);
 
-    // Wave clear
-    if (asteroids.length === 0) {
-      level++;
-      spawnWave();
-      updateHUD();
-    }
+    // Wave clear: a short arcade beat instead of instantly dumping the next field in.
+    if (!testMode && !upgradeChoosing && !evolutionChoosing && asteroids.length === 0 && !ufos.some(u=>u.boss) && waveTransitionTimer === 0) beginWaveClear();
   }
 
   function breakAsteroid(index, powerful) {
     const a = asteroids[index];
     score += a.size === 3 ? 20 : a.size === 2 ? 50 : 100;
-    saveData.totalAsteroidsDestroyed++;
+    if (!testMode) {
+      saveData.totalAsteroidsDestroyed++;
+      if (saveData.totalAsteroidsDestroyed >= 500) checkAchievementUnlocks(true);
+    }
     updateHUD();
     spawnExplosion(a.x, a.y, powerful ? 20 : 12, powerful ? '#ff7a4d' : '#ffd76f');
     SFX.explosion(a.size, powerful);
@@ -2418,22 +3267,10 @@
 
     // Powerup drop: one low-probability roll decides IF anything drops, then a
     // weighted pick decides WHAT — much easier to keep genuinely rare this way.
-    const effectiveDropChance = POWERUP_DROP_CHANCE + shopLevel('luckyFind') * 0.02;
-    if (Math.random() < effectiveDropChance) {
-      spawnPowerup(a.x, a.y, pickWeightedPowerupType());
-    }
+    if (!testMode && Math.random() < POWERUP_DROP_CHANCE) spawnPowerup(a.x,a.y,'shield');
   }
 
-  function pickWeightedPowerupType() {
-    const types = Object.keys(POWERUP_WEIGHTS);
-    const total = types.reduce((sum, t) => sum + POWERUP_WEIGHTS[t], 0);
-    let roll = Math.random() * total;
-    for (const t of types) {
-      roll -= POWERUP_WEIGHTS[t];
-      if (roll <= 0) return t;
-    }
-    return types[types.length - 1];
-  }
+  function pickWeightedPowerupType() { return 'shield'; }
 
   // ---------- Ray Gun: passive auto-turret ----------
   // Fires ONE chain-lightning beam, bouncing ship -> nearest small asteroid -> next
@@ -2477,7 +3314,7 @@
       chainPoints.push({ x: a.x, y: a.y });
     }
     spawnRayChain(chainPoints);
-    if (chainIndices.length >= 5) rayChain5Flag = true;
+    if (chainIndices.length >= 5) { rayChain5Flag = true; checkAchievementUnlocks(true); }
 
     // Destroy highest index first so earlier indices stay valid as we splice
     const removalOrder = chainIndices.slice().sort((a, b) => b - a);
@@ -2488,38 +3325,109 @@
   }
 
   // ---------- UFO enemies ----------
-  function spawnUFOFromEdge() {
+  function chooseUfoVariant() {
+    if (level < 10) return 'standard';
+    const roll=Math.random();
+    if (level>=20 && roll<.24) return 'carrier';
+    if (roll<.54) return 'hunter';
+    if (roll<.82) return 'gunner';
+    return 'standard';
+  }
+
+  function spawnUFOFromEdge(forced=false) {
     const r = 26;
+    if (!forced) SFX.ufoAlert();
     const fromLeft = Math.random() < 0.5;
     const x = fromLeft ? PLAY_X - r : PLAY_X + PLAY_W + r;
     const y = rand(PLAY_Y + PLAY_H * 0.15, PLAY_Y + PLAY_H * 0.85);
-    const vx = (fromLeft ? 1 : -1) * rand(0.7, 1.1);
-    const vy = rand(-0.25, 0.25);
+    const variant=chooseUfoVariant();
+    const base=variant==='hunter'?1.18:variant==='gunner'?1.0:.86;
+    const vx = (fromLeft ? 1 : -1) * rand(base*.85, base*1.12);
+    const vy = rand(-0.28, 0.28);
     ufos.push({
-      x, y, vx, vy, r, tier: 2, angle: 0,
-      fireCooldown: rand(90, 150), driftTimer: 0, ejectTimer: 0, broodId: null
+      x, y, vx, vy, r, tier: 2, angle: 0, variant,
+      fireCooldown: variant==='gunner'?rand(42,72):rand(76,132), driftTimer: 0, ejectTimer: 0, broodId: null,
+      carrierCooldown: rand(220,340)
     });
   }
 
-  function spawnEscapePod(x, y, ejectAngle, broodId) {
+  function spawnBoss() {
+    const bossIndex=Math.floor(level/10)-1;
+    const types=['DREADNOUGHT','CARRIER PRIME','HUNTER ACE'];
+    const bossType=types[bossIndex%types.length];
+    const hp=Math.round(44 + bossIndex*13);
+    const fromLeft=Math.random()<.5;
+    ufos.push({
+      x:fromLeft?PLAY_X-70:PLAY_X+PLAY_W+70, y:PLAY_Y+PLAY_H*.30,
+      vx:(fromLeft?1:-1)*(bossType==='HUNTER ACE'?1.15:.58), vy:.16,
+      r:bossType==='DREADNOUGHT'?58:bossType==='CARRIER PRIME'?54:46,
+      tier:3, boss:true, bossType, bossName:bossType, hp, maxHp:hp, angle:0,
+      fireCooldown:bossType==='HUNTER ACE'?42:68, carrierCooldown:210, driftTimer:0, ejectTimer:0, broodId:null,
+      phase:0
+    });
+    bossSequence++;
+    updateHUD();
+  }
+
+  function updateBossMovement(u) {
+    u.fireCooldown--;
+    if (u.bossType==='HUNTER ACE') {
+      const a=Math.atan2(ship.y-u.y,ship.x-u.x), target=1.45+Math.min(.5,level*.01);
+      u.vx+=(Math.cos(a)*target-u.vx)*.022; u.vy+=(Math.sin(a)*target-u.vy)*.022;
+    } else {
+      const centerY=PLAY_Y+PLAY_H*(.30+.16*Math.sin(Date.now()/1100));
+      u.vy+=(centerY-u.y)*.0009;
+    }
+    if (u.bossType==='CARRIER PRIME') {
+      u.carrierCooldown--;
+      if(u.carrierCooldown<=0 && ufos.filter(x=>x.tier===1).length<6){
+        const brood=nextBroodId++; const a=rand(0,Math.PI*2); spawnEscapePod(u.x,u.y,a,brood,false); spawnEscapePod(u.x,u.y,a+Math.PI,brood,false); u.carrierCooldown=190; SFX.escapePodEject();
+      }
+    }
+    if (u.fireCooldown<=0) {
+      fireBossVolley(u);
+      u.fireCooldown=u.bossType==='HUNTER ACE'?rand(34,52):u.bossType==='DREADNOUGHT'?rand(54,76):rand(62,88);
+    }
+  }
+
+  function fireBossVolley(u) {
+    const base=Math.atan2(ship.y-u.y,ship.x-u.x);
+    const spreads=u.bossType==='DREADNOUGHT'?[-.24,0,.24]:u.bossType==='HUNTER ACE'?[-.08,.08]:[-.14,0,.14];
+    for(const off of spreads){ const a=base+off; const sp=u.bossType==='HUNTER ACE'?4.8:4.15; ufoBullets.push({x:u.x,y:u.y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:140,r:3.5,bossShot:true}); }
+    SFX.bossShot();
+  }
+
+  function fireUfoBullet(u) {
+    const baseAngle = Math.atan2(ship.y - u.y, ship.x - u.x);
+    const inaccuracy = u.variant==='gunner' ? rand(-.16,.16) : u.variant==='hunter' ? rand(-.10,.10) : u.tier === 2 ? rand(-0.42, 0.42) : rand(-0.15, 0.15);
+    const angle = baseAngle + inaccuracy;
+    const speed = u.variant==='hunter'?4.7:4.2;
+    ufoBullets.push({ x:u.x,y:u.y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life:120,r:3 });
+    SFX.enemyShot();
+  }
+
+
+  function spawnEscapePod(x, y, ejectAngle, broodId, fromTestGround = false) {
     const r = 15;
     const speed = rand(1.6, 2.2);
     ufos.push({
       x, y,
       vx: Math.cos(ejectAngle) * speed, vy: Math.sin(ejectAngle) * speed,
       r, tier: 1, angle: 0,
-      fireCooldown: rand(50, 90), driftTimer: rand(30, 60), ejectTimer: 18, broodId
+      fireCooldown: rand(50, 90), driftTimer: rand(30, 60), ejectTimer: 18, broodId,
+      testGround: fromTestGround
     });
   }
 
-  function spawnDebris(x, y, ejectAngle) {
+  function spawnDebris(x, y, ejectAngle, fromTestGround = false) {
     const r = 9;
     const speed = rand(2, 2.8);
     ufos.push({
       x, y,
       vx: Math.cos(ejectAngle) * speed, vy: Math.sin(ejectAngle) * speed,
       r, tier: 0, angle: 0,
-      fireCooldown: Infinity, driftTimer: rand(20, 40), ejectTimer: 18, broodId: null // debris doesn't fire back
+      fireCooldown: Infinity, driftTimer: rand(20, 40), ejectTimer: 18, broodId: null, // debris doesn't fire back
+      testGround: fromTestGround
     });
   }
 
@@ -2538,11 +3446,29 @@
 
   let nextBroodId = 0;
 
+  function damageBossUFO(index, amount, hitX=null, hitY=null) {
+    const u=ufos[index]; if(!u || !u.boss) return false;
+    u.hp-=amount;
+    if(hitX!=null) spawnImpactRing(hitX,hitY,'#ff6f6f',amount>=5);
+    spawnExplosion(hitX??u.x,hitY??u.y,Math.min(12,4+Math.round(amount)),'#ff6f6f');
+    triggerShake(amount>=5?5:2.5,amount>=5?7:4); SFX.bossHit(); updateHUD();
+    if(u.hp>0) return true;
+    score += 1800 + level*85;
+    const x=u.x,y=u.y; ufos.splice(index,1); bossDefeatsThisRun++; pendingEvolution=true;
+    for(let k=0;k<4;k++) setTimeout(()=>spawnExplosion(x+rand(-42,42),y+rand(-30,30),28,'#ff6f6f'),k*45);
+    impactRings.push({x,y,radius:10,maxRadius:175,life:34,maxLife:34,color:'#ff6f6f',big:true}); triggerShake(14,22); hitStopFrames=Math.max(hitStopFrames,4); SFX.bossDown(); updateHUD();
+    return true;
+  }
+
   function breakUFO(index, powerful) {
     const u = ufos[index];
+    if (u && u.boss) { damageBossUFO(index, powerful?7:2.5, u.x, u.y); return; }
     const points = u.tier === 2 ? 200 : u.tier === 1 ? 150 : 100;
     score += points; // UFOs pay better than asteroids — worth hunting
-    saveData.totalUfosDestroyed++;
+    if (!testMode) {
+      saveData.totalUfosDestroyed++;
+      if (saveData.totalUfosDestroyed >= 20) checkAchievementUnlocks(true);
+    }
     updateHUD();
     spawnExplosion(u.x, u.y, u.tier === 2 ? 26 : u.tier === 1 ? 16 : 10, '#ff6fe8');
     triggerShake(u.tier === 2 ? 7 : u.tier === 1 ? 4 : 2, u.tier === 2 ? 10 : u.tier === 1 ? 6 : 4);
@@ -2550,8 +3476,8 @@
     ufos.splice(index, 1);
 
     // "Double Trouble" tracking: flag if both pods from the same mothership get destroyed this run
-    if (u.tier === 1 && u.broodId != null) {
-      if (destroyedBroodIds.has(u.broodId)) podBroodFlag = true;
+    if (!testMode && u.tier === 1 && u.broodId != null) {
+      if (destroyedBroodIds.has(u.broodId)) { podBroodFlag = true; checkAchievementUnlocks(true); }
       else destroyedBroodIds.add(u.broodId);
     }
 
@@ -2560,33 +3486,50 @@
       // Mothership destroyed — 2 escape pods eject outward symmetrically
       const angle = rand(0, Math.PI * 2);
       const broodId = nextBroodId++;
-      spawnEscapePod(u.x, u.y, angle, broodId);
-      spawnEscapePod(u.x, u.y, angle + Math.PI, broodId);
+      spawnEscapePod(u.x, u.y, angle, broodId, !!u.testGround);
+      spawnEscapePod(u.x, u.y, angle + Math.PI, broodId, !!u.testGround);
       SFX.escapePodEject();
     } else if (!powerful && u.tier === 1 && level >= 10) {
       // Escape pod breaks down further — 2 debris pieces scatter
       const angle = rand(0, Math.PI * 2);
-      spawnDebris(u.x, u.y, angle);
-      spawnDebris(u.x, u.y, angle + Math.PI);
+      spawnDebris(u.x, u.y, angle, !!u.testGround);
+      spawnDebris(u.x, u.y, angle + Math.PI, !!u.testGround);
       SFX.escapePodEject();
     }
 
-    if (Math.random() < UFO_POWERUP_DROP_CHANCE) {
-      spawnPowerup(u.x, u.y, pickWeightedPowerupType());
+    if (!testMode && Math.random() < UFO_POWERUP_DROP_CHANCE) {
+      spawnPowerup(u.x,u.y,'shield');
     }
   }
 
 
+  function explodeRocket(b, bulletIndex) {
+    const idx = bulletIndex >= 0 ? bulletIndex : bullets.indexOf(b); if (idx>=0) bullets.splice(idx,1);
+    const radius=b.blastRadius||86; const targets=[];
+    for(let i=asteroids.length-1;i>=0;i--) if(dist(b.x,b.y,asteroids[i].x,asteroids[i].y)<=radius+asteroids[i].r*.35) targets.push({kind:'a',i,d:dist(b.x,b.y,asteroids[i].x,asteroids[i].y)});
+    for(let i=ufos.length-1;i>=0;i--) if(dist(b.x,b.y,ufos[i].x,ufos[i].y)<=radius+ufos[i].r*.25) targets.push({kind:'u',i,d:dist(b.x,b.y,ufos[i].x,ufos[i].y)});
+    const rocketColor=(WEAPON_BUILDS.find(w=>w.id===b.weapon)||WEAPON_BUILDS[2]).color; spawnExplosion(b.x,b.y,34,rocketColor); impactRings.push({x:b.x,y:b.y,radius:8,maxRadius:radius,life:18,maxLife:18,color:rocketColor,big:true}); triggerShake(upgradeLevel('bigWarhead')?12:9,14); hitFlashAlpha=Math.max(hitFlashAlpha,.08); SFX.rocketBlast();
+    // break from high indexes so array mutation stays safe
+    targets.filter(t=>t.kind==='a').sort((x,y)=>y.i-x.i).forEach(t=>{ if(asteroids[t.i]) breakAsteroid(t.i, t.d<radius*.62 || upgradeLevel('bigWarhead')); });
+    targets.filter(t=>t.kind==='u').sort((x,y)=>y.i-x.i).forEach(t=>{ if(ufos[t.i]) { if(ufos[t.i].boss) damageBossUFO(t.i,b.bossDamage||9,b.x,b.y); else breakUFO(t.i, t.d<radius*.5 && upgradeLevel('bigWarhead')); } });
+    if (targets.length>=4 && !testMode) { rocketMultiKillFlag=true; checkAchievementUnlocks(true); }
+    if (b.cluster) { for(let k=0;k<6;k++){ const a=(k/6)*Math.PI*2+rand(-.15,.15); pushProjectileAt(b.x,b.y,a,7,26,1.5,{weapon:'rocket',clusterFrag:true}); } }
+  }
+  function pushProjectileAt(x,y,angle,speed,life,r,extra={}) { bullets.push(Object.assign({x,y,vx:Math.cos(angle)*speed,vy:Math.sin(angle)*speed,life,r,trail:true,weapon:'rocket'},extra)); }
+
+
   function shipHit() {
-    lives--;
-    livesLostThisRun++;
+    if (!testMode) {
+      lives--;
+      livesLostThisRun++;
+    }
     updateHUD();
     spawnExplosion(ship.x, ship.y, 25, '#ff6f6f');
     spawnShipDebris(ship.x, ship.y, ship.angle, ship.skin, ship.r);
     triggerShake(9, 14);
     hitFlashAlpha = 0.35;
     SFX.shipExplosion();
-    if (lives <= 0) {
+    if (!testMode && lives <= 0) {
       gameOver = true;
       deathZoomActive = true;
       deathZoomTimer = 0;
@@ -2703,7 +3646,7 @@
     ctx.stroke();
     ctx.globalAlpha = 1;
 
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting;
+    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || mouseThrust;
     if (thrusting) {
       ctx.strokeStyle = '#ffb347';
       ctx.shadowColor = '#ffb347';
@@ -2733,36 +3676,9 @@
       ctx.restore();
     }
 
-    if (weaponMode !== 'normal') {
-      ctx.save();
-      ctx.translate(ship.x, ship.y);
-      const ringColor = POWERUP_COLORS[weaponMode] || '#ff7a4d';
-      ctx.strokeStyle = ringColor;
-      ctx.shadowColor = ringColor;
-      ctx.shadowBlur = 9;
-      ctx.lineWidth = 2;
-      ctx.globalAlpha = weaponModeTimer < 90 && Math.floor(weaponModeTimer / 8) % 2 === 0 ? 0.3 : 0.7;
-      ctx.beginPath();
-      ctx.arc(0, 0, ship.r * 1.3, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.globalAlpha = 1;
-      ctx.restore();
-    }
-
-    if (rayGunLevel > 0) {
-      // Faint dashed ring showing the ray gun's fixed targeting perimeter around the ship
-      ctx.save();
-      ctx.translate(ship.x, ship.y);
-      ctx.strokeStyle = '#f5ff4d';
-      ctx.globalAlpha = 0.22;
-      ctx.lineWidth = 1;
-      ctx.setLineDash([5, 7]);
-      ctx.beginPath();
-      ctx.arc(0, 0, RAYGUN_RANGE, 0, Math.PI * 2);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.globalAlpha = 1;
-      ctx.restore();
+    if (currentWeapon) {
+      ctx.save(); ctx.translate(ship.x,ship.y); ctx.strokeStyle=currentWeapon.color; ctx.shadowColor=currentWeapon.color; ctx.shadowBlur=6; ctx.lineWidth=1; ctx.globalAlpha=.16;
+      ctx.beginPath(); ctx.arc(0,0,ship.r*1.42,0,Math.PI*2); ctx.stroke(); ctx.restore();
     }
   }
 
@@ -2900,27 +3816,20 @@
 
   function drawBullets() {
     for (const b of bullets) {
-      const color = b.overcharged ? '#ff7a4d' : b.pierce ? '#4dc9ff' : '#fff';
-      ctx.fillStyle = color;
-      ctx.strokeStyle = color;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = b.overcharged ? 10 : b.pierce ? 9 : 6;
-      if (b.trail) {
-        const len = b.overcharged ? 13 : 8;
-        const mag = Math.hypot(b.vx, b.vy) || 1;
-        ctx.globalAlpha = 0.42;
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.moveTo(b.x, b.y);
-        ctx.lineTo(b.x - (b.vx / mag) * len, b.y - (b.vy / mag) * len);
-        ctx.stroke();
-        ctx.globalAlpha = 1;
+      const w=WEAPON_BUILDS.find(x=>x.id===b.weapon)||currentWeapon; const color=b.clusterFrag?'#ffd76f':w.color;
+      ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.shadowColor=color;
+      if (b.rocket) {
+        ctx.translate(b.x,b.y); const ang=Math.atan2(b.vy,b.vx); ctx.rotate(ang); ctx.shadowBlur=12;
+        ctx.beginPath(); ctx.moveTo(7,0); ctx.lineTo(-5,-4); ctx.lineTo(-3,0); ctx.lineTo(-5,4); ctx.closePath(); ctx.stroke();
+        const flame=upgradeLevel('booster')?14:9; ctx.globalAlpha=.65; ctx.beginPath(); ctx.moveTo(-4,0); ctx.lineTo(-4-flame-rand(0,4),0); ctx.stroke();
+      } else {
+        ctx.shadowBlur=b.weapon==='sniper'?12:b.weapon==='rapid'?5:7;
+        const mag=Math.hypot(b.vx,b.vy)||1; const len=b.weapon==='sniper'?22:b.weapon==='rapid'?7:b.pellet?5:9;
+        ctx.globalAlpha=.5; ctx.lineWidth=b.weapon==='sniper'?2:1.2; ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-(b.vx/mag)*len,b.y-(b.vy/mag)*len); ctx.stroke();
+        ctx.globalAlpha=1; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
       }
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
-      ctx.fill();
+      ctx.restore();
     }
-    ctx.shadowBlur = 0;
   }
 
   function drawUfoBullets() {
@@ -2940,7 +3849,7 @@
       ctx.translate(u.x, u.y);
       const scale = u.ejectTimer > 0 ? Math.max(0.15, 1 - u.ejectTimer / 18) : 1; // pop-in when a pod is freshly ejected
       ctx.scale(scale, scale);
-      const color = u.tier === 2 ? '#ff6fe8' : u.tier === 1 ? '#ff8fe8' : '#ffb3f0';
+      const color = u.boss ? '#ff6f6f' : u.variant==='gunner' ? '#ff7b72' : u.variant==='hunter' ? '#ffb347' : u.variant==='carrier' ? '#c98cff' : u.tier === 2 ? '#ff6fe8' : u.tier === 1 ? '#ff8fe8' : '#ffb3f0';
       ctx.strokeStyle = color;
       ctx.shadowColor = color;
       ctx.shadowBlur = 7;
@@ -2955,6 +3864,16 @@
       ctx.beginPath();
       ctx.ellipse(0, -r * 0.25, r * 0.45, r * 0.35, 0, Math.PI, 0, true);
       ctx.stroke();
+      if (u.boss) {
+        ctx.beginPath(); ctx.arc(0,0,r*.72,0,Math.PI*2); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(-r*.8,0); ctx.lineTo(r*.8,0); ctx.moveTo(0,-r*.55); ctx.lineTo(0,r*.55); ctx.stroke();
+      } else if (u.variant==='gunner') {
+        ctx.beginPath(); ctx.moveTo(-r*.72,-r*.05); ctx.lineTo(-r*1.05,-r*.05); ctx.moveTo(r*.72,-r*.05); ctx.lineTo(r*1.05,-r*.05); ctx.stroke();
+      } else if (u.variant==='hunter') {
+        ctx.beginPath(); ctx.moveTo(-r*.8,r*.25); ctx.lineTo(0,r*.5); ctx.lineTo(r*.8,r*.25); ctx.stroke();
+      } else if (u.variant==='carrier') {
+        ctx.beginPath(); ctx.rect(-r*.22,-r*.1,r*.44,r*.35); ctx.stroke();
+      }
       // under-lights
       ctx.beginPath();
       ctx.moveTo(-r * 0.5, r * 0.05); ctx.lineTo(-r * 0.5, r * 0.25);
@@ -3052,12 +3971,16 @@
   // the canvas (desktop monitors, large tablets) — on mobile PLAY_W/H equal the canvas
   // exactly, so this is a no-op there. Marks the arena as intentional, not an invisible wall.
   function drawPlayBoundary() {
-    if (PLAY_W >= W && PLAY_H >= H) return;
+    const solid = gameSettings.containmentWalls;
+    if (!solid && PLAY_W >= W && PLAY_H >= H) return;
     ctx.save();
-    ctx.strokeStyle = 'rgba(111,242,255,0.14)';
-    ctx.setLineDash([6, 10]);
-    ctx.lineWidth = 1;
-    ctx.strokeRect(PLAY_X, PLAY_Y, PLAY_W, PLAY_H);
+    ctx.strokeStyle = solid ? 'rgba(111,242,255,0.48)' : 'rgba(111,242,255,0.14)';
+    ctx.setLineDash(solid ? [] : [6, 10]);
+    ctx.lineWidth = solid ? 1.5 : 1;
+    ctx.shadowColor = solid ? 'rgba(111,242,255,0.28)' : 'transparent';
+    ctx.shadowBlur = solid ? 7 : 0;
+    const inset = solid ? 1.5 : 0;
+    ctx.strokeRect(PLAY_X + inset, PLAY_Y + inset, Math.max(0, PLAY_W - inset * 2), Math.max(0, PLAY_H - inset * 2));
     ctx.restore();
   }
 
@@ -3103,6 +4026,32 @@
       if (s.y < 0) s.y += H;
       else if (s.y > H) s.y -= H;
     }
+  }
+
+  function drawMouseReticle() {
+    if (!mouseActive || !running || gameOver || paused || rebirthActive || deathZoomActive) return;
+    const x = Math.max(10, Math.min(W - 10, mousePos.x));
+    const y = Math.max(10, Math.min(H - 10, mousePos.y));
+    const color = currentWeapon ? currentWeapon.color : '#6ff2ff';
+    const pulse = 1 + Math.sin(Date.now() / 140) * 0.08;
+    const r = Math.max(4, 8 * pulse - reticleKick * 3);
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.strokeStyle = color;
+    ctx.fillStyle = color;
+    ctx.shadowColor = color;
+    ctx.shadowBlur = 7;
+    ctx.globalAlpha = 0.78;
+    ctx.lineWidth = 1.25;
+    const arm = 5;
+    ctx.beginPath();
+    ctx.moveTo(-r - arm, 0); ctx.lineTo(-r, 0);
+    ctx.moveTo(r, 0); ctx.lineTo(r + arm, 0);
+    ctx.moveTo(0, -r - arm); ctx.lineTo(0, -r);
+    ctx.moveTo(0, r); ctx.lineTo(0, r + arm);
+    ctx.stroke();
+    ctx.beginPath(); ctx.arc(0, 0, 1.4, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
   }
 
   function draw() {
@@ -3173,13 +4122,7 @@
       ctx.fillStyle = `rgba(255,255,255,${hitConfirmFlash})`;
       ctx.fillRect(0, 0, W, H);
     }
-    if (weaponMode === 'overcharge' && !gameOver) {
-      // Slow breathing red border — constant reminder you're in the powerful, punchy mode
-      const pulse = 0.12 + Math.sin(Date.now() / 90) * 0.035;
-      ctx.strokeStyle = `rgba(255,75,55,${pulse})`;
-      ctx.lineWidth = 5;
-      ctx.strokeRect(2, 2, W - 4, H - 4);
-    }
+    drawMouseReticle();
   }
 
   // ---------- Ambient menu background (runs whenever the game isn't active) ----------
@@ -3260,10 +4203,13 @@
     pctx.restore();
     if (!unlocked) {
       pctx.save();
-      pctx.font = '20px sans-serif';
-      pctx.textAlign = 'center';
-      pctx.textBaseline = 'middle';
-      pctx.fillText('🔒', w / 2, h / 2);
+      pctx.translate(w / 2, h / 2);
+      pctx.strokeStyle = '#6b6b7a';
+      pctx.lineWidth = 2;
+      pctx.strokeRect(-8, -1, 16, 13);
+      pctx.beginPath();
+      pctx.arc(0, -1, 5, Math.PI, 0);
+      pctx.stroke();
       pctx.restore();
     }
   }
@@ -3297,13 +4243,13 @@
     const statsEl2 = overlay.querySelector('#shipStatsLabel');
     if (statsEl2) {
       statsEl2.textContent = unlocked
-        ? `SPEED ${statBar(skin.thrustMult, 1.25)}\nTURN  ${statBar(skin.turnMult, 1.2)}\nSIZE  ${statBar(skin.hitFactor, 1.3, true)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`
+        ? `SPEED ${statBar(skin.maxSpeedMult || 1, 1.14)}\nTURN  ${statBar(skin.turnMult, 1.2)}\nSIZE  ${statBar(skin.hitFactor, 1.3, true)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`
         : 'SPEED ?????\nTURN  ?????\nSIZE  ?????\nARMOR ?????';
     }
     const startBtn = overlay.querySelector('#startBtn');
     if (startBtn) {
       startBtn.disabled = !unlocked;
-      startBtn.textContent = unlocked ? 'START' : 'LOCKED';
+      startBtn.textContent = unlocked ? 'START RUN' : 'LOCKED';
       startBtn.classList.toggle('lockedBtn', !unlocked);
     }
   }
@@ -3313,6 +4259,52 @@
     refreshShipPreviewUI();
     SFX.uiTick();
   }
+
+
+  function showUpgradeChoices() {
+    if (testMode || upgradeChoosing || evolutionChoosing) return false;
+    const pool=BUILD_UPGRADES[currentWeapon.id].filter(u=>upgradeLevel(u.id)<(u.maxRank||1));
+    if (!pool.length) return false;
+    upgradeChoosing=true; fireHeld=false; SFX.setThrust(false);
+    const shuffled=pool.slice().sort(()=>Math.random()-.5).slice(0,3);
+    buildUpgradeOverlay.querySelector('h2').textContent='CHOOSE AN UPGRADE';
+    upgradeBuildLabel.textContent=`${currentWeapon.name} // LEVEL ${level} CLEARED`;
+    upgradeChoicesEl.innerHTML=shuffled.map((u,i)=>{const cur=upgradeLevel(u.id),next=cur+1;return `<button class="upgradeChoice" data-id="${u.id}" style="color:${currentWeapon.color}"><b>${i+1}. ${u.name} // RANK ${next}</b><span>${u.desc}<br><small>RANK ${cur}/${u.maxRank||1}</small></span></button>`}).join('');
+    upgradeChoicesEl.querySelectorAll('.upgradeChoice').forEach(btn=>btn.addEventListener('click',()=>chooseUpgrade(btn.dataset.id)));
+    // Punch into the mutation screen instead of hard-cutting from the last gameplay frame.
+    hitFlashAlpha=Math.max(hitFlashAlpha,.26); triggerShake(5,8); SFX.mutationReady();
+    buildUpgradeOverlay.classList.remove('hidden','mutation-enter');
+    void buildUpgradeOverlay.offsetWidth; // restart CSS animation reliably on every mutation screen
+    buildUpgradeOverlay.classList.add('mutation-enter');
+    setTimeout(()=>buildUpgradeOverlay.classList.remove('mutation-enter'),650);
+    return true;
+  }
+  function chooseUpgrade(id) {
+    runUpgradeState[id]=(runUpgradeState[id]||0)+1; runUpgradeCount++; upgradeChoosing=false; buildUpgradeOverlay.classList.remove('mutation-enter'); buildUpgradeOverlay.classList.add('hidden'); SFX.purchase();
+    const u=BUILD_UPGRADES[currentWeapon.id].find(x=>x.id===id); spawnFloatingText(ship.x,ship.y-44,`${u.name} ${runUpgradeState[id]}`,currentWeapon.color); checkAchievementUnlocks(true);
+    advanceAfterUpgrade();
+  }
+
+  function showEvolutionChoices() {
+    if(testMode || evolutionChoosing) return false;
+    const pool=BUILD_EVOLUTIONS[currentWeapon.id].filter(u=>upgradeLevel(u.id)<(u.maxRank||1));
+    pendingEvolution=false;
+    if(!pool.length) return false;
+    evolutionChoosing=true; upgradeChoosing=true; fireHeld=false; SFX.setThrust(false);
+    const choices=pool.slice().sort(()=>Math.random()-.5).slice(0,2);
+    buildUpgradeOverlay.querySelector('h2').textContent='WEAPON EVOLUTION';
+    upgradeBuildLabel.textContent=`BOSS ${level} DESTROYED // ${currentWeapon.name}`;
+    upgradeChoicesEl.innerHTML=choices.map((u,i)=>{const cur=upgradeLevel(u.id);return `<button class="upgradeChoice" data-evo="${u.id}" style="color:${currentWeapon.color}"><b>${i+1}. ${u.name} // TIER ${cur+1}</b><span>${u.desc}<br><small>EVOLUTION ${cur}/${u.maxRank||1}</small></span></button>`}).join('');
+    upgradeChoicesEl.querySelectorAll('.upgradeChoice').forEach(btn=>btn.addEventListener('click',()=>chooseEvolution(btn.dataset.evo)));
+    buildUpgradeOverlay.classList.remove('hidden'); SFX.evolution(); return true;
+  }
+  function chooseEvolution(id) {
+    runUpgradeState[id]=(runUpgradeState[id]||0)+1; runUpgradeCount++; evolutionChoosing=false; upgradeChoosing=false; buildUpgradeOverlay.classList.add('hidden'); SFX.purchase();
+    const e=BUILD_EVOLUTIONS[currentWeapon.id].find(x=>x.id===id); spawnFloatingText(ship.x,ship.y-48,`${e.name} // TIER ${runUpgradeState[id]}`,currentWeapon.color);
+    advanceAfterUpgrade();
+  }
+  function advanceAfterUpgrade(){ invulnTimer=Math.max(invulnTimer,60); level++; const unlocks=checkLevelUnlocks(level); if(unlocks.length){persistSave(); spawnFloatingText(ship.x,ship.y-48,`SHIP UNLOCKED: ${unlocks.join(', ')}`,'#6fffb0');} spawnWave(); updateHUD(); }
+
 
 
   function showGameOver() {
@@ -3326,24 +4318,28 @@
     saveData.highScore = Math.max(saveData.highScore, score);
     saveData.bestLevel = Math.max(saveData.bestLevel, level);
     const newlyUnlocked = checkLevelUnlocks(level).concat(checkAchievementUnlocks());
-    const salvageEarned = Math.floor(score / 35);
+    const salvageGross = Math.floor(score / SALVAGE_SCORE_DIVISOR);
+    const cashoutSecured = level > FIRST_CASHOUT_LEVEL; // clearing level 10 advances the run to level 11
+    const salvageEarned = cashoutSecured ? salvageGross : Math.floor(salvageGross * FAILED_CASHOUT_RECOVERY);
+    const salvageLost = salvageGross - salvageEarned;
     saveData.salvage += salvageEarned;
     persistSave();
 
     let extraHTML = '';
     if (isNewHighScore) {
-      extraHTML += `<div class="gameOverCallout newHighScore">🏆 NEW HIGH SCORE</div>`;
+      extraHTML += `<div class="gameOverCallout newHighScore">${uiIcon('trophy')} NEW HIGH SCORE</div>`;
     }
     if (newlyUnlocked.length) {
-      extraHTML += `<div class="gameOverCallout unlockCallout">🔓 UNLOCKED: ${newlyUnlocked.join(', ')}</div>`;
+      extraHTML += `<div class="gameOverCallout unlockCallout">${uiIcon('check')} UNLOCKED: ${newlyUnlocked.join(', ')}</div>`;
     }
 
     overlay.classList.remove('hidden');
     overlay.innerHTML = `
       <h1>GAME OVER</h1>
-      <p>Final Score: ${score}<br>Level Reached: ${level}</p>
+      <p>Final Score: ${score}<br>Level Reached: ${level}<br>${currentWeapon.name} · ${runUpgradeCount} UPGRADES</p>
       ${extraHTML}
-      <div class="gameOverCallout salvageCallout">⚙ +${salvageEarned} SALVAGE</div>
+      <div class="gameOverCallout salvageCallout">${uiIcon('salvage')} +${salvageEarned} SALVAGE${cashoutSecured ? ' // SECURED' : ` // 50% RECOVERED`}</div>
+      ${cashoutSecured ? '' : `<p class="gameOverBest" style="color:#ffb347;opacity:.8!important;margin-bottom:8px!important">CASH-OUT NOT REACHED · ${salvageLost} SALVAGE LOST</p>`}
       <p class="gameOverBest">Best: ${saveData.highScore} pts · Top Level ${saveData.bestLevel} · Salvage: ${saveData.salvage}</p>
       <button id="restartBtn">PLAY AGAIN</button>
       <button id="gameOverMenuBtn" class="secondaryBtn">MAIN MENU</button>
@@ -3354,11 +4350,24 @@
 
   function startGame() {
     if (!isUnlocked(selectedSkinIndex)) return; // belt-and-suspenders; button is also disabled
+    testMode = false;
     SFX.init(); // must fire inside a user-gesture handler for browser autoplay rules
     tryLockLandscape(); // best-effort; silently no-ops where unsupported (e.g. iOS Safari)
     setInMenu(false);
     overlay.classList.add('hidden');
+    setWeaponBuild(selectedWeaponIndex, false);
     initGame();
+    running = true;
+  }
+
+  function startTestGround() {
+    testMode = true;
+    SFX.init();
+    tryLockLandscape();
+    setInMenu(false);
+    overlay.classList.add('hidden');
+    initGame();
+    configureTestGround();
     running = true;
   }
 
@@ -3430,9 +4439,17 @@
 
   async function tryLockLandscape() {
     try {
-      if (document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen();
+      // Fullscreen only the game surface instead of the whole document. This keeps browser
+      // fullscreen event routing scoped to the element that owns our gameplay input guards.
+      const fsTarget = gameWrapEl || document.documentElement;
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        if (fsTarget.requestFullscreen) {
+          await fsTarget.requestFullscreen();
+        } else if (fsTarget.webkitRequestFullscreen) {
+          fsTarget.webkitRequestFullscreen();
+        }
       }
+      refreshFullscreenContextGuard();
       if (screen.orientation && screen.orientation.lock) {
         await screen.orientation.lock('landscape');
       }
@@ -3464,28 +4481,39 @@
   // ---------- Main menu (re)binding — needed because "quit to menu" restores fresh markup ----------
   function bindMainMenuUI() {
     const startBtn = overlay.querySelector('#startBtn');
+    const testGroundBtn = overlay.querySelector('#testGroundBtn');
     const howToPlayBtn = overlay.querySelector('#howToPlayBtn');
     const achievementsBtn = overlay.querySelector('#achievementsBtn');
     const shopBtn = overlay.querySelector('#shopBtn');
+    const settingsBtn = overlay.querySelector('#settingsBtn');
     const volSlider = overlay.querySelector('.volumeSlider');
     const musicVolSlider = overlay.querySelector('.musicVolumeSlider');
     if (startBtn) startBtn.addEventListener('click', () => { SFX.uiTick(); startGame(); });
+    if (testGroundBtn) {
+      testGroundBtn.innerHTML = `${uiIcon('lab')} TEST GROUND`;
+      testGroundBtn.addEventListener('click', () => { SFX.uiTick(); startTestGround(); });
+    }
     if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
     if (achievementsBtn) achievementsBtn.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
     if (shopBtn) shopBtn.addEventListener('click', () => { SFX.uiTick(); renderShop(); shopOverlay.classList.remove('hidden'); });
+    if (settingsBtn) settingsBtn.addEventListener('click', () => { SFX.uiTick(); settingsOverlay.classList.remove('hidden'); });
+    if (howToPlayBtn) howToPlayBtn.innerHTML = uiIcon('help');
+    if (achievementsBtn) achievementsBtn.innerHTML = uiIcon('trophy');
+    if (shopBtn) shopBtn.innerHTML = uiIcon('salvage');
+    if (settingsBtn) settingsBtn.innerHTML = uiIcon('settings');
     if (volSlider) bindVolumeSlider(volSlider);
     if (musicVolSlider) bindMusicVolumeSlider(musicVolSlider);
 
     const musicMuteBtn = overlay.querySelector('#musicMuteBtn');
     if (musicMuteBtn) {
-      musicMuteBtn.textContent = MUSIC.isMuted() ? '🔇' : '🎵';
+      musicMuteBtn.innerHTML = uiIcon('music');
       musicMuteBtn.classList.toggle('muted', MUSIC.isMuted());
       musicMuteBtn.addEventListener('click', () => { syncMusicMuteButtons(MUSIC.toggleMute()); SFX.uiTick(); });
     }
 
     const sfxMuteBtn = overlay.querySelector('#sfxMuteBtn');
     if (sfxMuteBtn) {
-      sfxMuteBtn.textContent = SFX.isMuted() ? '🔇' : '🔊';
+      sfxMuteBtn.innerHTML = uiIcon('speaker', SFX.isMuted());
       sfxMuteBtn.classList.toggle('muted', SFX.isMuted());
       sfxMuteBtn.addEventListener('click', () => { syncSfxMuteButtons(SFX.toggleMute()); SFX.uiTick(); });
     }
@@ -3493,6 +4521,12 @@
     shipPreviewCanvasEl = overlay.querySelector('#shipPreviewCanvas');
     shipNameLabelEl = overlay.querySelector('#shipNameLabel');
     shipDescLabelEl = overlay.querySelector('#shipDescLabel');
+    const weaponNameEl=overlay.querySelector('#weaponNameLabel'); const weaponDescEl=overlay.querySelector('#weaponDescLabel'); const weaponStatsEl=overlay.querySelector('#weaponStatsLabel');
+    const weaponPrevBtn=overlay.querySelector('#weaponPrevBtn'); const weaponNextBtn=overlay.querySelector('#weaponNextBtn');
+    const refreshWeaponUI=()=>{ const w=WEAPON_BUILDS[selectedWeaponIndex]; if(weaponNameEl){weaponNameEl.textContent=w.name; weaponNameEl.style.color=w.color;} if(weaponDescEl)weaponDescEl.textContent=w.desc; if(weaponStatsEl)weaponStatsEl.textContent=w.stats; };
+    if(weaponPrevBtn)weaponPrevBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+WEAPON_BUILDS.length-1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
+    if(weaponNextBtn)weaponNextBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
+    refreshWeaponUI();
     const shipPrevBtn = overlay.querySelector('#shipPrevBtn');
     const shipNextBtn = overlay.querySelector('#shipNextBtn');
     if (shipPrevBtn) shipPrevBtn.addEventListener('click', () => cycleShip(-1));
@@ -3500,7 +4534,7 @@
     refreshShipPreviewUI();
 
     const statsEl = overlay.querySelector('#menuStats');
-    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}   ·   ⚙ ${saveData.salvage}`;
+    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}   ·   SALVAGE ${saveData.salvage}`;
   }
   bindMainMenuUI();
 
@@ -3525,7 +4559,7 @@
       const progressText = !unlocked ? ach.progress() : '';
       return `
         <div class="achRow ${unlocked ? 'unlocked' : 'locked'}">
-          <span class="achIcon">${unlocked ? '✅' : '🔒'}</span>
+          <span class="achIcon">${uiIcon(unlocked ? 'check' : 'lock')}</span>
           <div>
             <span class="achLabel">${ach.label} — ${SHIP_SKINS[ach.shipIndex].name}</span>
             <div class="achDesc">${ach.desc}</div>
@@ -3537,54 +4571,19 @@
   }
 
   function renderShop() {
-    const balanceEl = document.getElementById('shopBalance');
-    if (balanceEl) balanceEl.textContent = `⚙ SALVAGE: ${saveData.salvage}`;
-    const listEl = document.getElementById('shopList');
-    if (!listEl) return;
-    listEl.innerHTML = Object.keys(SHOP_UPGRADES).map((id) => {
-      const upg = SHOP_UPGRADES[id];
-      const lvl = shopLevel(id);
-      const maxed = lvl >= upg.maxLevel;
-      const cost = maxed ? null : upg.costs[lvl];
-      const canAfford = !maxed && saveData.salvage >= cost;
-      return `
-        <div class="shopRow">
-          <div class="shopInfo">
-            <span class="shopLabel">${upg.name}</span>
-            <div class="shopDesc">${upg.desc(lvl + (maxed ? 0 : 1))}</div>
-            <div class="shopMeta">LEVEL ${lvl}/${upg.maxLevel}${maxed ? ' — MAXED' : ` · COST ${cost}`}</div>
-          </div>
-          <button class="shopBuyBtn" data-id="${id}" ${maxed || !canAfford ? 'disabled' : ''}>${maxed ? 'MAX' : 'BUY'}</button>
-        </div>
-      `;
-    }).join('');
-    listEl.querySelectorAll('.shopBuyBtn').forEach((btn) => {
-      btn.addEventListener('click', () => buyShopUpgrade(btn.dataset.id));
-    });
+    const balanceEl=document.getElementById('shopBalance'); if(balanceEl) balanceEl.textContent=`SALVAGE VAULT: ${saveData.salvage}`;
+    const listEl=document.getElementById('shopList'); if(!listEl)return;
+    listEl.innerHTML=`<div class="shopRow"><div class="shopInfo"><span class="shopLabel">COMBAT POWER MOVED IN-RUN</span><div class="shopDesc">Permanent damage, fire-rate, drop-rate, and starting-stat upgrades have been retired. Weapon strength now comes from upgrades chosen during each run.</div><div class="shopMeta">SALVAGE IS BEING RESERVED FOR FUTURE COSMETICS, SIDEGRADES, AND UNLOCKS.</div></div></div>`;
   }
-
-  function buyShopUpgrade(id) {
-    const upg = SHOP_UPGRADES[id];
-    const lvl = shopLevel(id);
-    if (lvl >= upg.maxLevel) return;
-    const cost = upg.costs[lvl];
-    if (saveData.salvage < cost) return;
-    saveData.salvage -= cost;
-    saveData.shopLevels[id] = lvl + 1;
-    persistSave();
-    SFX.purchase();
-    renderShop();
-    const statsEl = overlay.querySelector('#menuStats');
-    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}   ·   ⚙ ${saveData.salvage}`;
-  }
+  function buyShopUpgrade(id) { return; }
 
   const rotateOverlay = document.getElementById('rotateOverlay');
   const rotateDismissBtn = document.getElementById('rotateDismissBtn');
   rotateDismissBtn.addEventListener('click', () => { SFX.uiTick(); rotateOverlay.classList.add('dismissed'); });
 
   function syncSfxMuteButtons(isMuted) {
-    document.querySelectorAll('#muteBtn, #sfxMuteBtn, #sfxMuteBtnPause').forEach((btn) => {
-      btn.textContent = isMuted ? '🔇' : '🔊';
+    document.querySelectorAll('#muteBtn, #sfxMuteBtn, #sfxMuteBtnPause, #sfxMuteBtnSettings').forEach((btn) => {
+      btn.innerHTML = uiIcon('speaker', isMuted);
       btn.classList.toggle('muted', isMuted);
     });
   }
@@ -3604,13 +4603,16 @@
   const achievementsBtnPause = document.getElementById('achievementsBtnPause');
   const achBackBtn = document.getElementById('achBackBtn');
   const shopBackBtn = document.getElementById('shopBackBtn');
+  const settingsBackBtn = document.getElementById('settingsBackBtn');
   let paused = false;
+  applyCoreIcons();
+  syncSfxMuteButtons(SFX.isMuted());
 
   function setPaused(val) {
     if (val && (!running || gameOver)) return; // only pausable mid-run
     paused = val;
     pauseOverlay.classList.toggle('hidden', !val);
-    pauseBtn.textContent = val ? '▶' : '⏸';
+    pauseBtn.innerHTML = uiIcon(val ? 'play' : 'pause');
     if (val) SFX.setThrust(false);
   }
 
@@ -3619,29 +4621,65 @@
   howToPlayBtnPause.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
   htpBackBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.add('hidden'); });
   achievementsBtnPause.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
+  settingsBackBtn.addEventListener('click', () => { SFX.uiTick(); settingsOverlay.classList.add('hidden'); });
+
+  const containmentToggle = document.getElementById('containmentToggle');
+  function refreshContainmentToggle() {
+    if (!containmentToggle) return;
+    containmentToggle.setAttribute('aria-pressed', gameSettings.containmentWalls ? 'true' : 'false');
+    containmentToggle.textContent = gameSettings.containmentWalls ? 'ON' : 'OFF';
+  }
+  refreshContainmentToggle();
+  if (containmentToggle) {
+    containmentToggle.addEventListener('click', () => {
+      gameSettings.containmentWalls = !gameSettings.containmentWalls;
+      persistGameSettings();
+      refreshContainmentToggle();
+      SFX.uiTick();
+      // If enabled mid-run, immediately pull the ship back into the active arena.
+      if (running && ship) applyPlayerBoundary(ship);
+    });
+  }
 
   const musicMuteBtnPause = document.getElementById('musicMuteBtnPause');
   function syncMusicMuteButtons(isMuted) {
-    document.querySelectorAll('#musicMuteBtn, #musicMuteBtnPause').forEach((btn) => {
-      btn.textContent = isMuted ? '🔇' : '🎵';
+    document.querySelectorAll('#musicMuteBtn, #musicMuteBtnPause, #musicMuteBtnSettings').forEach((btn) => {
+      btn.innerHTML = uiIcon('music');
       btn.classList.toggle('muted', isMuted);
     });
   }
-  musicMuteBtnPause.textContent = MUSIC.isMuted() ? '🔇' : '🎵';
+  musicMuteBtnPause.innerHTML = uiIcon('music');
   musicMuteBtnPause.classList.toggle('muted', MUSIC.isMuted());
   musicMuteBtnPause.addEventListener('click', () => { syncMusicMuteButtons(MUSIC.toggleMute()); SFX.uiTick(); });
+  const musicMuteBtnSettings = document.getElementById('musicMuteBtnSettings');
+  if (musicMuteBtnSettings) {
+    musicMuteBtnSettings.innerHTML = uiIcon('music');
+    musicMuteBtnSettings.classList.toggle('muted', MUSIC.isMuted());
+    musicMuteBtnSettings.addEventListener('click', () => { syncMusicMuteButtons(MUSIC.toggleMute()); SFX.uiTick(); });
+  }
 
   const sfxMuteBtnPause = document.getElementById('sfxMuteBtnPause');
-  sfxMuteBtnPause.textContent = SFX.isMuted() ? '🔇' : '🔊';
+  sfxMuteBtnPause.innerHTML = uiIcon('speaker', SFX.isMuted());
   sfxMuteBtnPause.classList.toggle('muted', SFX.isMuted());
   sfxMuteBtnPause.addEventListener('click', () => { syncSfxMuteButtons(SFX.toggleMute()); SFX.uiTick(); });
+  const sfxMuteBtnSettings = document.getElementById('sfxMuteBtnSettings');
+  if (sfxMuteBtnSettings) {
+    sfxMuteBtnSettings.innerHTML = uiIcon('speaker', SFX.isMuted());
+    sfxMuteBtnSettings.classList.toggle('muted', SFX.isMuted());
+    sfxMuteBtnSettings.addEventListener('click', () => { syncSfxMuteButtons(SFX.toggleMute()); SFX.uiTick(); });
+  }
 
   // Auto-pause the instant the player leaves — switches tabs, backgrounds the app, alt-tabs, etc.
   // Deliberately never auto-resumes on return; jumping back into live asteroids unannounced feels bad.
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) setPaused(true);
   });
-  window.addEventListener('blur', () => setPaused(true));
+  // Do not pause merely because the browser window reports blur: native menus, browser chrome,
+  // and some fullscreen transitions can all cause transient blur. Real tab/app/background changes
+  // are handled by visibilitychange above, which is the signal we actually care about.
+  window.addEventListener('blur', () => {
+    if (document.hidden) setPaused(true);
+  });
   achBackBtn.addEventListener('click', () => { SFX.uiTick(); achievementsOverlay.classList.add('hidden'); });
   shopBackBtn.addEventListener('click', () => { SFX.uiTick(); shopOverlay.classList.add('hidden'); });
 
@@ -3655,8 +4693,10 @@
     setPaused(false);
     running = false;
     gameOver = false;
+    testMode = false;
     deathZoomActive = false;
     SFX.setThrust(false);
+    fireHeld = false; mouseThrust = false;
     setInMenu(true);
     overlay.innerHTML = mainMenuHTML;
     overlay.classList.remove('hidden');
@@ -3683,7 +4723,7 @@
 
     while (simAccumulator >= SIM_STEP_MS) {
       simAccumulator -= SIM_STEP_MS;
-      if (running && !gameOver && !paused) {
+      if (running && !gameOver && !paused && !upgradeChoosing) {
         update();
       } else if (running && rebirthActive) {
         rebirthTimer++;
