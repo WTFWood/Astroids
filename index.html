@@ -108,7 +108,7 @@
   .secondaryBtn:active {
     background: rgba(111,242,255,0.2);
   }
-  #howToPlayOverlay, #pauseOverlay, #achievementsOverlay {
+  #howToPlayOverlay, #pauseOverlay, #achievementsOverlay, #shopOverlay {
     position: absolute;
     top: 0; left: 0; width: 100%; height: 100%;
     display: flex;
@@ -121,7 +121,7 @@
     text-shadow: 0 0 10px rgba(111,242,255,0.8);
     z-index: 25;
   }
-  #howToPlayOverlay, #achievementsOverlay { z-index: 30; }
+  #howToPlayOverlay, #achievementsOverlay, #shopOverlay { z-index: 30; }
   .htpPanel {
     max-width: 340px;
     width: 86vw;
@@ -225,40 +225,124 @@
     opacity: 0.5;
     margin-top: 2px;
   }
-  #hudTop, #hudBottom {
+  .shopRow {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    text-align: left;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(111,242,255,0.15);
+  }
+  .shopRow:last-child { border-bottom: none; }
+  .shopInfo { flex: 1; min-width: 0; }
+  .shopLabel {
+    display: block;
+    font-size: 13px;
+    letter-spacing: 1px;
+    color: #ffb347;
+    margin-bottom: 2px;
+    text-shadow: 0 0 8px rgba(255,179,71,0.5);
+  }
+  .shopDesc { font-size: 11px; opacity: 0.75; line-height: 1.4; }
+  .shopMeta { font-size: 10px; opacity: 0.5; margin-top: 3px; }
+  .shopBuyBtn {
+    flex-shrink: 0;
+    padding: 9px 16px;
+    font-size: 11px;
+    letter-spacing: 1px;
+    background: transparent;
+    border: 2px solid rgba(255,179,71,0.5);
+    color: #ffb347;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .shopBuyBtn:active:not(:disabled) { background: rgba(255,179,71,0.2); }
+  .shopBuyBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+    border-color: rgba(255,255,255,0.2);
+    color: rgba(255,255,255,0.4);
+  }
+  #hudTop {
     display: flex;
     width: 100%;
     justify-content: space-between;
+    align-items: center;
+  }
+  #scoreDisplay {
+    font-size: 15px;
+    letter-spacing: 2px;
+  }
+  #livesDisplay {
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: #6ff2ff;
+    text-shadow: 0 0 8px rgba(111,242,255,0.7);
+  }
+  #hudBottom {
+    display: flex;
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 6px;
+  }
+  #hudBottom span:not(:empty) {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 9px;
+    border-radius: 9px;
+    background: rgba(4,6,10,0.55);
+    border: 1px solid currentColor;
+    font-size: 11px;
+    letter-spacing: 0.5px;
   }
   #shieldDisplay {
     color: #6fffb0;
-    text-shadow: 0 0 8px rgba(111,255,176,0.7);
-    font-size: 14px;
-    opacity: 0.9;
   }
   #rangeDisplay {
     color: #ffd76f;
-    text-shadow: 0 0 8px rgba(255,215,111,0.7);
-    font-size: 14px;
-    opacity: 0.9;
   }
   #spreadDisplay {
     color: #c9a4ff;
-    text-shadow: 0 0 8px rgba(201,164,255,0.7);
-    font-size: 14px;
-    opacity: 0.9;
   }
   #rayGunDisplay {
     color: #f5ff4d;
-    text-shadow: 0 0 8px rgba(245,255,77,0.7);
-    font-size: 14px;
-    opacity: 0.9;
   }
-  #weaponDisplay {
+  #weaponStatus {
+    position: absolute;
+    top: 48px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: min(240px, 46vw);
+    text-align: center;
+    pointer-events: none;
+    z-index: 6;
+  }
+  #weaponStatusText {
+    min-height: 16px;
+    font-size: 12px;
+    letter-spacing: 2px;
     color: #ff9a6f;
     text-shadow: 0 0 8px rgba(255,154,111,0.7);
-    font-size: 14px;
-    opacity: 0.9;
+  }
+  #weaponTimerTrack {
+    height: 3px;
+    margin-top: 4px;
+    border: 1px solid rgba(255,255,255,0.12);
+    background: rgba(255,255,255,0.04);
+    overflow: hidden;
+    opacity: 0;
+    transition: opacity .15s ease;
+  }
+  #weaponTimerTrack.active { opacity: 1; }
+  #weaponTimerFill {
+    height: 100%;
+    width: 0%;
+    background: currentColor;
+    box-shadow: 0 0 8px currentColor;
   }
   #levelBanner {
     position: absolute;
@@ -332,6 +416,12 @@
     border: 1px solid rgba(111,255,176,0.5);
     background: rgba(111,255,176,0.08);
     text-shadow: 0 0 10px rgba(111,255,176,0.7);
+  }
+  .salvageCallout {
+    color: #ffb347;
+    border: 1px solid rgba(255,179,71,0.5);
+    background: rgba(255,179,71,0.08);
+    text-shadow: 0 0 10px rgba(255,179,71,0.7);
   }
   .gameOverBest {
     font-size: 11px !important;
@@ -440,12 +530,45 @@
     text-align: center;
     line-height: 1.4;
   }
+  .shipStatsLabel {
+    width: 190px;
+    font-size: 9px;
+    line-height: 1.55;
+    letter-spacing: 1px;
+    text-align: left;
+    opacity: 0.72;
+    white-space: pre;
+    margin-top: 6px;
+  }
   .menuActions {
     display: flex;
     flex-direction: column;
     align-items: stretch;
     gap: 14px;
     flex-shrink: 0;
+  }
+  .menuIconRow {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+  }
+  .menuIconBtn {
+    width: 42px; height: 42px;
+    border-radius: 50%;
+    border: 2px solid rgba(111,242,255,0.4);
+    background: rgba(111,242,255,0.06);
+    color: #6ff2ff;
+    font-size: 17px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-family: inherit;
+    flex-shrink: 0;
+  }
+  .menuIconBtn:active {
+    background: rgba(111,242,255,0.25);
+    border-color: rgba(111,242,255,0.8);
   }
   #startBtn:disabled, .lockedBtn {
     opacity: 0.35;
@@ -512,15 +635,18 @@
     .menuLayout { padding: 0 16px 0 3vw; gap: 2vw; }
     #startBtn, #restartBtn { padding: 8px 22px; font-size: 13px; width: 150px; }
     .secondaryBtn { padding: 7px 18px; font-size: 11px; }
+    .menuIconBtn { width: 34px; height: 34px; font-size: 14px; }
+    .menuIconRow { gap: 8px; }
     #shipPreviewCanvas { width: 56px; height: 56px; }
     .shipArrowBtn { width: 24px; height: 24px; font-size: 11px; }
     .shipDescLabel { max-width: 150px; font-size: 9px; }
+    .shipStatsLabel { width: 150px; font-size: 8px; }
     .menuVolume input.volumeSlider, .menuVolume input.musicVolumeSlider { width: 70px; }
     .menuVolume .volLabel { font-size: 10px; }
     .musicToggleBtn { width: 22px; height: 22px; font-size: 10px; }
   }
   .hidden { display: none !important; }
-  body.in-menu #hud, body.in-menu #muteBtn, body.in-menu #pauseBtn, body.in-menu #controls, body.in-menu #levelIndicator {
+  body.in-menu #hud, body.in-menu #muteBtn, body.in-menu #pauseBtn, body.in-menu #controls, body.in-menu #levelIndicator, body.in-menu #weaponStatus {
     display: none !important;
   }
   #levelIndicator {
@@ -630,8 +756,11 @@
       <span id="rangeDisplay"></span>
       <span id="spreadDisplay"></span>
       <span id="rayGunDisplay"></span>
-      <span id="weaponDisplay"></span>
     </div>
+  </div>
+  <div id="weaponStatus">
+    <div id="weaponStatusText"></div>
+    <div id="weaponTimerTrack"><div id="weaponTimerFill"></div></div>
   </div>
   <div id="levelIndicator">LEVEL 1</div>
 
@@ -655,7 +784,7 @@
       <div class="menuTitleBlock">
         <h1 class="menuTitle">ASTEROIDS</h1>
         <div class="menuSubtitle">SURVIVE THE FIELD</div>
-        <div class="menuStats" id="menuStats">BEST SCORE 0   ·   TOP LEVEL 0</div>
+        <div class="menuStats" id="menuStats">BEST SCORE 0   ·   TOP LEVEL 0   ·   ⚙ 0</div>
       </div>
       <div class="shipPreview">
         <div class="shipPreviewRow">
@@ -665,11 +794,15 @@
         </div>
         <div class="shipNameLabel" id="shipNameLabel">INTERCEPTOR</div>
         <div class="shipDescLabel" id="shipDescLabel">Balanced all-rounder. No surprises.</div>
+        <div class="shipStatsLabel" id="shipStatsLabel"></div>
       </div>
       <div class="menuActions">
         <button id="startBtn">START</button>
-        <button id="howToPlayBtn" class="secondaryBtn">HOW TO PLAY</button>
-        <button id="achievementsBtn" class="secondaryBtn">ACHIEVEMENTS</button>
+        <div class="menuIconRow">
+          <button id="howToPlayBtn" class="menuIconBtn" type="button" title="How To Play">📖</button>
+          <button id="achievementsBtn" class="menuIconBtn" type="button" title="Achievements">🏆</button>
+          <button id="shopBtn" class="menuIconBtn" type="button" title="Shop">⚙</button>
+        </div>
       </div>
     </div>
     <div class="menuVolume">
@@ -754,6 +887,15 @@
     </div>
   </div>
 
+  <div id="shopOverlay" class="hidden">
+    <div class="htpPanel">
+      <h2>SHOP</h2>
+      <p class="htpIntro" id="shopBalance">⚙ SALVAGE: 0</p>
+      <div id="shopList"></div>
+      <button id="shopBackBtn" class="secondaryBtn">BACK</button>
+    </div>
+  </div>
+
   <div id="pauseOverlay" class="hidden">
     <h1>PAUSED</h1>
     <div class="volumeRow">
@@ -781,6 +923,7 @@
   const mainMenuHTML = overlay.innerHTML; // pristine copy, restored on "quit to menu"
   const howToPlayOverlay = document.getElementById('howToPlayOverlay');
   const achievementsOverlay = document.getElementById('achievementsOverlay');
+  const shopOverlay = document.getElementById('shopOverlay');
   const pauseOverlay = document.getElementById('pauseOverlay');
   const scoreDisplay = document.getElementById('scoreDisplay');
   const livesDisplay = document.getElementById('livesDisplay');
@@ -788,7 +931,9 @@
   const rangeDisplay = document.getElementById('rangeDisplay');
   const spreadDisplay = document.getElementById('spreadDisplay');
   const rayGunDisplay = document.getElementById('rayGunDisplay');
-  const weaponDisplay = document.getElementById('weaponDisplay');
+  const weaponStatusText = document.getElementById('weaponStatusText');
+  const weaponTimerTrack = document.getElementById('weaponTimerTrack');
+  const weaponTimerFill = document.getElementById('weaponTimerFill');
   const levelIndicator = document.getElementById('levelIndicator');
   const levelBanner = document.getElementById('levelBanner');
 
@@ -949,6 +1094,11 @@
       },
       uiTick() {
         tone(500, 0.06, 'triangle', 0.12, 650);
+      },
+      purchase() {
+        // Bright two-note ascending chime — a little more ceremony than a plain uiTick
+        tone(520, 0.09, 'triangle', 0.16, 780);
+        setTimeout(() => tone(780, 0.14, 'triangle', 0.18, 1040), 70);
       },
       rayZap() {
         tone(1300, 0.05, 'square', 0.1, 250);
@@ -1136,6 +1286,7 @@
   let ufos, ufoBullets, ufoSpawnTimer;
   let keys = {};
   let invulnTimer = 0;
+  let hitStopFrames = 0; // brief total freeze on big kills, right before the shake — the "punch" beat
 
   // ---------- Juice: screen shake + hit flash ----------
   let shakeMagnitude = 0, shakeTime = 0, hitFlashAlpha = 0, hitConfirmFlash = 0;
@@ -1369,17 +1520,57 @@
           if (typeof parsed.totalAsteroidsDestroyed !== 'number') parsed.totalAsteroidsDestroyed = 0;
           if (typeof parsed.totalUfosDestroyed !== 'number') parsed.totalUfosDestroyed = 0;
           if (!parsed.achievements || typeof parsed.achievements !== 'object') parsed.achievements = {};
+          if (typeof parsed.salvage !== 'number') parsed.salvage = 0;
+          if (!parsed.shopLevels || typeof parsed.shopLevels !== 'object') parsed.shopLevels = {};
           return parsed;
         }
       }
     } catch (e) { /* localStorage unavailable — fall back to defaults */ }
-    return { highScore: 0, bestLevel: 0, unlockedShips: [0], totalAsteroidsDestroyed: 0, totalUfosDestroyed: 0, achievements: {} };
+    return { highScore: 0, bestLevel: 0, unlockedShips: [0], totalAsteroidsDestroyed: 0, totalUfosDestroyed: 0, achievements: {}, salvage: 0, shopLevels: {} };
   }
   function persistSave() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(saveData)); } catch (e) { /* ignore */ }
   }
   let saveData = loadSave();
+  function shopLevel(id) { return saveData.shopLevels[id] || 0; }
   function isUnlocked(idx) { return saveData.unlockedShips.indexOf(idx) !== -1; }
+
+  // ---------- Shop: permanent, account-wide upgrades bought with Salvage ----------
+  // Deliberately kept small for this first pass — groundwork for the roguelite build-choice
+  // system later, not the final economy. Each entry has a per-level cost table and a short
+  // description generator so the UI can show "what you'd get" before buying.
+  const SHOP_UPGRADES = {
+    extraLife: {
+      name: 'Reinforced Hull',
+      maxLevel: 2,
+      costs: [90, 220],
+      desc: (lvl) => `+${lvl} starting life`
+    },
+    extraShield: {
+      name: 'Shield Capacitor',
+      maxLevel: 2,
+      costs: [80, 190],
+      desc: (lvl) => `+${lvl} starting shield charge`
+    },
+    rayGunSpeed: {
+      name: 'Ray Gun Overclock',
+      maxLevel: 3,
+      costs: [70, 150, 260],
+      desc: (lvl) => `Ray Gun fires ${lvl * 8}% faster`
+    },
+    luckyFind: {
+      name: 'Salvage Sense',
+      maxLevel: 3,
+      costs: [70, 150, 260],
+      desc: (lvl) => `+${lvl * 2}% powerup drop chance`
+    },
+    quickTrigger: {
+      name: 'Quick Trigger',
+      maxLevel: 3,
+      costs: [70, 150, 260],
+      desc: (lvl) => `-${lvl * 15}ms base fire cooldown`
+    }
+  };
 
   function checkLevelUnlocks(levelReached) {
     const newlyUnlocked = [];
@@ -1506,6 +1697,7 @@
     shakeTime = 0;
     hitFlashAlpha = 0;
     hitConfirmFlash = 0;
+    hitStopFrames = 0;
     deathZoomActive = false;
     deathZoomTimer = 0;
     deathZoomTickAccum = 0;
@@ -1513,11 +1705,11 @@
     rebirthTimer = 0;
     shipRebirthPieces = [];
     score = 0;
-    lives = 3;
+    lives = 3 + shopLevel('extraLife');
     level = 1;
     gameOver = false;
     invulnTimer = 120;
-    shieldCharges = ship.skin.startShield || 0;
+    shieldCharges = (ship.skin.startShield || 0) + shopLevel('extraShield');
     rangeLevel = 0;
     spreadLevel = 0;
     rayGunLevel = 0;
@@ -1540,15 +1732,26 @@
   };
   function updateHUD() {
     scoreDisplay.textContent = 'SCORE: ' + score;
-    livesDisplay.textContent = 'LIVES: ' + Math.max(lives, 0);
+    livesDisplay.textContent = '▲'.repeat(Math.max(lives, 0)) || '—';
     levelIndicator.textContent = 'LEVEL ' + level;
-    shieldDisplay.textContent = shieldCharges > 0 ? '🛡 SHIELD x' + shieldCharges : '';
-    rangeDisplay.textContent = rangeLevel > 0 ? '⇢ RANGE x' + rangeLevel : '';
-    spreadDisplay.textContent = spreadLevel > 0 ? '⋔ SPREAD x' + spreadLevel : '';
-    rayGunDisplay.textContent = rayGunLevel > 0 ? '☇ RAY GUN x' + rayGunLevel : '';
-    weaponDisplay.textContent = weaponMode !== 'normal'
-      ? WEAPON_MODE_LABELS[weaponMode] + Math.ceil(weaponModeTimer / 60) + 's'
-      : '';
+    shieldDisplay.textContent = shieldCharges > 0 ? '🛡 x' + shieldCharges : '';
+    rangeDisplay.textContent = rangeLevel > 0 ? '⇢ x' + rangeLevel : '';
+    spreadDisplay.textContent = spreadLevel > 0 ? '⋔ x' + spreadLevel : '';
+    rayGunDisplay.textContent = rayGunLevel > 0 ? '☇ x' + rayGunLevel : '';
+    if (weaponMode !== 'normal') {
+      const total = WEAPON_MODE_DURATIONS[weaponMode] || 1;
+      const pct = Math.max(0, Math.min(1, weaponModeTimer / total));
+      const color = POWERUP_COLORS[weaponMode] || '#ff9a6f';
+      weaponStatusText.textContent = WEAPON_MODE_LABELS[weaponMode] + Math.ceil(weaponModeTimer / 60) + 's';
+      weaponStatusText.style.color = color;
+      weaponTimerTrack.style.color = color; // currentColor feeds the fill + its glow
+      weaponTimerTrack.classList.add('active');
+      weaponTimerFill.style.width = (pct * 100) + '%';
+    } else {
+      weaponStatusText.textContent = '';
+      weaponTimerTrack.classList.remove('active');
+      weaponTimerFill.style.width = '0%';
+    }
   }
 
   // ---------- Input ----------
@@ -1584,7 +1787,8 @@
 
   function fireBullet() {
     if (gameOver || !running || paused) return;
-    const cooldown = weaponMode === 'rapidfire' ? RAPIDFIRE_COOLDOWN : 220;
+    const baseCooldown = 220 - shopLevel('quickTrigger') * 15;
+    const cooldown = weaponMode === 'rapidfire' ? RAPIDFIRE_COOLDOWN : baseCooldown;
     const now = Date.now();
     if (now - lastShot < cooldown) return;
     lastShot = now;
@@ -1615,7 +1819,22 @@
         life: coneLife,
         r: isOvercharge ? 4 : isPiercing ? 3 : 2,
         overcharged: isOvercharge,
-        pierce: isPiercing ? PIERCE_HITS : 0
+        pierce: isPiercing ? PIERCE_HITS : 0,
+        trail: true
+      });
+    }
+
+    // Muzzle flash — tiny burst right at the nozzle on every trigger pull, so firing itself
+    // reads clearly even before a shot connects with anything.
+    const muzzleX = ship.x + Math.cos(ship.angle) * ship.r * 1.15;
+    const muzzleY = ship.y + Math.sin(ship.angle) * ship.r * 1.15;
+    for (let m = 0; m < (isOvercharge ? 6 : 3); m++) {
+      particles.push({
+        x: muzzleX, y: muzzleY,
+        vx: Math.cos(ship.angle + rand(-0.35, 0.35)) * rand(0.6, 2.2),
+        vy: Math.sin(ship.angle + rand(-0.35, 0.35)) * rand(0.6, 2.2),
+        life: rand(5, 10), maxLife: 10, size: rand(1, 2.2),
+        color: isOvercharge ? '#ff7a4d' : '#ffffff'
       });
     }
 
@@ -1728,10 +1947,10 @@
   function spawnImpactRing(x, y, color, big) {
     impactRings.push({
       x, y,
-      life: big ? 28 : 16,
-      maxLife: big ? 28 : 16,
+      life: big ? 32 : 18,
+      maxLife: big ? 32 : 18,
       color: color || '#ffffff',
-      maxRadius: big ? 115 : 32,
+      maxRadius: big ? 145 : 42,
       radius: 2, // eases toward maxRadius each frame rather than growing at a flat linear rate
       big: !!big
     });
@@ -1802,6 +2021,7 @@
       SFX.setThrust(false);
       return;
     }
+    if (hitStopFrames > 0) { hitStopFrames--; SFX.setThrust(false); return; }
 
     // Ship rotation — eased angular velocity so a quick tap gives a small precise
     // nudge, while holding ramps up to full turn speed almost immediately
@@ -1856,7 +2076,7 @@
       if (rayGunCooldown > 0) rayGunCooldown--;
       else {
         fireRayGun();
-        rayGunCooldown = RAYGUN_COOLDOWN;
+        rayGunCooldown = Math.round(RAYGUN_COOLDOWN * (1 - shopLevel('rayGunSpeed') * 0.08));
       }
     }
 
@@ -2116,6 +2336,7 @@
     updateHUD();
     spawnExplosion(a.x, a.y, powerful ? 20 : 12, powerful ? '#ff7a4d' : '#ffd76f');
     SFX.explosion(a.size, powerful);
+    if (powerful && a.size === 3) hitStopFrames = Math.max(hitStopFrames, 2);
     asteroids.splice(index, 1);
     if (!powerful && a.size > 1) {
       const newSize = a.size - 1;
@@ -2127,7 +2348,8 @@
 
     // Powerup drop: one low-probability roll decides IF anything drops, then a
     // weighted pick decides WHAT — much easier to keep genuinely rare this way.
-    if (Math.random() < POWERUP_DROP_CHANCE) {
+    const effectiveDropChance = POWERUP_DROP_CHANCE + shopLevel('luckyFind') * 0.02;
+    if (Math.random() < effectiveDropChance) {
       spawnPowerup(a.x, a.y, pickWeightedPowerupType());
     }
   }
@@ -2608,23 +2830,27 @@
 
   function drawBullets() {
     for (const b of bullets) {
-      if (b.overcharged) {
-        ctx.fillStyle = '#ff7a4d';
-        ctx.shadowColor = '#ff7a4d';
-        ctx.shadowBlur = 10;
-      } else if (b.pierce) {
-        ctx.fillStyle = '#4dc9ff';
-        ctx.shadowColor = '#4dc9ff';
-        ctx.shadowBlur = 9;
-      } else {
-        ctx.fillStyle = '#fff';
-        ctx.shadowColor = '#fff';
-        ctx.shadowBlur = 6;
+      const color = b.overcharged ? '#ff7a4d' : b.pierce ? '#4dc9ff' : '#fff';
+      ctx.fillStyle = color;
+      ctx.strokeStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = b.overcharged ? 10 : b.pierce ? 9 : 6;
+      if (b.trail) {
+        const len = b.overcharged ? 13 : 8;
+        const mag = Math.hypot(b.vx, b.vy) || 1;
+        ctx.globalAlpha = 0.42;
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(b.x, b.y);
+        ctx.lineTo(b.x - (b.vx / mag) * len, b.y - (b.vy / mag) * len);
+        ctx.stroke();
+        ctx.globalAlpha = 1;
       }
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.shadowBlur = 0;
   }
 
   function drawUfoBullets() {
@@ -2863,6 +3089,13 @@
       ctx.fillStyle = `rgba(255,255,255,${hitConfirmFlash})`;
       ctx.fillRect(0, 0, W, H);
     }
+    if (weaponMode === 'overcharge' && !gameOver) {
+      // Slow breathing red border — constant reminder you're in the powerful, punchy mode
+      const pulse = 0.12 + Math.sin(Date.now() / 90) * 0.035;
+      ctx.strokeStyle = `rgba(255,75,55,${pulse})`;
+      ctx.lineWidth = 5;
+      ctx.strokeRect(2, 2, W - 4, H - 4);
+    }
   }
 
   // ---------- Ambient menu background (runs whenever the game isn't active) ----------
@@ -2961,12 +3194,27 @@
     return 'Locked.';
   }
 
+  // Renders a 5-segment bar like ▰▰▰▱▱ — quick visual stat comparison between ships,
+  // clearer at a glance than the text description alone. invert flips high-value-is-worse
+  // stats (hitbox size) so a full bar always reads as "good" regardless of which stat it is.
+  function statBar(value, max, invert = false) {
+    let n = Math.max(1, Math.min(5, Math.round((value / max) * 5)));
+    if (invert) n = 6 - n;
+    return '▰'.repeat(n) + '▱'.repeat(5 - n);
+  }
+
   function refreshShipPreviewUI() {
     const skin = SHIP_SKINS[selectedSkinIndex];
     const unlocked = isUnlocked(selectedSkinIndex);
     if (shipNameLabelEl) shipNameLabelEl.textContent = unlocked ? skin.name : 'LOCKED';
     if (shipDescLabelEl) {
       shipDescLabelEl.textContent = unlocked ? skin.desc : lockedShipDescription(skin);
+    }
+    const statsEl2 = overlay.querySelector('#shipStatsLabel');
+    if (statsEl2) {
+      statsEl2.textContent = unlocked
+        ? `SPEED ${statBar(skin.thrustMult, 1.25)}\nTURN  ${statBar(skin.turnMult, 1.2)}\nSIZE  ${statBar(skin.hitFactor, 1.3, true)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`
+        : 'SPEED ?????\nTURN  ?????\nSIZE  ?????\nARMOR ?????';
     }
     const startBtn = overlay.querySelector('#startBtn');
     if (startBtn) {
@@ -2994,6 +3242,8 @@
     saveData.highScore = Math.max(saveData.highScore, score);
     saveData.bestLevel = Math.max(saveData.bestLevel, level);
     const newlyUnlocked = checkLevelUnlocks(level).concat(checkAchievementUnlocks());
+    const salvageEarned = Math.floor(score / 35);
+    saveData.salvage += salvageEarned;
     persistSave();
 
     let extraHTML = '';
@@ -3009,7 +3259,8 @@
       <h1>GAME OVER</h1>
       <p>Final Score: ${score}<br>Level Reached: ${level}</p>
       ${extraHTML}
-      <p class="gameOverBest">Best: ${saveData.highScore} pts · Top Level ${saveData.bestLevel}</p>
+      <div class="gameOverCallout salvageCallout">⚙ +${salvageEarned} SALVAGE</div>
+      <p class="gameOverBest">Best: ${saveData.highScore} pts · Top Level ${saveData.bestLevel} · Salvage: ${saveData.salvage}</p>
       <button id="restartBtn">PLAY AGAIN</button>
       <button id="gameOverMenuBtn" class="secondaryBtn">MAIN MENU</button>
     `;
@@ -3131,11 +3382,13 @@
     const startBtn = overlay.querySelector('#startBtn');
     const howToPlayBtn = overlay.querySelector('#howToPlayBtn');
     const achievementsBtn = overlay.querySelector('#achievementsBtn');
+    const shopBtn = overlay.querySelector('#shopBtn');
     const volSlider = overlay.querySelector('.volumeSlider');
     const musicVolSlider = overlay.querySelector('.musicVolumeSlider');
     if (startBtn) startBtn.addEventListener('click', () => { SFX.uiTick(); startGame(); });
     if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
     if (achievementsBtn) achievementsBtn.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
+    if (shopBtn) shopBtn.addEventListener('click', () => { SFX.uiTick(); renderShop(); shopOverlay.classList.remove('hidden'); });
     if (volSlider) bindVolumeSlider(volSlider);
     if (musicVolSlider) bindMusicVolumeSlider(musicVolSlider);
 
@@ -3163,7 +3416,7 @@
     refreshShipPreviewUI();
 
     const statsEl = overlay.querySelector('#menuStats');
-    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}`;
+    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}   ·   ⚙ ${saveData.salvage}`;
   }
   bindMainMenuUI();
 
@@ -3199,6 +3452,48 @@
     }).join('');
   }
 
+  function renderShop() {
+    const balanceEl = document.getElementById('shopBalance');
+    if (balanceEl) balanceEl.textContent = `⚙ SALVAGE: ${saveData.salvage}`;
+    const listEl = document.getElementById('shopList');
+    if (!listEl) return;
+    listEl.innerHTML = Object.keys(SHOP_UPGRADES).map((id) => {
+      const upg = SHOP_UPGRADES[id];
+      const lvl = shopLevel(id);
+      const maxed = lvl >= upg.maxLevel;
+      const cost = maxed ? null : upg.costs[lvl];
+      const canAfford = !maxed && saveData.salvage >= cost;
+      return `
+        <div class="shopRow">
+          <div class="shopInfo">
+            <span class="shopLabel">${upg.name}</span>
+            <div class="shopDesc">${upg.desc(lvl + (maxed ? 0 : 1))}</div>
+            <div class="shopMeta">LEVEL ${lvl}/${upg.maxLevel}${maxed ? ' — MAXED' : ` · COST ${cost}`}</div>
+          </div>
+          <button class="shopBuyBtn" data-id="${id}" ${maxed || !canAfford ? 'disabled' : ''}>${maxed ? 'MAX' : 'BUY'}</button>
+        </div>
+      `;
+    }).join('');
+    listEl.querySelectorAll('.shopBuyBtn').forEach((btn) => {
+      btn.addEventListener('click', () => buyShopUpgrade(btn.dataset.id));
+    });
+  }
+
+  function buyShopUpgrade(id) {
+    const upg = SHOP_UPGRADES[id];
+    const lvl = shopLevel(id);
+    if (lvl >= upg.maxLevel) return;
+    const cost = upg.costs[lvl];
+    if (saveData.salvage < cost) return;
+    saveData.salvage -= cost;
+    saveData.shopLevels[id] = lvl + 1;
+    persistSave();
+    SFX.purchase();
+    renderShop();
+    const statsEl = overlay.querySelector('#menuStats');
+    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}   ·   ⚙ ${saveData.salvage}`;
+  }
+
   const rotateOverlay = document.getElementById('rotateOverlay');
   const rotateDismissBtn = document.getElementById('rotateDismissBtn');
   rotateDismissBtn.addEventListener('click', () => { SFX.uiTick(); rotateOverlay.classList.add('dismissed'); });
@@ -3224,6 +3519,7 @@
   const howToPlayBtnPause = document.getElementById('howToPlayBtnPause');
   const achievementsBtnPause = document.getElementById('achievementsBtnPause');
   const achBackBtn = document.getElementById('achBackBtn');
+  const shopBackBtn = document.getElementById('shopBackBtn');
   let paused = false;
 
   function setPaused(val) {
@@ -3263,6 +3559,7 @@
   });
   window.addEventListener('blur', () => setPaused(true));
   achBackBtn.addEventListener('click', () => { SFX.uiTick(); achievementsOverlay.classList.add('hidden'); });
+  shopBackBtn.addEventListener('click', () => { SFX.uiTick(); shopOverlay.classList.add('hidden'); });
 
   quitBtn.addEventListener('click', () => { SFX.uiTick(); returnToMainMenu(); });
 
