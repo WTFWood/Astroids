@@ -26,6 +26,7 @@
   canvas {
     display: block;
     background: #05050a;
+    cursor: crosshair;
   }
   #hud {
     position: absolute;
@@ -825,7 +826,7 @@
       <h2>HOW TO PLAY</h2>
       <div class="htpSection">
         <h3>Controls</h3>
-        <p>Rotate: ◀ ▶ or A/D. Thrust: ▲ or W. Fire: SPACE or the FIRE button. Your ship wraps around the screen edges.</p>
+        <p>Keyboard: Rotate with ◀ ▶ or A/D. Thrust: ▲ or W. Fire: SPACE.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Right-click to thrust, left-click to fire.<br>Touch: Use the on-screen buttons. Your ship wraps around the screen edges.</p>
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
@@ -938,12 +939,30 @@
   const levelBanner = document.getElementById('levelBanner');
 
   let W, H;
+
+  // On a compact mobile screen the visible canvas already IS a tight arena. On a big
+  // desktop monitor (or tablet), the same asteroid count spread across a much larger
+  // canvas means most of the level is spent flying to the next rock instead of fighting
+  // it — more asteroids doesn't fix that, it just adds MORE distance to cover on top of
+  // it. The actual fix: cap how big the play field itself gets, centered in the canvas,
+  // regardless of how big the window/monitor is. Mobile never hits this cap at all.
+  const MAX_PLAY_W = 980;
+  const MAX_PLAY_H = 560;
+  let PLAY_X = 0, PLAY_Y = 0, PLAY_W = 0, PLAY_H = 0;
+  function updatePlayArea() {
+    PLAY_W = Math.min(W, MAX_PLAY_W);
+    PLAY_H = Math.min(H, MAX_PLAY_H);
+    PLAY_X = (W - PLAY_W) / 2;
+    PLAY_Y = (H - PLAY_H) / 2;
+  }
+
   function resize() {
     // visualViewport tracks Safari's address bar shrinking/growing much more reliably
     // than window.innerWidth/innerHeight, which can lag or misreport during the transition.
     const vv = window.visualViewport;
     W = canvas.width = vv ? Math.round(vv.width) : window.innerWidth;
     H = canvas.height = vv ? Math.round(vv.height) : window.innerHeight;
+    updatePlayArea();
   }
   window.addEventListener('resize', resize);
   if (window.visualViewport) {
@@ -965,10 +984,10 @@
   function rand(min, max) { return Math.random() * (max - min) + min; }
   function dist(x1, y1, x2, y2) { return Math.hypot(x1 - x2, y1 - y2); }
   function wrap(obj) {
-    if (obj.x < -obj.r) obj.x = W + obj.r;
-    if (obj.x > W + obj.r) obj.x = -obj.r;
-    if (obj.y < -obj.r) obj.y = H + obj.r;
-    if (obj.y > H + obj.r) obj.y = -obj.r;
+    if (obj.x < PLAY_X - obj.r) obj.x = PLAY_X + PLAY_W + obj.r;
+    if (obj.x > PLAY_X + PLAY_W + obj.r) obj.x = PLAY_X - obj.r;
+    if (obj.y < PLAY_Y - obj.r) obj.y = PLAY_Y + PLAY_H + obj.r;
+    if (obj.y > PLAY_Y + PLAY_H + obj.r) obj.y = PLAY_Y - obj.r;
   }
 
   // ---------- Audio ----------
@@ -1285,6 +1304,12 @@
   let ship, bullets, asteroids, particles, powerups, floatingTexts, rayBeams, shipDebris, impactRings, score, lives, level, gameOver, running;
   let ufos, ufoBullets, ufoSpawnTimer;
   let keys = {};
+  // Mouse state — used for PC mouse controls (aim, right-click thrust, left-click fire).
+  // mouseActive flips true the first time the mouse moves over the canvas during a run,
+  // so touch players on landscape tablets aren't affected at all.
+  let mousePos = { x: 0, y: 0 };
+  let mouseActive = false;   // has the mouse moved since this run started?
+  let mouseThrust = false;   // right button held
   let invulnTimer = 0;
   let hitStopFrames = 0; // brief total freeze on big kills, right before the shake — the "punch" beat
 
@@ -1655,8 +1680,8 @@
     for (let i = 0; i < count; i++) {
       let x, y;
       do {
-        x = rand(0, W);
-        y = rand(0, H);
+        x = rand(PLAY_X, PLAY_X + PLAY_W);
+        y = rand(PLAY_Y, PLAY_Y + PLAY_H);
       } while (dist(x, y, ship.x, ship.y) < 150);
       asteroids.push(spawnAsteroid(x, y, 3));
     }
@@ -1721,6 +1746,8 @@
     rayChain5Flag = false;
     destroyedBroodIds = new Set();
     podBroodFlag = false;
+    mouseActive = false;
+    mouseThrust = false;
     spawnWave();
     updateHUD();
   }
@@ -1781,6 +1808,32 @@
   bindHold(btnThrust, () => ship.thrusting = true, () => ship.thrusting = false);
   fireBtn.addEventListener('touchstart', (e) => { e.preventDefault(); fireBullet(); }, {passive:false});
   fireBtn.addEventListener('mousedown', (e) => { e.preventDefault(); fireBullet(); });
+
+  // ---------- Mouse controls (PC) ----------
+  // Mouse movement activates aim-toward-cursor mode. Right-click = thrust, left-click = fire.
+  // Context menu is suppressed on the canvas so right-click doesn't pop a browser menu mid-game.
+  canvas.addEventListener('contextmenu', (e) => e.preventDefault());
+
+  canvas.addEventListener('mousemove', (e) => {
+    const rect = canvas.getBoundingClientRect();
+    mousePos.x = e.clientX - rect.left;
+    mousePos.y = e.clientY - rect.top;
+    mouseActive = true;
+  });
+
+  canvas.addEventListener('mousedown', (e) => {
+    if (!running || gameOver || paused) return;
+    e.preventDefault();
+    if (e.button === 0) fireBullet();       // left-click fires
+    if (e.button === 2) mouseThrust = true; // right-click thrusts
+  });
+
+  canvas.addEventListener('mouseup', (e) => {
+    if (e.button === 2) mouseThrust = false;
+  });
+
+  // If the cursor leaves the canvas, release thrust so the ship doesn't fly off uncontrolled.
+  canvas.addEventListener('mouseleave', () => { mouseThrust = false; });
 
   let lastShot = 0;
   const SHOTGUN_BLAST_LIFE = 20; // fixed short range for the Spread+Overcharge combo — ignores Range stacks
@@ -2023,23 +2076,40 @@
     }
     if (hitStopFrames > 0) { hitStopFrames--; SFX.setThrust(false); return; }
 
-    // Ship rotation — eased angular velocity so a quick tap gives a small precise
-    // nudge, while holding ramps up to full turn speed almost immediately
-    let turnInput = 0;
-    if (keys['arrowleft'] || keys['a'] || ship.turningLeft) turnInput -= 1;
-    if (keys['arrowright'] || keys['d'] || ship.turningRight) turnInput += 1;
-    if (turnInput !== 0) {
-      ship.angularVelocity += turnInput * ship.angularAccel;
-      if (ship.angularVelocity > ship.maxAngular) ship.angularVelocity = ship.maxAngular;
-      if (ship.angularVelocity < -ship.maxAngular) ship.angularVelocity = -ship.maxAngular;
+    // Ship rotation — two modes:
+    // • Mouse active: snap toward cursor with an eased angular velocity so it still
+    //   feels physical (no instant teleport snap) rather than a hard set.
+    // • Keyboard/touch: original eased left/right input.
+    if (mouseActive) {
+      const targetAngle = Math.atan2(mousePos.y - ship.y, mousePos.x - ship.x);
+      // Shortest angular delta in [-π, π]
+      let delta = targetAngle - ship.angle;
+      while (delta > Math.PI) delta -= Math.PI * 2;
+      while (delta < -Math.PI) delta += Math.PI * 2;
+      // Drive angular velocity toward the delta — faster the further we are from target,
+      // but capped at the ship's maxAngular so it still has the same feel/character.
+      const turnStrength = 0.18; // how aggressively it chases the cursor
+      ship.angularVelocity += delta * turnStrength;
+      ship.angularVelocity = Math.max(-ship.maxAngular * 3, Math.min(ship.maxAngular * 3, ship.angularVelocity));
+      ship.angularVelocity *= 0.75; // dampen so it settles instead of oscillating
     } else {
-      ship.angularVelocity *= ship.angularDamping;
-      if (Math.abs(ship.angularVelocity) < 0.001) ship.angularVelocity = 0;
+      // Original keyboard/touch rotation
+      let turnInput = 0;
+      if (keys['arrowleft'] || keys['a'] || ship.turningLeft) turnInput -= 1;
+      if (keys['arrowright'] || keys['d'] || ship.turningRight) turnInput += 1;
+      if (turnInput !== 0) {
+        ship.angularVelocity += turnInput * ship.angularAccel;
+        if (ship.angularVelocity > ship.maxAngular) ship.angularVelocity = ship.maxAngular;
+        if (ship.angularVelocity < -ship.maxAngular) ship.angularVelocity = -ship.maxAngular;
+      } else {
+        ship.angularVelocity *= ship.angularDamping;
+        if (Math.abs(ship.angularVelocity) < 0.001) ship.angularVelocity = 0;
+      }
     }
     ship.angle += ship.angularVelocity;
 
-    // Thrust
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting;
+    // Thrust — keyboard/touch OR right-click mouse
+    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || mouseThrust;
     if (thrusting) {
       ship.vx += Math.cos(ship.angle) * ship.thrustPower;
       ship.vy += Math.sin(ship.angle) * ship.thrustPower;
@@ -2421,8 +2491,8 @@
   function spawnUFOFromEdge() {
     const r = 26;
     const fromLeft = Math.random() < 0.5;
-    const x = fromLeft ? -r : W + r;
-    const y = rand(H * 0.15, H * 0.85);
+    const x = fromLeft ? PLAY_X - r : PLAY_X + PLAY_W + r;
+    const y = rand(PLAY_Y + PLAY_H * 0.15, PLAY_Y + PLAY_H * 0.85);
     const vx = (fromLeft ? 1 : -1) * rand(0.7, 1.1);
     const vy = rand(-0.25, 0.25);
     ufos.push({
@@ -2978,6 +3048,19 @@
     ctx.fillRect(0, 0, W, H);
   }
 
+  // Only draws on screens big enough that the play field is actually capped smaller than
+  // the canvas (desktop monitors, large tablets) — on mobile PLAY_W/H equal the canvas
+  // exactly, so this is a no-op there. Marks the arena as intentional, not an invisible wall.
+  function drawPlayBoundary() {
+    if (PLAY_W >= W && PLAY_H >= H) return;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(111,242,255,0.14)';
+    ctx.setLineDash([6, 10]);
+    ctx.lineWidth = 1;
+    ctx.strokeRect(PLAY_X, PLAY_Y, PLAY_W, PLAY_H);
+    ctx.restore();
+  }
+
   function drawStars() {
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     const t = Date.now() / 1000;
@@ -3062,6 +3145,7 @@
       ctx.translate(-W / 2, -H / 2);
     }
     drawVignette();
+    drawPlayBoundary();
     drawStars();
     drawParticles();
     drawPowerups();
