@@ -124,6 +124,60 @@
     z-index: 25;
   }
   #howToPlayOverlay, #achievementsOverlay, #shopOverlay, #settingsOverlay { z-index: 30; }
+
+  /* Pause screen doubles as a run-build reference. Kept modular so it reflows on phones. */
+  .pausePanel {
+    width: min(760px, 92vw);
+    max-height: 88vh;
+    overflow-y: auto;
+    padding: 20px;
+    border: 1px solid rgba(111,242,255,.42);
+    border-radius: 12px;
+    background: linear-gradient(160deg, rgba(4,14,28,.94), rgba(8,5,24,.94));
+    box-shadow: inset 0 0 28px rgba(55,180,255,.06);
+    text-align: left;
+  }
+  .pauseHeader { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:14px; }
+  .pauseHeader h1 { margin:0; letter-spacing:5px; font-size:28px; }
+  .pauseRunMeta { font-size:10px; letter-spacing:2px; opacity:.6; text-align:right; }
+  .pauseLoadoutGrid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+  .pauseLoadoutCard { border:1px solid rgba(111,242,255,.22); background:rgba(111,242,255,.045); padding:10px 12px; min-width:0; }
+  .pauseLoadoutCard span { display:block; font-size:9px; letter-spacing:2px; opacity:.55; margin-bottom:4px; }
+  .pauseLoadoutCard b { display:block; font-size:14px; letter-spacing:2px; color:#d9fbff; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .pauseSectionTitle { font-size:10px; letter-spacing:2px; color:#7feeff; opacity:.72; margin-bottom:8px; }
+  .pauseUpgradeSection { border-top:1px solid rgba(111,242,255,.15); border-bottom:1px solid rgba(111,242,255,.15); padding:12px 0; margin-bottom:13px; }
+  .pauseUpgradeList { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:7px; }
+  .pauseUpgradeChip { display:flex; justify-content:space-between; align-items:center; gap:8px; border:1px solid rgba(111,242,255,.18); background:rgba(4,8,18,.56); padding:7px 9px; min-width:0; font-size:10px; letter-spacing:.7px; }
+  .pauseUpgradeChip b { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; color:#d9fbff; }
+  .pauseUpgradeChip em { font-style:normal; flex-shrink:0; font-size:9px; opacity:.7; }
+  .pauseUpgradeChip.evolution { border-color:rgba(255,77,166,.45); background:rgba(255,77,166,.055); }
+  .pauseUpgradeChip.evolution b { color:#ff9bd0; }
+  .pauseNoUpgrades { grid-column:1/-1; font-size:11px; opacity:.45; padding:7px 0; }
+  .pauseAudioRow { display:flex; gap:14px; align-items:center; justify-content:space-between; }
+  .pauseAudioRow .volumeRow { width:48%; margin:0; }
+  .pauseActions { display:grid; grid-template-columns:1.25fr 1fr 1fr 1fr; gap:8px; margin-top:14px; }
+  .pauseActions button { width:100%; margin:0; min-height:42px; padding:8px 10px; font-size:11px; }
+  @media (max-width: 620px) {
+    .pausePanel { width:94vw; padding:13px; max-height:90vh; }
+    .pauseHeader h1 { font-size:20px; }
+    .pauseLoadoutGrid { grid-template-columns:1fr 1fr; }
+    .pauseUpgradeList { grid-template-columns:1fr; }
+    .pauseAudioRow { flex-direction:column; align-items:stretch; gap:8px; }
+    .pauseAudioRow .volumeRow { width:100%; }
+    .pauseActions { grid-template-columns:1fr 1fr; }
+  }
+  @media (orientation: landscape) and (max-height: 430px) {
+    .pausePanel { max-height:92vh; padding:10px 12px; }
+    .pauseHeader { margin-bottom:8px; }
+    .pauseHeader h1 { font-size:18px; }
+    .pauseLoadoutGrid { margin-bottom:8px; }
+    .pauseLoadoutCard { padding:6px 9px; }
+    .pauseUpgradeSection { padding:8px 0; margin-bottom:8px; }
+    .pauseUpgradeList { grid-template-columns:repeat(3,minmax(0,1fr)); gap:5px; }
+    .pauseUpgradeChip { padding:5px 7px; font-size:9px; }
+    .pauseAudioRow { display:none; }
+    .pauseActions { margin-top:8px; }
+  }
   .htpPanel {
     max-width: 340px;
     width: 86vw;
@@ -709,8 +763,10 @@
   }
   .upgradeChoice span { font-size:10px; line-height:1.48; color:#c8eaff; opacity:.82; }
   .upgradeChoice small { color:#6fc8ff; opacity:.78; }
-  #heatTrack { height:3px; margin-top:4px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); overflow:hidden; display:none; }
-  #heatFill { height:100%; width:0%; background:#ff4da6; box-shadow:0 0 8px #ff4da6; }
+  #heatTrack, #reloadTrack { height:3px; margin-top:4px; border:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.04); overflow:hidden; display:none; }
+  #heatFill, #reloadFill { height:100%; width:0%; background:#ff4da6; box-shadow:0 0 8px #ff4da6; }
+  #reloadTrack { height:4px; border-color:rgba(116,232,255,.20); }
+  #reloadFill { background:#74e8ff; box-shadow:0 0 9px #74e8ff; transition:width .05s linear; }
   @media (orientation: landscape) and (max-height: 420px) {
     .weaponSelect { width:170px; margin-top:5px; padding-top:5px; }
     .weaponDescLabel { display:none; }
@@ -933,8 +989,8 @@
   /* Directional virtual joystick. The direction of the knob is the direction
      the ship tries to face; distance from center controls thrust amount. */
   #moveJoystick {
-    --joy-size: 124px;
-    --knob-size: 50px;
+    --joy-size: 138px;
+    --knob-size: 56px;
     pointer-events: auto;
     position: relative;
     width: var(--joy-size);
@@ -1003,9 +1059,9 @@
     background: rgba(111,242,255,0.3);
   }
   #fireBtn {
-    width: 84px;
-    height: 84px;
-    font-size: 16px;
+    width: 94px;
+    height: 94px;
+    font-size: 17px;
     letter-spacing: 1px;
     border-color: rgba(255,111,111,0.7);
     background: rgba(255,111,111,0.08);
@@ -1223,9 +1279,9 @@
     #muteBtn, #pauseBtn { right:7px; transform:scale(.88); transform-origin:top right; }
     #pauseBtn { top:45px; }
     #controls { padding:10px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); }
-    #moveJoystick { --joy-size:clamp(96px,29vw,118px); --knob-size:clamp(40px,12vw,48px); }
+    #moveJoystick { --joy-size:clamp(108px,31vw,132px); --knob-size:clamp(44px,13vw,52px); }
     .ctrlBtn { width:clamp(48px,16vw,62px); height:clamp(48px,16vw,62px); margin:3px; font-size:20px; }
-    #fireBtn { width:clamp(62px,20vw,76px); height:clamp(62px,20vw,76px); font-size:12px; }
+    #fireBtn { width:clamp(72px,22vw,88px); height:clamp(72px,22vw,88px); font-size:13px; }
   }
 
   /* Phone landscape: keep two columns, but aggressively compact vertical content. */
@@ -1265,9 +1321,9 @@
     .buildTag { display:none; }
     .htpPanel, .settingsPanel, .upgradePanel { max-height:88vh; }
     #controls { padding:7px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
-    #moveJoystick { --joy-size:96px; --knob-size:40px; }
+    #moveJoystick { --joy-size:110px; --knob-size:44px; }
     .ctrlBtn { width:50px; height:50px; margin:2px; font-size:18px; }
-    #fireBtn { width:62px; height:62px; font-size:11px; }
+    #fireBtn { width:72px; height:72px; font-size:12px; }
   }
 
   /* Very small portrait devices if the player dismisses the landscape recommendation. */
@@ -1310,6 +1366,7 @@
     <div id="weaponStatusText"></div>
     <div id="weaponTimerTrack"><div id="weaponTimerFill"></div></div>
     <div id="heatTrack"><div id="heatFill"></div></div>
+    <div id="reloadTrack"><div id="reloadFill"></div></div>
   </div>
   <div id="bossStatus">
     <div id="bossName">BOSS</div>
@@ -1400,10 +1457,10 @@
       <div class="htpSection">
         <h3>Weapon builds</h3>
         <p>Pick a weapon build before the run. Your ship and weapon are separate choices, so any hull can pair with any build.</p>
-        <div class="powerRow"><span class="powerIcon" style="color:#74e8ff">➹</span><div><b style="color:#74e8ff">Longbow</b>Hard-hitting precision rail shot. Very long range, slow cadence, high recoil, and penetration. Missing hurts.</div></div>
-        <div class="powerRow"><span class="powerIcon" style="color:#ffd36f">⋔</span><div><b style="color:#ffd36f">Scattergun</b>Short-range cone of pellets. Devastating up close, weak at distance, and the recoil becomes part of your movement.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#74e8ff">➹</span><div><b style="color:#74e8ff">Longbow</b>Hard-hitting precision rail shot. Long range, slow cadence, high recoil, and penetration. Only the first target takes the full vaporizing hit; follow-through shots fragment targets normally.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ffd36f">⋔</span><div><b style="color:#ffd36f">Scattergun</b>Short-range cone of pellets. Multiple pellets from one tight point-blank blast can overwhelm a target; loose or distant hits mostly fragment it.</div></div>
         <div class="powerRow"><span class="powerIcon" style="color:#ff7a4d">◆</span><div><b style="color:#ff7a4d">Rocket Pod</b>Slow one-shot rocket with a heavy blast radius. Excellent against packed fields; poor when enemies are spread out.</div></div>
-        <div class="powerRow"><span class="powerIcon" style="color:#ff4da6">»</span><div><b style="color:#ff4da6">Cycler</b>High fire rate and low per-shot power. Builds heat while held down and temporarily overheats if you get greedy.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ff4da6">»</span><div><b style="color:#ff4da6">Cycler</b>High fire rate, short-to-mid range, and low per-shot power. Builds heat while held down and temporarily overheats if you get greedy.</div></div>
       </div>
       <div class="htpSection">
         <h3>Run upgrades</h3>
@@ -1411,7 +1468,7 @@
       </div>
       <div class="htpSection">
         <h3>Universal pickups</h3>
-        <p>Weapon-defining powerups are gone. Shields remain as a simple survival pickup so your build stays readable and focused.</p>
+        <p>Weapon-defining powerups are gone. Shields are deliberately scarce and only one loose shield can exist at a time. The first two shield layers each absorb two hits; a third layer is volatile, absorbs one hit, then detonates in a close-range overload burst that can vaporize nearby asteroids and enemy ships. Rare 1UP pickups add one life, up to a 5-life cap; they can drop from UFOs and are much more likely after boss kills.</p>
       </div>
       <div class="htpSection">
         <h3>Levels</h3>
@@ -1484,21 +1541,44 @@
   </div>
 
   <div id="pauseOverlay" class="hidden">
-    <h1>PAUSED</h1>
-    <div class="volumeRow">
-      <button id="musicMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle music" aria-label="Toggle music"></button>
-      <span class="volLabel">MUSIC</span>
-      <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
+    <div class="pausePanel">
+      <div class="pauseHeader">
+        <h1>PAUSED</h1>
+        <div id="pauseRunMeta" class="pauseRunMeta">RUN LOADOUT</div>
+      </div>
+      <div class="pauseLoadoutGrid">
+        <div class="pauseLoadoutCard">
+          <span>HULL</span>
+          <b id="pauseHullName">INTERCEPTOR</b>
+        </div>
+        <div class="pauseLoadoutCard weaponCard">
+          <span>WEAPON BUILD</span>
+          <b id="pauseWeaponName">LONGBOW</b>
+        </div>
+      </div>
+      <div class="pauseUpgradeSection">
+        <div class="pauseSectionTitle">RUN UPGRADES</div>
+        <div id="pauseUpgradeList" class="pauseUpgradeList"><div class="pauseNoUpgrades">No upgrades acquired yet.</div></div>
+      </div>
+      <div class="pauseAudioRow">
+        <div class="volumeRow">
+          <button id="musicMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle music" aria-label="Toggle music"></button>
+          <span class="volLabel">MUSIC</span>
+          <input type="range" class="musicVolumeSlider" min="0" max="100" value="22">
+        </div>
+        <div class="volumeRow">
+          <button id="sfxMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle sound effects" aria-label="Toggle sound effects"></button>
+          <span class="volLabel">SFX</span>
+          <input type="range" class="volumeSlider" min="0" max="100" value="35">
+        </div>
+      </div>
+      <div class="pauseActions">
+        <button id="resumeBtn">RESUME</button>
+        <button id="howToPlayBtnPause" class="secondaryBtn">HOW TO PLAY</button>
+        <button id="achievementsBtnPause" class="secondaryBtn">ACHIEVEMENTS</button>
+        <button id="quitBtn" class="secondaryBtn">QUIT TO MENU</button>
+      </div>
     </div>
-    <div class="volumeRow">
-      <button id="sfxMuteBtnPause" class="musicToggleBtn" type="button" title="Toggle sound effects" aria-label="Toggle sound effects"></button>
-      <span class="volLabel">SFX</span>
-      <input type="range" class="volumeSlider" min="0" max="100" value="35">
-    </div>
-    <button id="resumeBtn">RESUME</button>
-    <button id="howToPlayBtnPause" class="secondaryBtn">HOW TO PLAY</button>
-    <button id="achievementsBtnPause" class="secondaryBtn">ACHIEVEMENTS</button>
-    <button id="quitBtn" class="secondaryBtn">QUIT TO MENU</button>
   </div>
 </div>
 
@@ -1582,6 +1662,8 @@
   const weaponTimerFill = document.getElementById('weaponTimerFill');
   const heatTrack = document.getElementById('heatTrack');
   const heatFill = document.getElementById('heatFill');
+  const reloadTrack = document.getElementById('reloadTrack');
+  const reloadFill = document.getElementById('reloadFill');
   const bossStatus = document.getElementById('bossStatus');
   const bossName = document.getElementById('bossName');
   const bossFill = document.getElementById('bossFill');
@@ -1800,6 +1882,14 @@
       rocketBlast(){ noiseBurst(.42,.48,760); tone(82,.34,'sine',.28,28); setTimeout(()=>noiseBurst(.16,.16,1800),32); },
       overheat(){ tone(160,.35,'square',.18,70); },
       ready(){ tone(420,.10,'triangle',.12,760); },
+      reloadStart(type){
+        if(type==='sniper'){ tone(190,.07,'triangle',.07,130); setTimeout(()=>tone(260,.05,'square',.045,190),55); }
+        else if(type==='shotgun'){ noiseBurst(.045,.075,1200); tone(105,.08,'sine',.075,72); }
+      },
+      reloadDone(type){
+        if(type==='sniper'){ tone(330,.07,'triangle',.085,620); setTimeout(()=>tone(620,.08,'triangle',.075,920),48); }
+        else if(type==='shotgun'){ noiseBurst(.035,.06,1800); tone(210,.055,'triangle',.07,330); }
+      },
       mutationReady(){
         // Run-milestone cue: low impact first, then a restrained synthetic rise into the choice screen.
         noiseBurst(.12,.18,1200);
@@ -1818,11 +1908,27 @@
         noiseBurst(0.6, 0.45, 350);
         tone(180, 0.5, 'sawtooth', 0.25, 40);
       },
+      shieldHit() {
+        tone(760, 0.10, 'sine', 0.11, 430);
+        setTimeout(()=>tone(420, 0.07, 'triangle', 0.055, 310), 28);
+      },
       shieldBreak() {
         tone(500, 0.25, 'sine', 0.22, 120);
       },
+      shieldOverload() {
+        noiseBurst(0.34, 0.32, 520);
+        tone(165, 0.34, 'sawtooth', 0.20, 52);
+        setTimeout(()=>tone(920, 0.16, 'triangle', 0.12, 280), 28);
+      },
       shieldUp() {
         tone(420, 0.18, 'sine', 0.18, 700);
+      },
+      oneUp() {
+        // Bright arcade reward arpeggio, distinct from shields and upgrade UI.
+        tone(523, .12, 'square', .14, 659);
+        setTimeout(()=>tone(659, .12, 'square', .14, 784), 90);
+        setTimeout(()=>tone(784, .16, 'triangle', .16, 1047), 180);
+        setTimeout(()=>tone(1047, .20, 'triangle', .12, 1319), 285);
       },
       pickup(type) {
         const freqs = { range: 700, overcharge: 300, spread: 620, rapidfire: 900, piercing: 480 };
@@ -1873,6 +1979,13 @@
       ufoAlert() {
         tone(170, 0.16, 'sawtooth', 0.12, 120);
         setTimeout(() => tone(230, 0.12, 'square', 0.08, 170), 100);
+      },
+      ambushAlert() {
+        // Three descending danger pulses: less 'level-up', more 'contacts just surrounded you'.
+        noiseBurst(.09,.10,1200);
+        tone(210,.15,'sawtooth',.14,132);
+        setTimeout(()=>tone(170,.15,'sawtooth',.16,104),150);
+        setTimeout(()=>tone(126,.22,'square',.18,72),310);
       },
       bossAlert() {
         noiseBurst(.18,.14,700); tone(78,.52,'sawtooth',.22,42);
@@ -2075,6 +2188,9 @@
   let waveTransitionTimer = 0;
   const WAVE_CLEAR_DELAY = 48; // 0.8s breather between fields
   let currentWaveKind = 'NORMAL';
+  // UFO Ambush is a staged encounter: entry warnings telegraph multiple hostile vectors,
+  // then pairs of UFOs punch in from different edges instead of simply spawning two ships.
+  let ambushSpawnQueue = [];
   let pendingEvolution = false;
   let evolutionChoosing = false;
   let bossDefeatsThisRun = 0;
@@ -2121,7 +2237,9 @@
   // ---------- UFO enemies ----------
   // Mothership (tier 2) drifts in slow, fires wide/inaccurate shots. When destroyed it
   // ejects 2 escape pods (tier 1) — faster, erratic, more accurate, worth less alone.
-  const UFO_POWERUP_DROP_CHANCE = 0.35;
+  const UFO_POWERUP_DROP_CHANCE = 0.06; // shield chance from normal UFOs
+  const ONEUP_UFO_DROP_CHANCE = 0.01; // rare arcade 1UP from normal UFOs
+  const ONEUP_BOSS_DROP_CHANCE = 0.25; // bosses are the main 1UP source
   function ufoMaxConcurrent() { return Math.min(6, 2 + Math.floor(level / 10)); }
   function ufoSpawnWindow() {
     // Pressure ramps mostly through enemy presence/behavior instead of infinite asteroid speed.
@@ -2131,19 +2249,23 @@
   }
 
   // ---------- Weapon builds + simple universal pickups ----------
-  const POWERUP_DROP_CHANCE = 0.055;
+  const POWERUP_DROP_CHANCE = 0.01; // shield chance per asteroid piece; anti-flood rules below keep only one loose shield active
+  const MAX_LIVES = 5;
   const SHIELD_MAX_CHARGES = 3;
+  const SHIELD_STANDARD_HITS = 2;
+  const SHIELD_OVERLOAD_RADIUS = 165;
   const NORMAL_RECOIL = 0.12;
   let shieldCharges = 0;
+  let shieldLayers = [];
   // Legacy fields are kept inert so older save/achievement code remains migration-safe.
   let rangeLevel = 0, spreadLevel = 0, rayGunLevel = 0, rayGunCooldown = 0;
   let weaponMode = 'normal', weaponModeTimer = 0;
 
   const WEAPON_BUILDS = [
-    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration.', stats:'POWER █████   RATE ██░░░   RANGE ████░', cooldown:620, speed:13.5, life:50, recoil:0.72 },
-    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Short cone, heavy recoil, brutal crowd control.', stats:'POWER ████░   RATE ███░░   RANGE █░░░░', cooldown:430, speed:8.2, life:21, recoil:1.05 },
+    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration.', stats:'POWER █████   RATE ██░░░   RANGE ████░', cooldown:660, speed:13.5, life:42, recoil:0.72 },
+    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Tight blasts can overwhelm a target; range falls off hard. Starts with two shells and can build into a deep tube.', stats:'POWER ████░   RATE ███░░   RANGE █░░░░', cooldown:440, speed:8.2, life:18, recoil:1.05 },
     { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, punishes packed targets.', stats:'POWER █████   RATE █░░░░   RANGE ████░', cooldown:980, speed:5.1, life:110, recoil:1.35 },
-    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Tiny rounds build heat and can overheat the weapon.', stats:'POWER ██░░░   RATE █████   RANGE ███░░', cooldown:92, speed:8.8, life:56, recoil:0.04 }
+    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Shorter-range pressure weapon; tiny rounds build heat and can overheat.', stats:'POWER ██░░░   RATE █████   RANGE ██░░░', cooldown:92, speed:8.8, life:36, recoil:0.04 }
   ];
   let selectedWeaponIndex = 0;
   let currentWeapon = WEAPON_BUILDS[0];
@@ -2152,21 +2274,31 @@
   let upgradeChoosing = false;
   let weaponHeat = 0;
   let weaponOverheated = false;
+  // Longbow + Scattergun use magazines. Rocket Pod keeps its deliberate single-shot cycle,
+  // while Cycler continues to use heat as its resource rhythm.
+  let weaponAmmo = 0;
+  let weaponReloading = false;
+  let weaponReloadTimer = 0;
+  let weaponReloadDuration = 1;
   let rocketMultiKillFlag = false;
 
   const BUILD_UPGRADES = {
     sniper: [
       {id:'railPierce', name:'RAIL CAPACITOR', desc:'+1 penetration per rank.', maxRank:5},
-      {id:'hypervelocity', name:'HYPERVELOCITY', desc:'+10% projectile speed and +8% range per rank.', maxRank:4},
+      {id:'hypervelocity', name:'HYPERVELOCITY', desc:'+10% projectile speed and +3% range per rank.', maxRank:4},
       {id:'heavyCore', name:'HEAVY CORE', desc:'Harder impact and larger rail core; recoil also rises.', maxRank:3},
       {id:'quickCycle', name:'QUICK CYCLE', desc:'12% faster follow-up shots per rank.', maxRank:4},
+      {id:'longMag', name:'CAPACITOR RACK', desc:'+1 Longbow shot per magazine per rank.', maxRank:3},
+      {id:'railReload', name:'CHARGE CYCLER', desc:'15% faster Longbow reload per rank.', maxRank:3},
       {id:'deadeye', name:'DEADEYE', desc:'+10% rail-shot score per rank.', maxRank:4}
     ],
     shotgun: [
       {id:'extraPellets', name:'DOUBLE LOAD', desc:'+2 pellets per rank.', maxRank:4},
-      {id:'tightChoke', name:'TIGHT CHOKE', desc:'Tighter cone and slightly longer range per rank.', maxRank:4},
+      {id:'tightChoke', name:'TIGHT CHOKE', desc:'Tighter cone and +5% effective range per rank.', maxRank:4},
       {id:'sawedOff', name:'SAWED-OFF', desc:'Massive close-range punch and recoil; shorter range.', maxRank:1},
       {id:'fastPump', name:'FAST PUMP', desc:'13% faster blast cadence per rank.', maxRank:4},
+      {id:'shellRack', name:'EXTENDED TUBE', desc:'+1 Scattergun shell before reload per rank (up to 8).', maxRank:6},
+      {id:'scatterReload', name:'SPEED LOADER', desc:'15% faster Scattergun reload per rank.', maxRank:3},
       {id:'flechette', name:'FLECHETTES', desc:'Center pellets pierce extra targets; +1 pierce per rank.', maxRank:3}
     ],
     rocket: [
@@ -2192,7 +2324,7 @@
     ],
     shotgun: [
       {id:'breacher', name:'BREACHER CORE', desc:'Point-blank pellets gain brutal large-target damage and stronger recoil.', maxRank:3},
-      {id:'flechetteArray', name:'FLECHETTE ARRAY', desc:'Extends effective range and grants every pellet limited penetration.', maxRank:3}
+      {id:'flechetteArray', name:'FLECHETTE ARRAY', desc:'Extends effective range modestly and grants every pellet limited penetration.', maxRank:3}
     ],
     rocket: [
       {id:'swarmPod', name:'SWARM POD', desc:'Launch 3 smaller rockets in a fan. Smaller blasts, dramatically better coverage.', maxRank:3},
@@ -2205,6 +2337,37 @@
   };
 
   function upgradeLevel(id) { return runUpgradeState[id] || 0; }
+  function usesMagazine(w=currentWeapon) { return !!w && (w.id==='sniper' || w.id==='shotgun'); }
+  function magazineSize(w=currentWeapon) {
+    if (!w) return 0;
+    if (w.id==='sniper') return 5 + upgradeLevel('longMag');
+    if (w.id==='shotgun') return 2 + upgradeLevel('shellRack');
+    return 0;
+  }
+  function reloadFrames(w=currentWeapon) {
+    if (!w) return 1;
+    if (w.id==='sniper') return Math.max(34, Math.round(90 * Math.pow(.85, upgradeLevel('railReload')))); // 1.5s base
+    if (w.id==='shotgun') return Math.max(28, Math.round(72 * Math.pow(.85, upgradeLevel('scatterReload')))); // 1.2s base
+    return 1;
+  }
+  function resetMagazine() {
+    weaponReloading=false; weaponReloadTimer=0; weaponReloadDuration=1;
+    weaponAmmo=usesMagazine()?magazineSize():0;
+  }
+  function startWeaponReload() {
+    if (!usesMagazine() || weaponReloading || weaponAmmo>=magazineSize()) return;
+    weaponReloading=true; weaponReloadTimer=0; weaponReloadDuration=reloadFrames();
+    SFX.reloadStart(currentWeapon.id);
+    spawnFloatingText(ship.x, ship.y-32, currentWeapon.id==='sniper'?'RECHARGING':'RELOADING', currentWeapon.color);
+    updateHUD();
+  }
+  function finishWeaponReload() {
+    weaponReloading=false; weaponReloadTimer=weaponReloadDuration;
+    weaponAmmo=magazineSize();
+    SFX.reloadDone(currentWeapon.id);
+    spawnFloatingText(ship.x, ship.y-32, 'WEAPON READY', currentWeapon.color);
+    updateHUD();
+  }
   function setWeaponBuild(index, allUpgrades=false) {
     selectedWeaponIndex = (index + WEAPON_BUILDS.length) % WEAPON_BUILDS.length;
     currentWeapon = WEAPON_BUILDS[selectedWeaponIndex];
@@ -2215,6 +2378,7 @@
       BUILD_EVOLUTIONS[currentWeapon.id].forEach(u => runUpgradeState[u.id] = u.maxRank || 1);
       runUpgradeCount = BUILD_UPGRADES[currentWeapon.id].reduce((n,u)=>n+(u.maxRank||1),0) + BUILD_EVOLUTIONS[currentWeapon.id].reduce((n,u)=>n+(u.maxRank||1),0);
     }
+    resetMagazine();
     updateHUD();
   }
 
@@ -2535,6 +2699,7 @@
 
   function spawnWave() {
     asteroids = [];
+    ambushSpawnQueue = [];
     waveTransitionTimer = 0;
     currentWaveKind = waveKindForLevel(level);
     MUSIC.setIntensity(Math.min(3, Math.floor(level / 5)));
@@ -2554,9 +2719,10 @@
       const count=Math.min(7+Math.floor(level/10),12);
       for(let i=0;i<count;i++) spawnRock(3,.68);
     } else if (currentWaveKind === 'UFO AMBUSH') {
-      const count=Math.min(5+Math.floor(level/12),9);
-      for(let i=0;i<count;i++) spawnRock(i%2?2:3,.86);
-      spawnUFOFromEdge(true); spawnUFOFromEdge(true);
+      // Fewer rocks than a normal field: the danger here is being surrounded by hostiles.
+      const count=Math.min(4+Math.floor(level/18),7);
+      for(let i=0;i<count;i++) spawnRock(i%3===0?3:2,.92);
+      startUfoAmbush();
     } else if (currentWaveKind === 'ELITE FIELD') {
       const count=Math.min(8+Math.floor(level*.55),16);
       for(let i=0;i<count;i++) spawnRock(3,1.28);
@@ -2571,6 +2737,63 @@
       ufoSpawnTimer=Math.min(ufoSpawnTimer, Math.floor(rand(mn*.45,mx*.55)));
     }
     showLevelBanner(level, currentWaveKind);
+  }
+
+
+  function startUfoAmbush() {
+    // First ambush arrives as three paired breaches (~0.5s, 1.25s, 2.1s).
+    // Deep runs add a fourth pair. Each pair comes from a different axis so the player
+    // can't solve the event by simply camping one side of the arena.
+    const pairCount = Math.min(4, 3 + Math.floor(level / 40));
+    const patterns = [
+      [
+        {edge:'left',   lane:.27, variant:'hunter'},
+        {edge:'right',  lane:.73, variant:'gunner'}
+      ],
+      [
+        {edge:'top',    lane:.33, variant:'gunner'},
+        {edge:'bottom', lane:.67, variant:'hunter'}
+      ],
+      [
+        {edge:'left',   lane:.74, variant:'carrier'},
+        {edge:'right',  lane:.26, variant:'hunter'}
+      ],
+      [
+        {edge:'top',    lane:.72, variant:'hunter'},
+        {edge:'bottom', lane:.28, variant:'gunner'}
+      ]
+    ];
+    const delays = [30, 76, 128, 184];
+    ambushSpawnQueue = [];
+    for (let p=0; p<pairCount; p++) {
+      patterns[p].forEach((entry, idx) => {
+        ambushSpawnQueue.push({
+          ...entry,
+          timer: delays[p],
+          warned: false,
+          cue: idx === 0
+        });
+      });
+    }
+    SFX.ambushAlert();
+    triggerShake(2.2, 7);
+  }
+
+  function updateUfoAmbush() {
+    if (currentWaveKind !== 'UFO AMBUSH' || ambushSpawnQueue.length === 0) return;
+    for (let i=ambushSpawnQueue.length-1; i>=0; i--) {
+      const e = ambushSpawnQueue[i];
+      e.timer--;
+      // A short directional warning appears before each pair breaches the arena.
+      if (!e.warned && e.timer <= 24) {
+        e.warned = true;
+        if (e.cue) SFX.ufoAlert();
+      }
+      if (e.timer <= 0) {
+        spawnUFOAtEdge(e.edge, e.lane, e.variant, true);
+        ambushSpawnQueue.splice(i, 1);
+      }
+    }
   }
 
 
@@ -2608,7 +2831,10 @@
   // ---------- Test Ground ----------
   function restockTestGroundGoodies() {
     if (!powerups.some(p => p.testGround && p.type === 'shield')) {
-      powerups.push({x:PLAY_X+PLAY_W*.5,y:PLAY_Y+PLAY_H*.72,r:13,type:'shield',vx:0,vy:0,angle:0,life:999999,testGround:true});
+      spawnPowerup(PLAY_X+PLAY_W*.44,PLAY_Y+PLAY_H*.72,'shield',{vx:0,vy:0,life:999999,testGround:true});
+    }
+    if (!powerups.some(p => p.testGround && p.type === 'oneup')) {
+      spawnPowerup(PLAY_X+PLAY_W*.56,PLAY_Y+PLAY_H*.72,'oneup',{vx:0,vy:0,life:999999,testGround:true});
     }
   }
   function spawnTestTargetPack() {
@@ -2622,13 +2848,13 @@
   }
   function maintainTestGround() { restockTestGroundGoodies(); spawnTestTargetPack(); spawnTestUFO(); }
   function configureTestGround() {
-    level=10; lives=99; score=0; shieldCharges=SHIELD_MAX_CHARGES;
+    level=10; lives=99; score=0; resetShieldLayers(SHIELD_MAX_CHARGES);
     rangeLevel=spreadLevel=rayGunLevel=0; weaponMode='normal'; weaponModeTimer=0;
     waveTransitionTimer=0; achievementPollTimer=0; testGroundMaintenanceTimer=0;
     asteroids=[]; ufos=[]; ufoBullets=[]; powerups=[]; bullets=[]; ufoSpawnTimer=Infinity; invulnTimer=180;
     setWeaponBuild(selectedWeaponIndex, true);
     MUSIC.setIntensity(3); maintainTestGround(); clearTimeout(levelBannerTimeout);
-    levelBanner.textContent='TEST GROUND // 1-4 SWITCH BUILDS // MAX UPGRADES + EVOLUTIONS';
+    levelBanner.textContent='TEST GROUND // 1-4 BUILDS // 5 UFO AMBUSH // MAX UPGRADES + EVOLUTIONS';
     levelBanner.classList.remove('hard','clear'); levelBanner.classList.add('show');
     levelBannerTimeout=setTimeout(()=>levelBanner.classList.remove('show'),2600); updateHUD();
   }
@@ -2668,7 +2894,7 @@
     level = 1;
     gameOver = false;
     invulnTimer = 120;
-    shieldCharges = (ship.skin.startShield || 0);
+    resetShieldLayers(ship.skin.startShield || 0);
     rangeLevel = 0;
     spreadLevel = 0;
     rayGunLevel = 0;
@@ -2679,6 +2905,7 @@
     runUpgradeCount = 0;
     weaponHeat = 0;
     weaponOverheated = false;
+    resetMagazine();
     rocketMultiKillFlag = false;
     upgradeChoosing = false;
     evolutionChoosing = false;
@@ -2686,6 +2913,7 @@
     bossDefeatsThisRun = 0;
     bossSequence = 0;
     currentWaveKind = 'NORMAL';
+    ambushSpawnQueue = [];
     waveTransitionTimer = 0;
     achievementPollTimer = 0;
     fireHeld = false;
@@ -2707,14 +2935,34 @@
     scoreDisplay.textContent = testMode ? 'TEST SCORE: ' + score : 'SCORE: ' + score;
     livesDisplay.textContent = testMode ? '∞' : ('▲'.repeat(Math.max(lives, 0)) || '—');
     levelIndicator.textContent = testMode ? 'TEST GROUND' : 'LEVEL ' + level;
-    shieldDisplay.textContent = shieldCharges > 0 ? '◇ x' + shieldCharges : '';
+    const topShield = currentShieldLayer();
+    if (topShield) {
+      shieldDisplay.textContent = topShield.volatile
+        ? `◇ x${shieldCharges} // OVERLOAD READY`
+        : `◇ x${shieldCharges} // ${topShield.hp} HIT${topShield.hp===1?'':'S'} LEFT`;
+      shieldDisplay.style.color = topShield.volatile ? '#ff6fe8' : '#6fffb0';
+    } else {
+      shieldDisplay.textContent = '';
+      shieldDisplay.style.color = '#6fffb0';
+    }
     rangeDisplay.textContent = '';
     spreadDisplay.textContent = '';
     rayGunDisplay.textContent = '';
     const w = currentWeapon || WEAPON_BUILDS[selectedWeaponIndex];
     weaponStatusText.textContent = `${w.name}${runUpgradeCount ? '  //  UPGRADES ' + runUpgradeCount : ''}`;
+    if (usesMagazine(w)) {
+      weaponStatusText.textContent += `  //  AMMO ${weaponAmmo}/${magazineSize(w)}`;
+      if (weaponReloading) weaponStatusText.textContent += '  //  RELOADING';
+    }
     weaponStatusText.style.color = w.color;
     weaponTimerTrack.classList.remove('active'); weaponTimerFill.style.width='0%';
+    reloadTrack.style.display = weaponReloading ? 'block' : 'none';
+    if (weaponReloading) {
+      const pct = Math.max(0, Math.min(1, weaponReloadTimer / Math.max(1, weaponReloadDuration)));
+      reloadFill.style.width = (pct * 100) + '%';
+      reloadFill.style.background = w.color;
+      reloadFill.style.boxShadow = `0 0 9px ${w.color}`;
+    } else reloadFill.style.width='0%';
     const activeBoss = ufos && ufos.find(u=>u.boss);
     if (activeBoss) {
       bossStatus.classList.add('active');
@@ -2741,6 +2989,11 @@
     } else if (testMode && ['1','2','3','4'].includes(e.key)) {
       e.preventDefault(); setWeaponBuild(parseInt(e.key,10)-1, true);
       spawnFloatingText(ship.x, ship.y-42, currentWeapon.name, currentWeapon.color); SFX.uiTick();
+    } else if (testMode && e.key === '5') {
+      e.preventDefault();
+      ufos = []; ufoBullets = []; ambushSpawnQueue = []; currentWaveKind = 'UFO AMBUSH';
+      startUfoAmbush();
+      spawnFloatingText(ship.x, ship.y-48, 'UFO AMBUSH TEST', '#ff4da6');
     }
   });
   window.addEventListener('keyup', (e) => {
@@ -2771,7 +3024,7 @@
   let touchJoystickId = null;
   let touchJoystickAngle = -Math.PI / 2;
   let touchJoystickMagnitude = 0;
-  const JOYSTICK_DEADZONE = 0.12;
+  const JOYSTICK_DEADZONE = 0.18; // larger center deadzone prevents tiny thumb movements from steering the ship
 
   function resetTouchJoystick() {
     touchJoystickActive = false;
@@ -2888,14 +3141,17 @@
 
   let lastShot = 0;
   let rapidSpinShots = 0;
+  let shotgunVolleyId = 0;
 
   function pushProjectile(angle, speed, life, radius, extra={}) {
     bullets.push(Object.assign({x:ship.x+Math.cos(angle)*ship.r*1.12,y:ship.y+Math.sin(angle)*ship.r*1.12,vx:Math.cos(angle)*speed+ship.vx,vy:Math.sin(angle)*speed+ship.vy,life,r:radius,trail:true,weapon:currentWeapon.id},extra));
   }
 
   function fireBullet() {
-    if (gameOver || !running || paused || upgradeChoosing || weaponOverheated) return;
-    const w=currentWeapon; const now=Date.now(); let cooldown=w.cooldown;
+    if (gameOver || !running || paused || upgradeChoosing || weaponOverheated || weaponReloading) return;
+    const w=currentWeapon;
+    if (usesMagazine(w) && weaponAmmo <= 0) { startWeaponReload(); return; }
+    const now=Date.now(); let cooldown=w.cooldown;
     if (w.id==='sniper') cooldown*=Math.pow(.88,upgradeLevel('quickCycle')) * Math.pow(1.14,upgradeLevel('railDriver')) * Math.pow(.92,upgradeLevel('marksmanCore'));
     if (w.id==='shotgun') cooldown*=Math.pow(.87,upgradeLevel('fastPump'));
     if (w.id==='rocket') cooldown*=Math.pow(.86,upgradeLevel('fastLoader')) * Math.pow(1.18,upgradeLevel('siegeWarhead'));
@@ -2905,10 +3161,11 @@
       if (upgradeLevel('spinUp') || upgradeLevel('gatlingCore')) cooldown*=Math.max(maxSpin,1-Math.min(rapidSpinShots,28)*(upgradeLevel('gatlingCore')?.015:.01));
     }
     if (now-lastShot<cooldown) return; lastShot=now;
+    if (usesMagazine(w)) weaponAmmo = Math.max(0, weaponAmmo - 1);
 
     if (w.id==='sniper') {
       const hv=upgradeLevel('hypervelocity'), hc=upgradeLevel('heavyCore');
-      const speed=w.speed*(1+hv*.10); const life=Math.round(w.life*(1+hv*.08));
+      const speed=w.speed*(1+hv*.10); const life=Math.round(w.life*(1+hv*.03));
       const marks=upgradeLevel('marksmanCore'), rail=upgradeLevel('railDriver');
       // Longbow's first asteroid impact is the precision kill. Penetrated follow-up hits
       // keep traveling but fragment larger rocks normally, creating extra field pressure.
@@ -2916,10 +3173,14 @@
       const recoil=w.recoil*(1+hc*.12)*(1-marks*.08); ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil;
       spawnMuzzleBurst(7,w.color,.12); triggerShake(2.5,4);
     } else if (w.id==='shotgun') {
-      const pellets=7+upgradeLevel('extraPellets')*2; const choke=upgradeLevel('tightChoke'); let fan=.46*Math.max(.58,1-choke*.105); let life=Math.round(w.life*(1+choke*.08)); let recoil=w.recoil;
-      if (upgradeLevel('sawedOff')) { fan*=1.18; life=Math.round(life*.66); recoil*=1.45; }
-      const evoRange=upgradeLevel('flechetteArray'); life=Math.round(life*(1+evoRange*.18));
-      for(let i=0;i<pellets;i++){ const t=pellets===1?0:(i/(pellets-1)-.5); pushProjectile(ship.angle+t*fan,w.speed*rand(.94,1.06),Math.round(life*(1-Math.abs(t)*.42)),1.8,{pellet:true,pierce:evoRange+((Math.abs(t)<.18)?upgradeLevel('flechette'):0),bossDamage:.72+upgradeLevel('breacher')*.28}); }
+      const pellets=7+upgradeLevel('extraPellets')*2; const choke=upgradeLevel('tightChoke'); let fan=.48*Math.max(.60,1-choke*.10); let life=Math.round(w.life*(1+choke*.05)); let recoil=w.recoil;
+      if (upgradeLevel('sawedOff')) { fan*=1.20; life=Math.round(life*.58); recoil*=1.45; }
+      const evoRange=upgradeLevel('flechetteArray'); life=Math.round(life*(1+evoRange*.10));
+      const volleyId=++shotgunVolleyId;
+      for(let i=0;i<pellets;i++){
+        const t=pellets===1?0:(i/(pellets-1)-.5);
+        pushProjectile(ship.angle+t*fan,w.speed*rand(.94,1.06),Math.round(life*(1-Math.abs(t)*.42)),1.8,{pellet:true,volleyId,originX:ship.x,originY:ship.y,pierce:evoRange+((Math.abs(t)<.18)?upgradeLevel('flechette'):0),bossDamage:.72+upgradeLevel('breacher')*.28});
+      }
       ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil; spawnMuzzleBurst(12,w.color,.42); triggerShake(4,6);
     } else if (w.id==='rocket') {
       const speed=w.speed*(1+upgradeLevel('booster')*.12)*(upgradeLevel('siegeWarhead')?.84:1); const radius=86*(1+upgradeLevel('bigWarhead')*.18)*(1+upgradeLevel('siegeWarhead')*.20);
@@ -2937,7 +3198,9 @@
       spawnMuzzleBurst(twin?4:2,w.color,.10);
     }
     const heatRatio=w.id==='rapid'?weaponHeat/(100*(1+upgradeLevel('deepMag')*.15)):0;
-    SFX.weaponFire(w.id,heatRatio); updateHUD();
+    SFX.weaponFire(w.id,heatRatio);
+    if (usesMagazine(w) && weaponAmmo <= 0) startWeaponReload();
+    updateHUD();
   }
 
   function spawnMuzzleBurst(count,color,spread) {
@@ -2945,12 +3208,127 @@
     for(let i=0;i<count;i++) particles.push({x:mx,y:my,vx:Math.cos(ship.angle+rand(-spread,spread))*rand(.8,2.8),vy:Math.sin(ship.angle+rand(-spread,spread))*rand(.8,2.8),life:rand(5,12),maxLife:12,size:rand(.8,2.2),color});
   }
 
+  // ---------- Reinforced shield stack ----------
+  // Layers 1-2 are reinforced (2 hits each). Layer 3 is a volatile one-hit overcharge.
+  function makeShieldLayer(slot) {
+    return slot >= SHIELD_MAX_CHARGES
+      ? { hp:1, maxHp:1, volatile:true }
+      : { hp:SHIELD_STANDARD_HITS, maxHp:SHIELD_STANDARD_HITS, volatile:false };
+  }
+  function resetShieldLayers(count=0) {
+    shieldLayers = [];
+    const capped = Math.max(0, Math.min(SHIELD_MAX_CHARGES, count|0));
+    for (let slot=1; slot<=capped; slot++) shieldLayers.push(makeShieldLayer(slot));
+    shieldCharges = shieldLayers.length;
+  }
+  function currentShieldLayer() { return shieldLayers.length ? shieldLayers[shieldLayers.length-1] : null; }
+  function addShieldLayer() {
+    if (shieldLayers.length >= SHIELD_MAX_CHARGES) return false;
+    shieldLayers.push(makeShieldLayer(shieldLayers.length + 1));
+    shieldCharges = shieldLayers.length;
+    return true;
+  }
+  function detonateShieldOverload() {
+    const x=ship.x, y=ship.y, radius=SHIELD_OVERLOAD_RADIUS;
+    spawnExplosion(x,y,54,'#7dfff2');
+    spawnExplosion(x,y,32,'#ff4da6');
+    impactRings.push({x,y,radius:8,maxRadius:radius,life:26,maxLife:26,color:'#7dfff2',big:true});
+    impactRings.push({x,y,radius:18,maxRadius:radius*.82,life:20,maxLife:20,color:'#ff4da6',big:true});
+    spawnFloatingText(x,y-ship.r-34,'SHIELD OVERLOAD','#ff6fe8');
+    triggerShake(13,18);
+    hitFlashAlpha=Math.max(hitFlashAlpha,.16);
+    SFX.shieldOverload();
+
+    // Vaporize nearby rocks so the burst creates breathing room instead of more fragments.
+    for (let i=asteroids.length-1;i>=0;i--) {
+      const a=asteroids[i];
+      if (dist(x,y,a.x,a.y) <= radius + a.r*.45) breakAsteroid(i,true);
+    }
+    // Normal enemy ships are destroyed outright. Bosses take a meaningful chunk instead.
+    for (let i=ufos.length-1;i>=0;i--) {
+      const u=ufos[i];
+      if (dist(x,y,u.x,u.y) <= radius + u.r*.35) {
+        if (u.boss) damageBossUFO(i,10,x,y);
+        else breakUFO(i,true);
+      }
+    }
+    // The EMP-like blast also scrubs hostile rounds in the immediate area.
+    for (let i=ufoBullets.length-1;i>=0;i--) {
+      const b=ufoBullets[i];
+      if (dist(x,y,b.x,b.y) <= radius) ufoBullets.splice(i,1);
+    }
+  }
+  function absorbShieldHit() {
+    const layer=currentShieldLayer();
+    if (!layer) return false;
+    layer.hp--;
+    invulnTimer = layer.hp > 0 ? 42 : 60;
+
+    if (layer.hp > 0) {
+      spawnExplosion(ship.x,ship.y,10,'#6fffb0');
+      impactRings.push({x:ship.x,y:ship.y,radius:ship.r*1.4,maxRadius:ship.r*2.6,life:10,maxLife:10,color:'#6fffb0',big:false});
+      spawnFloatingText(ship.x,ship.y-ship.r-22,`SHIELD ${layer.hp}/${layer.maxHp}`,'#6fffb0');
+      triggerShake(2.4,5);
+      SFX.shieldHit();
+    } else {
+      const volatile = !!layer.volatile;
+      shieldLayers.pop();
+      shieldCharges = shieldLayers.length;
+      if (volatile) detonateShieldOverload();
+      else {
+        spawnExplosion(ship.x,ship.y,20,'#6fffb0');
+        impactRings.push({x:ship.x,y:ship.y,radius:ship.r*1.5,maxRadius:ship.r*3.2,life:14,maxLife:14,color:'#6fffb0',big:true});
+        spawnFloatingText(ship.x,ship.y-ship.r-22,'SHIELD BROKEN','#6fffb0');
+        triggerShake(4,8);
+        SFX.shieldBreak();
+      }
+    }
+    updateHUD();
+    return true;
+  }
+
   // ---------- Powerups ----------
-  const POWERUP_COLORS = { shield:'#6fffb0' };
-  function spawnPowerup(x,y,type='shield'){ powerups.push({x,y,r:13,type:'shield',vx:rand(-.5,.5),vy:rand(-.5,.5),angle:0,life:600}); }
+  const POWERUP_COLORS = { shield:'#6fffb0', oneup:'#c8ff4d' };
+  function loosePowerupExists(type){ return powerups.some(p => p.type === type && !p.testGround); }
+  function canSpawnShield(){ return shieldCharges < SHIELD_MAX_CHARGES && !loosePowerupExists('shield'); }
+  function canSpawnOneUp(){ return lives < MAX_LIVES && !loosePowerupExists('oneup'); }
+  function spawnPowerup(x,y,type='shield',opts={}){
+    powerups.push({
+      x,y,
+      r:type==='oneup'?15:13,
+      type,
+      vx:opts.vx ?? rand(-.5,.5),
+      vy:opts.vy ?? rand(-.5,.5),
+      angle:0,
+      life:opts.life ?? (type==='oneup'?900:600),
+      testGround:!!opts.testGround
+    });
+  }
   function collectPowerup(p){
+    if (p.type === 'oneup') {
+      if (testMode) {
+        spawnFloatingText(p.x,p.y-22,'1UP // TEST','#c8ff4d');
+      } else if (lives < MAX_LIVES) {
+        lives++;
+        spawnFloatingText(ship.x,ship.y-ship.r-24,`1UP // LIFE ${lives}`,'#c8ff4d');
+      } else {
+        score += 500;
+        spawnFloatingText(p.x,p.y-22,'+500 // LIFE MAX','#c8ff4d');
+      }
+      spawnExplosion(p.x,p.y,24,'#c8ff4d');
+      impactRings.push({x:p.x,y:p.y,radius:5,maxRadius:72,life:22,maxLife:22,color:'#c8ff4d',big:true});
+      triggerShake(5,8);
+      SFX.oneUp();
+      updateHUD();
+      return;
+    }
     if (shieldCharges>=SHIELD_MAX_CHARGES) { score+=60; spawnFloatingText(p.x,p.y-18,'+60 SHIELD MAXED','#6fffb0'); }
-    else { shieldCharges++; spawnFloatingText(ship.x,ship.y-ship.r-20,`SHIELD ${shieldCharges}`,'#6fffb0'); SFX.shieldUp(); }
+    else {
+      addShieldLayer();
+      const added=currentShieldLayer();
+      spawnFloatingText(ship.x,ship.y-ship.r-20,added && added.volatile ? 'OVERLOAD SHIELD ARMED' : `SHIELD ${shieldCharges} // 2 HITS`,added && added.volatile ? '#ff6fe8' : '#6fffb0');
+      SFX.shieldUp();
+    }
     spawnExplosion(p.x,p.y,12,'#6fffb0'); updateHUD();
   }
 
@@ -3091,10 +3469,15 @@
       let delta = touchJoystickAngle - ship.angle;
       while (delta > Math.PI) delta -= Math.PI * 2;
       while (delta < -Math.PI) delta += Math.PI * 2;
-      const touchTurnStrength = 0.20;
+      // Analog steering curve: small stick deflections produce gentle corrections;
+      // full deflection still turns decisively, but no faster than roughly keyboard handling.
+      const steerAmount = Math.max(0, Math.min(1, (touchJoystickMagnitude - JOYSTICK_DEADZONE) / (1 - JOYSTICK_DEADZONE)));
+      const steerCurve = 0.20 + 0.80 * Math.pow(steerAmount, 1.35);
+      const touchTurnStrength = 0.055 * steerCurve;
+      const touchTurnCap = ship.maxAngular * (0.78 + 0.42 * steerAmount);
       ship.angularVelocity += delta * touchTurnStrength;
-      ship.angularVelocity = Math.max(-ship.maxAngular * 3, Math.min(ship.maxAngular * 3, ship.angularVelocity));
-      ship.angularVelocity *= 0.72;
+      ship.angularVelocity = Math.max(-touchTurnCap, Math.min(touchTurnCap, ship.angularVelocity));
+      ship.angularVelocity *= 0.86;
     } else {
       // Keyboard rotation remains available on desktop / keyboard-equipped tablets.
       let turnInput = 0;
@@ -3115,7 +3498,12 @@
     const joystickThrust = touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE;
     const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || (!TOUCH_INPUT_MODE && mouseThrust) || joystickThrust;
     if (thrusting) {
-      const thrustScale = joystickThrust ? Math.max(0.28, touchJoystickMagnitude) : 1;
+      // Analog thrust uses a curved response instead of a minimum 28% shove.
+      // This gives the inner half of the joystick much finer low-speed control.
+      const joyAmount = joystickThrust
+        ? Math.max(0, Math.min(1, (touchJoystickMagnitude - JOYSTICK_DEADZONE) / (1 - JOYSTICK_DEADZONE)))
+        : 1;
+      const thrustScale = joystickThrust ? Math.pow(joyAmount, 1.65) : 1;
       ship.vx += Math.cos(ship.angle) * ship.thrustPower * thrustScale;
       ship.vy += Math.sin(ship.angle) * ship.thrustPower * thrustScale;
       spawnThrustTrail();
@@ -3136,6 +3524,13 @@
     updateStarParallax();
 
     if (invulnTimer > 0) invulnTimer--;
+
+    // Magazine reloads tick in simulation time, so pausing the game pauses the reload too.
+    if (weaponReloading && usesMagazine()) {
+      weaponReloadTimer++;
+      if (weaponReloadTimer >= weaponReloadDuration) finishWeaponReload();
+      else if (weaponReloadTimer % 3 === 0) updateHUD();
+    }
 
     // Build-specific continuous systems.
     if (currentWeapon.id === 'rapid') {
@@ -3248,6 +3643,33 @@
         const b=bullets[j];
         if (dist(a.x,a.y,b.x,b.y) < a.r+b.r) {
           if (b.rocket) { explodeRocket(b,j); break; }
+
+          // Scattergun balance: pellets from the SAME blast can combine at point-blank range.
+          // This makes accuracy + distance matter. Far hits still fragment normally; a tight close
+          // blast can overwhelm a target instead of pellet count only increasing screen coverage.
+          if (b.pellet) {
+            const hitIdx=[];
+            for (let k=bullets.length-1;k>=0;k--) {
+              const pb=bullets[k];
+              if (pb && pb.pellet && pb.volleyId===b.volleyId && dist(a.x,a.y,pb.x,pb.y)<a.r+pb.r) hitIdx.push(k);
+            }
+            const travel=dist(b.originX==null?ship.x:b.originX,b.originY==null?ship.y:b.originY,b.x,b.y);
+            const breacher=upgradeLevel('breacher');
+            const sawed=upgradeLevel('sawedOff')?1:0;
+            const closeRange=88 + breacher*9 + sawed*14;
+            let needed=a.size===3 ? Math.max(2,4-breacher-sawed) : a.size===2 ? 2 : 1;
+            const hardHit=travel<=closeRange && hitIdx.length>=needed;
+            spawnImpactRing(b.x,b.y,currentWeapon.color,hardHit); applyWeaponHitFeedback(b,false);
+            breakAsteroid(i,hardHit);
+            // Consume the pellets that actually landed. Piercing flechettes survive as intended.
+            hitIdx.sort((x,y)=>y-x).forEach(k=>{
+              const pb=bullets[k]; if(!pb) return;
+              if(pb.pierce>0) pb.pierce--; else bullets.splice(k,1);
+            });
+            updateHUD();
+            break;
+          }
+
           spawnImpactRing(b.x,b.y,currentWeapon.color,!!b.vaporize); applyWeaponHitFeedback(b,false);
           const scoreBefore=score;
           const sniperFirstImpact = b.weapon==='sniper' && b.firstImpactVaporize ? (b.impactCount||0)===0 : false;
@@ -3261,6 +3683,9 @@
         }
       }
     }
+
+    // Staged UFO Ambush breaches are simulation-timed so pausing also pauses the ambush.
+    updateUfoAmbush();
 
     // UFO spawn timer
     if (currentWaveKind !== 'BOSS') {
@@ -3326,8 +3751,11 @@
         const b=bullets[j];
         if (dist(u.x,u.y,b.x,b.y)<u.r+b.r) {
           if (b.rocket) { explodeRocket(b,j); break; }
-          spawnImpactRing(b.x,b.y,currentWeapon.color,!!b.vaporize); applyWeaponHitFeedback(b,!!u.boss);
-          if (u.boss) damageBossUFO(i,b.bossDamage||1,b.x,b.y); else breakUFO(i,!!b.vaporize);
+          const sniperFirstImpact = b.weapon==='sniper' && b.firstImpactVaporize ? (b.impactCount||0)===0 : false;
+          const powerfulHit = b.weapon==='sniper' ? sniperFirstImpact : !!b.vaporize;
+          spawnImpactRing(b.x,b.y,currentWeapon.color,powerfulHit); applyWeaponHitFeedback(b,!!u.boss);
+          if (u.boss) damageBossUFO(i,b.bossDamage||1,b.x,b.y); else breakUFO(i,powerfulHit);
+          if (b.weapon==='sniper' && b.firstImpactVaporize) b.impactCount=(b.impactCount||0)+1;
           if (b.pierce>0) b.pierce--; else bullets.splice(j,1);
           break;
         }
@@ -3340,13 +3768,7 @@
         const a = asteroids[i];
         if (dist(a.x, a.y, ship.x, ship.y) < a.r + ship.r * 0.6) {
           if (shieldCharges > 0) {
-            // One shield charge absorbs the hit and breaks immediately
-            shieldCharges--;
-            invulnTimer = 60; // brief grace period so it can't be re-popped instantly
-            spawnExplosion(ship.x, ship.y, 18, '#6fffb0');
-            triggerShake(4, 8);
-            SFX.shieldBreak();
-            updateHUD();
+            absorbShieldHit();
           } else {
             shipHit();
           }
@@ -3361,12 +3783,7 @@
         const u = ufos[i];
         if (dist(u.x, u.y, ship.x, ship.y) < u.r + ship.r * 0.6) {
           if (shieldCharges > 0) {
-            shieldCharges--;
-            invulnTimer = 60;
-            spawnExplosion(ship.x, ship.y, 18, '#6fffb0');
-            triggerShake(4, 8);
-            SFX.shieldBreak();
-            updateHUD();
+            absorbShieldHit();
           } else {
             shipHit();
           }
@@ -3382,12 +3799,7 @@
         if (dist(b.x, b.y, ship.x, ship.y) < b.r + ship.r * 0.6) {
           ufoBullets.splice(i, 1);
           if (shieldCharges > 0) {
-            shieldCharges--;
-            invulnTimer = 60;
-            spawnExplosion(ship.x, ship.y, 18, '#6fffb0');
-            triggerShake(4, 8);
-            SFX.shieldBreak();
-            updateHUD();
+            absorbShieldHit();
           } else {
             shipHit();
           }
@@ -3403,7 +3815,11 @@
     if (upgradeFlashAlpha > 0) upgradeFlashAlpha = Math.max(0, upgradeFlashAlpha - 0.035);
 
     // Wave clear: a short arcade beat instead of instantly dumping the next field in.
-    if (!testMode && !upgradeChoosing && !evolutionChoosing && asteroids.length === 0 && !ufos.some(u=>u.boss) && waveTransitionTimer === 0) beginWaveClear();
+    // UFO AMBUSH is different from a normal field: the player must actually survive and clear
+    // every staged hostile contact, not just finish the rocks while UFOs remain on screen.
+    const ambushThreatsRemain = currentWaveKind === 'UFO AMBUSH' &&
+      (ambushSpawnQueue.length > 0 || ufos.some(u=>!u.boss));
+    if (!testMode && !upgradeChoosing && !evolutionChoosing && asteroids.length === 0 && !ufos.some(u=>u.boss) && !ambushThreatsRemain && waveTransitionTimer === 0) beginWaveClear();
   }
 
   function breakAsteroid(index, powerful) {
@@ -3428,7 +3844,7 @@
 
     // Powerup drop: one low-probability roll decides IF anything drops, then a
     // weighted pick decides WHAT — much easier to keep genuinely rare this way.
-    if (!testMode && Math.random() < POWERUP_DROP_CHANCE) spawnPowerup(a.x,a.y,'shield');
+    if (!testMode && canSpawnShield() && Math.random() < POWERUP_DROP_CHANCE) spawnPowerup(a.x,a.y,'shield');
   }
 
   function pickWeightedPowerupType() { return 'shield'; }
@@ -3495,21 +3911,34 @@
     return 'standard';
   }
 
-  function spawnUFOFromEdge(forced=false) {
+  function spawnUFOAtEdge(edge, lane=null, variantOverride=null, forced=false) {
     const r = 26;
     if (!forced) SFX.ufoAlert();
-    const fromLeft = Math.random() < 0.5;
-    const x = fromLeft ? PLAY_X - r : PLAY_X + PLAY_W + r;
-    const y = rand(PLAY_Y + PLAY_H * 0.15, PLAY_Y + PLAY_H * 0.85);
-    const variant=chooseUfoVariant();
-    const base=variant==='hunter'?1.18:variant==='gunner'?1.0:.86;
-    const vx = (fromLeft ? 1 : -1) * rand(base*.85, base*1.12);
-    const vy = rand(-0.28, 0.28);
+    const variant = variantOverride || chooseUfoVariant();
+    const base = variant==='hunter' ? 1.18 : variant==='gunner' ? 1.0 : .86;
+    const t = lane == null ? rand(.15,.85) : Math.max(.12,Math.min(.88,lane));
+    let x, y, vx, vy;
+    if (edge === 'top' || edge === 'bottom') {
+      x = PLAY_X + PLAY_W * t;
+      y = edge === 'top' ? PLAY_Y - r : PLAY_Y + PLAY_H + r;
+      vx = rand(-.28,.28);
+      vy = (edge === 'top' ? 1 : -1) * rand(base*.85, base*1.12);
+    } else {
+      const fromLeft = edge !== 'right';
+      x = fromLeft ? PLAY_X - r : PLAY_X + PLAY_W + r;
+      y = PLAY_Y + PLAY_H * t;
+      vx = (fromLeft ? 1 : -1) * rand(base*.85, base*1.12);
+      vy = rand(-.28,.28);
+    }
     ufos.push({
       x, y, vx, vy, r, tier: 2, angle: 0, variant,
       fireCooldown: variant==='gunner'?rand(42,72):rand(76,132), driftTimer: 0, ejectTimer: 0, broodId: null,
       carrierCooldown: rand(220,340)
     });
+  }
+
+  function spawnUFOFromEdge(forced=false) {
+    spawnUFOAtEdge(Math.random()<.5?'left':'right', null, null, forced);
   }
 
   function spawnBoss() {
@@ -3618,6 +4047,10 @@
     const x=u.x,y=u.y; ufos.splice(index,1); bossDefeatsThisRun++; pendingEvolution=true;
     for(let k=0;k<4;k++) setTimeout(()=>spawnExplosion(x+rand(-42,42),y+rand(-30,30),28,'#ff6f6f'),k*45);
     impactRings.push({x,y,radius:10,maxRadius:175,life:34,maxLife:34,color:'#ff6f6f',big:true}); triggerShake(14,22); hitStopFrames=Math.max(hitStopFrames,4); SFX.bossDown(); updateHUD();
+    if (!testMode && canSpawnOneUp() && Math.random() < ONEUP_BOSS_DROP_CHANCE) {
+      spawnPowerup(x,y,'oneup',{vx:rand(-.28,.28),vy:rand(-.28,.28),life:1200});
+      spawnFloatingText(x,y-52,'1UP SIGNAL','#c8ff4d');
+    }
     return true;
   }
 
@@ -3658,8 +4091,12 @@
       SFX.escapePodEject();
     }
 
-    if (!testMode && Math.random() < UFO_POWERUP_DROP_CHANCE) {
-      spawnPowerup(u.x,u.y,'shield');
+    if (!testMode) {
+      if (canSpawnOneUp() && Math.random() < ONEUP_UFO_DROP_CHANCE) {
+        spawnPowerup(u.x,u.y,'oneup');
+      } else if (canSpawnShield() && Math.random() < UFO_POWERUP_DROP_CHANCE) {
+        spawnPowerup(u.x,u.y,'shield');
+      }
     }
   }
 
@@ -3821,19 +4258,26 @@
     if (shieldCharges > 0) {
       ctx.save();
       ctx.translate(ship.x, ship.y);
-      const pulse = 1 + Math.sin(Date.now() / 120) * 0.05;
-      ctx.strokeStyle = '#6fffb0';
-      ctx.shadowColor = '#6fffb0';
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 2;
-      // one ring per charge, nested outward; a lone remaining charge pulses softly as a low warning
-      for (let c = 0; c < shieldCharges; c++) {
-        ctx.globalAlpha = shieldCharges === 1 ? 0.55 + Math.sin(Date.now() / 200) * 0.2 : 0.8 - c * 0.15;
+      const t=Date.now();
+      const pulse = 1 + Math.sin(t / 120) * 0.04;
+      // Each visible ring is a real shield layer. Damaged reinforced layers go dashed;
+      // the third/volatile layer shifts magenta so players know the kamikaze burst is armed.
+      for (let c = 0; c < shieldLayers.length; c++) {
+        const layer=shieldLayers[c];
+        const volatile=!!layer.volatile;
+        const damaged=!volatile && layer.hp<layer.maxHp;
+        const color=volatile ? '#ff6fe8' : '#6fffb0';
+        ctx.strokeStyle=color; ctx.shadowColor=color;
+        ctx.shadowBlur=volatile ? 16 : 10;
+        ctx.lineWidth=volatile ? 2.8 : 2;
+        ctx.globalAlpha=volatile ? 0.68 + Math.sin(t/75)*0.22 : (damaged ? .48 : .78-c*.10);
+        ctx.setLineDash(damaged ? [5,4] : (volatile ? [11,4] : []));
         ctx.beginPath();
-        ctx.arc(0, 0, (ship.r * 1.7 + c * 6) * pulse, 0, Math.PI * 2);
+        ctx.arc(0,0,(ship.r*1.7+c*6)*pulse,0,Math.PI*2);
         ctx.stroke();
       }
-      ctx.globalAlpha = 1;
+      ctx.setLineDash([]);
+      ctx.globalAlpha=1;
       ctx.restore();
     }
 
@@ -3867,7 +4311,17 @@
       ctx.stroke();
       // inner glyph
       ctx.beginPath();
-      if (p.type === 'shield') {
+      if (p.type === 'oneup') {
+        // Keep the arcade label upright even while the outer capsule rotates.
+        ctx.rotate(-p.angle);
+        ctx.fillStyle = color;
+        ctx.font = 'bold 9px "Courier New", monospace';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('1UP',0,.5);
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'alphabetic';
+      } else if (p.type === 'shield') {
         ctx.moveTo(0, -p.r * 0.5);
         ctx.lineTo(p.r * 0.4, -p.r * 0.1);
         ctx.lineTo(p.r * 0.25, p.r * 0.5);
@@ -4145,6 +4599,40 @@
     ctx.restore();
   }
 
+
+  function drawAmbushTelegraphs() {
+    if (currentWaveKind !== 'UFO AMBUSH' || ambushSpawnQueue.length === 0) return;
+    ctx.save();
+    const pulse = .72 + Math.sin(Date.now()/75) * .22;
+    for (const e of ambushSpawnQueue) {
+      if (e.timer > 42) continue;
+      const urgency = Math.max(0, Math.min(1, 1 - e.timer/42));
+      const alpha = (.20 + urgency*.72) * pulse;
+      const size = 10 + urgency*8;
+      let x, y, dx=0, dy=0;
+      if (e.edge === 'left')   { x=PLAY_X+8; y=PLAY_Y+PLAY_H*e.lane; dx=1; }
+      if (e.edge === 'right')  { x=PLAY_X+PLAY_W-8; y=PLAY_Y+PLAY_H*e.lane; dx=-1; }
+      if (e.edge === 'top')    { x=PLAY_X+PLAY_W*e.lane; y=PLAY_Y+8; dy=1; }
+      if (e.edge === 'bottom') { x=PLAY_X+PLAY_W*e.lane; y=PLAY_Y+PLAY_H-8; dy=-1; }
+      ctx.strokeStyle=`rgba(255,77,166,${alpha})`;
+      ctx.shadowColor='#ff4da6'; ctx.shadowBlur=8+urgency*8;
+      ctx.lineWidth=1.5+urgency;
+      // Two nested chevrons point inward at each incoming contact.
+      for(let k=0;k<2;k++){
+        const off=k*7;
+        const bx=x-dx*off, by=y-dy*off;
+        ctx.beginPath();
+        if(dx!==0){
+          ctx.moveTo(bx-dx*size, by-size*.72); ctx.lineTo(bx,by); ctx.lineTo(bx-dx*size,by+size*.72);
+        } else {
+          ctx.moveTo(bx-size*.72, by-dy*size); ctx.lineTo(bx,by); ctx.lineTo(bx+size*.72,by-dy*size);
+        }
+        ctx.stroke();
+      }
+    }
+    ctx.restore();
+  }
+
   function drawStars() {
     ctx.fillStyle = 'rgba(255,255,255,0.5)';
     const t = Date.now() / 1000;
@@ -4273,6 +4761,7 @@
     }
     drawShip();
     drawFloatingTexts();
+    drawAmbushTelegraphs();
     ctx.restore();
 
     if (hitFlashAlpha > 0) {
@@ -4450,7 +4939,9 @@
     return true;
   }
   function chooseUpgrade(id) {
-    runUpgradeState[id]=(runUpgradeState[id]||0)+1; runUpgradeCount++; upgradeChoosing=false; buildUpgradeOverlay.classList.remove('mutation-enter'); buildUpgradeOverlay.classList.add('hidden'); SFX.purchase();
+    runUpgradeState[id]=(runUpgradeState[id]||0)+1; runUpgradeCount++;
+    if (id==='longMag' || id==='shellRack') weaponAmmo=Math.min(magazineSize(), weaponAmmo+1);
+    upgradeChoosing=false; buildUpgradeOverlay.classList.remove('mutation-enter'); buildUpgradeOverlay.classList.add('hidden'); SFX.purchase();
     const u=BUILD_UPGRADES[currentWeapon.id].find(x=>x.id===id); spawnFloatingText(ship.x,ship.y-44,`${u.name} ${runUpgradeState[id]}`,currentWeapon.color); checkAchievementUnlocks(true);
     advanceAfterUpgrade();
   }
@@ -4778,9 +5269,36 @@
   applyCoreIcons();
   syncSfxMuteButtons(SFX.isMuted());
 
+  function renderPauseLoadout() {
+    const hullEl=document.getElementById('pauseHullName');
+    const weaponEl=document.getElementById('pauseWeaponName');
+    const metaEl=document.getElementById('pauseRunMeta');
+    const listEl=document.getElementById('pauseUpgradeList');
+    if (hullEl) hullEl.textContent=(ship && ship.skin ? ship.skin.name : SHIP_SKINS[selectedSkinIndex].name);
+    if (weaponEl) { weaponEl.textContent=currentWeapon.name; weaponEl.style.color=currentWeapon.color; }
+    if (metaEl) {
+      let resource = '';
+      if (usesMagazine()) resource = `  //  AMMO ${weaponAmmo}/${magazineSize()}${weaponReloading?' (RELOADING)':''}`;
+      else if (currentWeapon.id==='rapid') { const cap=100*(1+upgradeLevel('deepMag')*.15); resource = `  //  HEAT ${Math.round((weaponHeat/cap)*100)}%`; }
+      const ps=currentShieldLayer();
+      const shieldState=ps ? (ps.volatile ? `  //  SHIELD ${shieldCharges}/3 OVERLOAD` : `  //  SHIELD ${shieldCharges}/3 ${ps.hp} HIT${ps.hp===1?'':'S'} LEFT`) : '  //  SHIELD 0/3';
+      metaEl.textContent=`LEVEL ${level}  //  ${runUpgradeCount} UPGRADE${runUpgradeCount===1?'':'S'}${resource}${shieldState}`;
+    }
+    if (!listEl) return;
+    const chips=[];
+    (BUILD_EVOLUTIONS[currentWeapon.id]||[]).forEach(u=>{
+      const rank=upgradeLevel(u.id); if(rank>0) chips.push(`<div class="pauseUpgradeChip evolution"><b>${u.name}</b><em>EVOLUTION ${rank}</em></div>`);
+    });
+    (BUILD_UPGRADES[currentWeapon.id]||[]).forEach(u=>{
+      const rank=upgradeLevel(u.id); if(rank>0) chips.push(`<div class="pauseUpgradeChip"><b>${u.name}</b><em>RANK ${rank}</em></div>`);
+    });
+    listEl.innerHTML=chips.length?chips.join(''):'<div class="pauseNoUpgrades">No upgrades acquired yet.</div>';
+  }
+
   function setPaused(val) {
     if (val && (!running || gameOver)) return; // only pausable mid-run
     paused = val;
+    if (val) renderPauseLoadout();
     pauseOverlay.classList.toggle('hidden', !val);
     pauseBtn.innerHTML = uiIcon(val ? 'play' : 'pause');
     if (val) SFX.setThrust(false);
