@@ -2992,6 +2992,2720 @@
     }
   }
 
+
+  /* ---------- DESKTOP UI READABILITY PASS ---------- */
+  /* Mobile already reads well. These overrides only target larger desktop / laptop
+     environments where the tiny tracked neon type starts to look fuzzy and hard to parse. */
+  @media (min-width: 981px) and (pointer: fine) {
+
+    html, body, button, input, select, textarea {
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: geometricPrecision;
+    }
+
+    body {
+      font-family: Consolas, "Courier New", monospace;
+    }
+
+    /* Stronger panel contrast across desktop UI surfaces */
+    .pausePanel,
+    .htpPanel,
+    .settingsPanel,
+    .achievementsPanel,
+    .shopPanel,
+    .upgradePanel,
+    .testLoadoutPanel,
+    .testSpawnerPanel,
+    .hullWorkshopPanel,
+    .loadoutPanel,
+    .pauseLoadoutCard {
+      background: linear-gradient(180deg, rgba(7,13,27,.92), rgba(5,10,20,.94));
+      border-color: rgba(111,242,255,.24);
+      box-shadow:
+        0 0 0 1px rgba(255,255,255,.025) inset,
+        0 18px 42px rgba(0,0,0,.34),
+        0 0 26px rgba(111,242,255,.06);
+    }
+
+    /* Main menu / loadout readability */
+    .menuEyebrow {
+      font-size: 10px !important;
+      letter-spacing: 3px !important;
+      opacity: .66 !important;
+      text-shadow: none !important;
+    }
+    .menuTitle {
+      letter-spacing: 6px !important;
+    }
+    .menuSubtitle {
+      font-size: 12px !important;
+      letter-spacing: 2.3px !important;
+      line-height: 1.7 !important;
+      opacity: .92 !important;
+      color: #d9f9ff !important;
+      text-shadow: none !important;
+    }
+    .menuStats {
+      font-size: 11px !important;
+      letter-spacing: .6px !important;
+      line-height: 1.55 !important;
+      opacity: .92 !important;
+      color: #c8f6ff !important;
+      text-shadow: none !important;
+    }
+
+    .loadoutHeader {
+      font-size: 10px !important;
+      letter-spacing: 2px !important;
+      opacity: .84 !important;
+      text-shadow: none !important;
+    }
+    .loadoutHeader span {
+      font-size: 9px !important;
+      opacity: .60 !important;
+      text-shadow: none !important;
+    }
+    .shipNameLabel,
+    .weaponNameLabel,
+    #testConfigWeaponName,
+    .hwBuildName {
+      letter-spacing: 2px !important;
+      text-shadow: 0 0 10px rgba(111,242,255,.12) !important;
+    }
+    .shipNameLabel { font-size: 16px !important; }
+    .weaponNameLabel { font-size: 15px !important; }
+    #testConfigWeaponName { font-size: 15px !important; }
+    .hwBuildName { font-size: 13px !important; }
+
+    .shipDescLabel,
+    .weaponDescLabel,
+    .testConfigDesc,
+    .hwSub,
+    .hwDesc,
+    .settingOptionDesc,
+    .testLoadoutSub,
+    .pauseRunMeta {
+      font-size: 11px !important;
+      line-height: 1.55 !important;
+      letter-spacing: .25px !important;
+      opacity: .88 !important;
+      color: #d5f7ff !important;
+      text-shadow: none !important;
+    }
+
+    .shipStatsLabel,
+    .weaponStatsLabel,
+    .hwStats,
+    .hwSummary,
+    .menuActions button,
+    .testUtilityBtn,
+    .testSpawnBtn,
+    .hwActionRow button,
+    .hwPresetBtn,
+    .hwLoadBtn {
+      font-size: 10px !important;
+      line-height: 1.5 !important;
+      letter-spacing: .7px !important;
+      opacity: .96 !important;
+      text-shadow: none !important;
+    }
+
+    /* Settings / help / generic informational rows */
+    .settingsKicker,
+    .settingGroupLabel,
+    .settingOptionLabel,
+    .htpKicker,
+    .testConfigSectionTitle,
+    .testSpawnerTitle,
+    .testSpawnerGroupTitle,
+    .hwLabel,
+    .hwLegacyLabel {
+      font-size: 10px !important;
+      letter-spacing: 1.6px !important;
+      opacity: .84 !important;
+      color: #aef6ff !important;
+      text-shadow: none !important;
+    }
+
+    .settingOptionDesc { margin-top: 5px !important; }
+    .settingOptionLabel {
+      font-size: 12px !important;
+      letter-spacing: 1.1px !important;
+      color: #d9fbff !important;
+    }
+
+    .testConfigName,
+    .hwValue,
+    .testRankValue {
+      font-size: 11px !important;
+      letter-spacing: .8px !important;
+      opacity: .98 !important;
+      text-shadow: none !important;
+    }
+
+    /* Upgrade / choose upgrade screens */
+    .upgradePanel h2 {
+      letter-spacing: 4px !important;
+    }
+    .upgradePanel h2::before {
+      font-size: 9px !important;
+      letter-spacing: 3px !important;
+      opacity: .86 !important;
+      text-shadow: none !important;
+    }
+    .upgradePanel .sub {
+      font-size: 11px !important;
+      letter-spacing: 1.4px !important;
+      line-height: 1.5 !important;
+      opacity: .90 !important;
+      text-shadow: none !important;
+    }
+    .upgradeChoice {
+      min-height: 118px !important;
+      padding: 14px 13px !important;
+    }
+    .upgradeChoice b {
+      font-size: 13px !important;
+      letter-spacing: .8px !important;
+      text-shadow: none !important;
+    }
+    .upgradeChoice span {
+      font-size: 11px !important;
+      line-height: 1.5 !important;
+      opacity: .94 !important;
+      text-shadow: none !important;
+    }
+    .upgradeChoice small {
+      font-size: 10px !important;
+      opacity: .82 !important;
+      text-shadow: none !important;
+    }
+
+    /* Pause overlay readability */
+    .pauseHeader h1 {
+      letter-spacing: 4px !important;
+    }
+    .pauseRunMeta {
+      font-size: 11px !important;
+      letter-spacing: 1px !important;
+      text-align: right;
+    }
+    .pauseLoadoutCard {
+      padding: 12px 14px !important;
+    }
+    .pauseLoadoutCard span {
+      font-size: 10px !important;
+      letter-spacing: 1.3px !important;
+      opacity: .78 !important;
+      text-shadow: none !important;
+    }
+    .pauseLoadoutCard b {
+      font-size: 15px !important;
+      letter-spacing: 1.2px !important;
+      text-shadow: none !important;
+    }
+    .pauseSectionTitle {
+      font-size: 11px !important;
+      letter-spacing: 1.5px !important;
+      opacity: .88 !important;
+      text-shadow: none !important;
+    }
+    .pauseUpgradeChip {
+      font-size: 11px !important;
+      letter-spacing: .35px !important;
+      padding: 8px 10px !important;
+      background: rgba(5,11,24,.76) !important;
+      border-color: rgba(111,242,255,.24) !important;
+      text-shadow: none !important;
+    }
+    .pauseUpgradeChip b {
+      text-shadow: none !important;
+    }
+    .pauseUpgradeChip em {
+      font-size: 10px !important;
+      opacity: .82 !important;
+      text-shadow: none !important;
+    }
+    .pauseNoUpgrades {
+      font-size: 12px !important;
+      opacity: .74 !important;
+      text-shadow: none !important;
+    }
+    .pauseActions button {
+      font-size: 11px !important;
+      letter-spacing: 1px !important;
+    }
+
+    /* Test lab / workshop */
+    .testLoadoutTitle,
+    .hwTitle {
+      letter-spacing: 4px !important;
+    }
+    .testLoadoutSub {
+      font-size: 10px !important;
+      letter-spacing: 1px !important;
+      opacity: .86 !important;
+      text-shadow: none !important;
+    }
+    .testConfigSectionTitle,
+    .testSpawnerTitle {
+      font-size: 11px !important;
+      letter-spacing: 2px !important;
+    }
+    .testSpawnerGroupTitle {
+      font-size: 9px !important;
+      letter-spacing: 1.5px !important;
+      opacity: .76 !important;
+    }
+    .testConfigName {
+      font-size: 11px !important;
+    }
+    .testConfigDesc,
+    .hwDesc {
+      opacity: .80 !important;
+    }
+    .testSpawnBtn {
+      min-height: 34px !important;
+      font-size: 9px !important;
+    }
+
+    .hwSub {
+      font-size: 9px !important;
+      letter-spacing: .8px !important;
+      opacity: .82 !important;
+    }
+    .hwLabel {
+      font-size: 9px !important;
+      letter-spacing: 1.5px !important;
+      opacity: .78 !important;
+    }
+    .hwValue {
+      font-size: 11px !important;
+      letter-spacing: 1px !important;
+    }
+    .hwDesc {
+      font-size: 10px !important;
+      line-height: 1.45 !important;
+    }
+    .hwLegacyLabel {
+      font-size: 8px !important;
+      opacity: .72 !important;
+    }
+
+    /* Buttons generally need slightly larger labels on desktop */
+    #startBtn,
+    .secondaryBtn,
+    .primaryBtn,
+    .testUtilityBtn,
+    .hwActionRow button,
+    .hwPresetBtn,
+    .hwLoadBtn {
+      letter-spacing: 1.2px !important;
+      text-shadow: none !important;
+    }
+
+    /* Keep glowy headings, but kill haze on dense informational text */
+    .shipDescLabel,
+    .weaponDescLabel,
+    .shipStatsLabel,
+    .weaponStatsLabel,
+    .menuStats,
+    .menuSubtitle,
+    .settingOptionLabel,
+    .settingOptionDesc,
+    .pauseUpgradeChip,
+    .pauseLoadoutCard span,
+    .pauseRunMeta,
+    .testConfigDesc,
+    .hwDesc {
+      filter: none !important;
+      text-shadow: none !important;
+    }
+  }
+
+
+  /* ---------- DESKTOP CRISP MICRO-TYPE // WINDOWS + CHROME ---------- */
+  @media (min-width:981px) and (pointer:fine) {
+    html, body, button, input, select, textarea {
+      /* Small monospace text benefits from normal font hinting on Windows.
+         geometricPrecision was making 8-11px labels look like runes. */
+      text-rendering:auto !important;
+      font-kerning:normal;
+      font-synthesis:none;
+    }
+
+    /* Dense informational UI gets a sturdy hinted monospace stack. */
+    .hwPanel,
+    .testLoadoutPanel,
+    .testSpawnerPanel,
+    .pausePanel,
+    .settingsPanel,
+    .htpPanel,
+    .achievementsPanel,
+    .shopPanel,
+    .upgradePanel,
+    .loadoutPanel {
+      font-family: Consolas, "Lucida Console", "Courier New", monospace !important;
+    }
+
+    /* HULL WORKSHOP — strongest fix, matching the screenshot. */
+    .hwStats {
+      font-size:12px !important;
+      line-height:1.72 !important;
+      font-weight:600 !important;
+      letter-spacing:0 !important;
+      opacity:1 !important;
+      color:#e7fcff !important;
+      text-shadow:none !important;
+    }
+    .hwPower {
+      font-size:11px !important;
+      line-height:1.55 !important;
+      font-weight:600 !important;
+      letter-spacing:.15px !important;
+      opacity:1 !important;
+      color:#e7fcff !important;
+      text-shadow:none !important;
+      padding:10px 11px !important;
+    }
+    .hwLabel {
+      font-size:11px !important;
+      font-weight:700 !important;
+      letter-spacing:.65px !important;
+      opacity:.96 !important;
+      color:#bdf8ff !important;
+      text-shadow:none !important;
+    }
+    .hwValue {
+      font-size:12px !important;
+      font-weight:700 !important;
+      letter-spacing:.35px !important;
+      opacity:1 !important;
+      color:#f1feff !important;
+      text-shadow:none !important;
+    }
+    .hwDesc {
+      font-size:11px !important;
+      line-height:1.5 !important;
+      font-weight:500 !important;
+      letter-spacing:0 !important;
+      opacity:.92 !important;
+      color:#d8f8ff !important;
+      text-shadow:none !important;
+    }
+    .hwSub {
+      font-size:11px !important;
+      line-height:1.45 !important;
+      font-weight:500 !important;
+      letter-spacing:.25px !important;
+      opacity:.90 !important;
+      color:#c7f4ff !important;
+      text-shadow:none !important;
+    }
+    .hwLegacyLabel,
+    .hwPresetStatus,
+    .hwPresetEmpty {
+      font-size:10px !important;
+      line-height:1.45 !important;
+      font-weight:600 !important;
+      letter-spacing:.35px !important;
+      opacity:.84 !important;
+      color:#bfefff !important;
+      text-shadow:none !important;
+    }
+    .hwPresetLoad,
+    .hwPresetDelete,
+    .hwPresetName,
+    .hwLegacyBtn,
+    .hwAction,
+    #customHullBtn,
+    .hwSaveBtn {
+      font-size:11px !important;
+      font-weight:600 !important;
+      letter-spacing:.25px !important;
+      line-height:1.2 !important;
+      text-shadow:none !important;
+    }
+    .hwPresetLoad,
+    .hwPresetName {
+      min-height:38px !important;
+      padding:8px 10px !important;
+    }
+    .hwPresetDelete {
+      min-height:38px !important;
+    }
+    .hwLegacyBtn,
+    .hwAction,
+    #customHullBtn,
+    .hwSaveBtn {
+      min-height:38px !important;
+      padding:8px 12px !important;
+    }
+    .hwBuildName {
+      font-size:14px !important;
+      font-weight:700 !important;
+      letter-spacing:1px !important;
+    }
+    .hwTitle {
+      font-size:22px !important;
+      letter-spacing:3.2px !important;
+    }
+
+    /* Make the little bar-glyph stat display itself cleaner and brighter. */
+    .hwStats {
+      border-color:rgba(111,242,255,.20) !important;
+      background:rgba(2,10,23,.58) !important;
+    }
+    .hwPower,
+    .hwPresetShelf,
+    .hwRow {
+      border-color:rgba(111,242,255,.22) !important;
+      background:rgba(2,9,21,.64) !important;
+    }
+
+    /* TEST LAB / BUILD CONFIG */
+    .testConfigName,
+    .testRankValue,
+    .testSpawnerTitle {
+      font-size:12px !important;
+      font-weight:700 !important;
+      letter-spacing:.35px !important;
+      opacity:1 !important;
+      text-shadow:none !important;
+    }
+    .testConfigDesc,
+    .testLoadoutSub {
+      font-size:11px !important;
+      line-height:1.5 !important;
+      font-weight:500 !important;
+      letter-spacing:0 !important;
+      opacity:.92 !important;
+      text-shadow:none !important;
+    }
+    .testConfigSectionTitle,
+    .testSpawnerGroupTitle {
+      font-size:11px !important;
+      font-weight:700 !important;
+      letter-spacing:.8px !important;
+      opacity:.92 !important;
+      text-shadow:none !important;
+    }
+    .testSpawnBtn,
+    .testUtilityBtn {
+      font-size:11px !important;
+      font-weight:600 !important;
+      letter-spacing:.25px !important;
+      text-shadow:none !important;
+    }
+
+    /* SETTINGS / PAUSE / UPGRADE MICROCOPY */
+    .settingOptionDesc,
+    .pauseRunMeta,
+    .pauseUpgradeChip,
+    .pauseUpgradeChip em,
+    .upgradeChoice span,
+    .upgradeChoice small,
+    .shipDescLabel,
+    .weaponDescLabel,
+    .shipStatsLabel,
+    .weaponStatsLabel {
+      font-family:Consolas, "Lucida Console", "Courier New", monospace !important;
+      font-weight:500 !important;
+      letter-spacing:0 !important;
+      opacity:.94 !important;
+      text-shadow:none !important;
+    }
+
+    .settingOptionDesc,
+    .pauseRunMeta,
+    .upgradeChoice span,
+    .shipDescLabel,
+    .weaponDescLabel {
+      font-size:12px !important;
+      line-height:1.55 !important;
+    }
+
+    .shipStatsLabel,
+    .weaponStatsLabel,
+    .pauseUpgradeChip,
+    .upgradeChoice small {
+      font-size:11px !important;
+      line-height:1.5 !important;
+    }
+
+    .settingOptionLabel,
+    .pauseSectionTitle,
+    .loadoutHeader,
+    .testConfigSectionTitle {
+      font-size:12px !important;
+      font-weight:700 !important;
+      letter-spacing:.75px !important;
+      opacity:.96 !important;
+      text-shadow:none !important;
+    }
+
+    /* Keep actual synthwave headers decorative, but not excessively spaced. */
+    .settingsKicker,
+    .menuEyebrow,
+    .upgradePanel h2::before {
+      letter-spacing:2px !important;
+    }
+  }
+
+
+  /* Weapon meters use the same clean segmented-box vocabulary as hull stats. */
+  .weaponStatsLabel {
+    white-space:pre !important;
+    text-align:center !important;
+    font-family:Consolas, "Lucida Console", "Courier New", monospace !important;
+    font-variant-ligatures:none;
+    letter-spacing:0 !important;
+    line-height:1.58 !important;
+    color:#dffaff !important;
+    background:rgba(111,242,255,.025) !important;
+    border:1px solid rgba(111,242,255,.09) !important;
+    box-shadow:inset 0 0 16px rgba(0,0,0,.18) !important;
+  }
+
+  @media (min-width:981px) and (pointer:fine) {
+    .weaponStatsLabel {
+      font-size:11px !important;
+      font-weight:600 !important;
+      line-height:1.62 !important;
+      padding:8px 10px !important;
+      text-shadow:none !important;
+    }
+  }
+
+
+  /* ---------- TITLE SPLASH + CLEANER MAIN MENU ---------- */
+  #titleScreen {
+    --title-parallax-x: 0px;
+    --title-parallax-y: 0px;
+    position:absolute;
+    inset:0;
+    z-index:30;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:30px;
+    overflow:hidden;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(71,30,97,.16) 0%, rgba(71,30,97,0) 52%),
+      linear-gradient(180deg, #010207 0%, #020513 44%, #030918 100%);
+    transition:opacity .55s ease, visibility .55s ease;
+  }
+  #titleScreen::before {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(circle at 18% 22%, rgba(111,242,255,.045), transparent 18%),
+      radial-gradient(circle at 74% 28%, rgba(255,77,166,.045), transparent 20%),
+      radial-gradient(circle at 56% 82%, rgba(111,242,255,.03), transparent 22%);
+    opacity:.9;
+  }
+  #titleScreen::after {
+    content:"";
+    position:absolute;
+    inset:0;
+    pointer-events:none;
+    background:radial-gradient(circle at center, transparent 44%, rgba(0,0,0,.26) 100%);
+  }
+
+  .titleSplashScene {
+    position:absolute;
+    inset:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+
+  .titleNebulaField {
+    position:absolute;
+    inset:-10%;
+    will-change:transform, opacity;
+    mix-blend-mode:screen;
+    opacity:.78;
+  }
+  .titleNebulaField.layer-far {
+    transform:translate3d(calc(var(--title-parallax-x) * .10), calc(var(--title-parallax-y) * .08), 0);
+  }
+  .titleNebulaField.layer-mid {
+    transform:translate3d(calc(var(--title-parallax-x) * .20), calc(var(--title-parallax-y) * .14), 0);
+  }
+  .titleNebulaField.layer-near {
+    transform:translate3d(calc(var(--title-parallax-x) * .34), calc(var(--title-parallax-y) * .22), 0);
+  }
+
+  .titleNebulaBlob {
+    position:absolute;
+    display:block;
+    border-radius:50%;
+    filter:blur(38px) saturate(1.12);
+    opacity:.62;
+    animation:nebulaPulse 10s ease-in-out infinite alternate;
+  }
+
+  .titleNebulaBlob.cyanA {
+    width:40vw; height:26vw; min-width:260px; min-height:180px;
+    left:8%; top:8%;
+    background:
+      radial-gradient(ellipse at 52% 46%, rgba(83,230,255,.28) 0%, rgba(83,230,255,.15) 24%, rgba(83,230,255,.06) 44%, rgba(83,230,255,0) 72%);
+    animation-duration: 12.5s;
+  }
+  .titleNebulaBlob.magentaA {
+    width:52vw; height:34vw; min-width:340px; min-height:220px;
+    left:25%; top:2%;
+    background:
+      radial-gradient(ellipse at 50% 44%, rgba(255,84,180,.34) 0%, rgba(255,84,180,.20) 22%, rgba(255,84,180,.08) 46%, rgba(255,84,180,0) 74%);
+    animation-duration: 10.8s;
+  }
+  .titleNebulaBlob.violetA {
+    width:46vw; height:30vw; min-width:300px; min-height:200px;
+    right:6%; top:10%;
+    background:
+      radial-gradient(ellipse at 50% 50%, rgba(144,108,255,.26) 0%, rgba(144,108,255,.15) 24%, rgba(144,108,255,.06) 46%, rgba(144,108,255,0) 74%);
+    animation-duration: 13.2s;
+  }
+  .titleNebulaBlob.pinkB {
+    width:38vw; height:24vw; min-width:240px; min-height:170px;
+    left:18%; bottom:22%;
+    background:
+      radial-gradient(ellipse at 48% 48%, rgba(255,112,200,.22) 0%, rgba(255,112,200,.11) 26%, rgba(255,112,200,.04) 48%, rgba(255,112,200,0) 74%);
+    animation-duration: 14.2s;
+  }
+  .titleNebulaBlob.blueB {
+    width:44vw; height:28vw; min-width:280px; min-height:190px;
+    right:18%; bottom:18%;
+    background:
+      radial-gradient(ellipse at 52% 48%, rgba(92,176,255,.18) 0%, rgba(92,176,255,.10) 24%, rgba(92,176,255,.04) 46%, rgba(92,176,255,0) 74%);
+    animation-duration: 15.5s;
+  }
+  .titleNebulaBlob.whiteCore {
+    width:22vw; height:15vw; min-width:150px; min-height:100px;
+    left:44%; top:18%;
+    background:
+      radial-gradient(ellipse at center, rgba(255,255,255,.18) 0%, rgba(255,216,246,.11) 16%, rgba(255,216,246,.04) 34%, rgba(255,216,246,0) 66%);
+    filter:blur(26px);
+    opacity:.52;
+    animation-duration: 8.6s;
+  }
+
+  @keyframes nebulaPulse {
+    0%   { transform:translate3d(0,0,0) scale(1); opacity:.50; }
+    50%  { transform:translate3d(8px,-6px,0) scale(1.045); opacity:.68; }
+    100% { transform:translate3d(-6px,7px,0) scale(1.02); opacity:.58; }
+  }
+
+  .titleStarfield {
+    position:absolute;
+    inset:-6%;
+    will-change:transform;
+  }
+
+  .titleStarLayer {
+    position:absolute;
+    inset:-5%;
+    will-change:transform;
+    transition:transform .12s linear;
+  }
+  .titleStarLayer.layer-far {
+    transform:translate3d(calc(var(--title-parallax-x) * .20), calc(var(--title-parallax-y) * .16), 0);
+  }
+  .titleStarLayer.layer-mid {
+    transform:translate3d(calc(var(--title-parallax-x) * .42), calc(var(--title-parallax-y) * .30), 0);
+  }
+  .titleStarLayer.layer-near {
+    transform:translate3d(calc(var(--title-parallax-x) * .72), calc(var(--title-parallax-y) * .52), 0);
+  }
+
+  .titleStarLayer.layer-far .titleStar { animation-duration: 4.8s; }
+  .titleStarLayer.layer-mid .titleStar { animation-duration: 3.8s; }
+  .titleStarLayer.layer-near .titleStar { animation-duration: 2.9s; }
+
+  .titleStar {
+    position:absolute;
+    display:block;
+    border-radius:50%;
+    background:#d8fbff;
+    opacity:.8;
+    animation-name:titleStarTwinkle;
+    animation-iteration-count:infinite;
+    animation-timing-function:ease-in-out;
+  }
+  @keyframes titleStarTwinkle {
+    0%,100% { transform:scale(.92); opacity:.42; }
+    50% { transform:scale(1.15); opacity:1; }
+  }
+
+  .titleSplashInner {
+    position:relative;
+    z-index:1;
+    width:min(760px, 100%);
+    text-align:center;
+    padding:34px 24px 28px;
+    border:1px solid rgba(111,242,255,.16);
+    background:
+      linear-gradient(180deg, rgba(5,11,26,.48), rgba(2,7,18,.34)),
+      linear-gradient(90deg, rgba(111,242,255,.018), rgba(255,77,166,.018));
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.02),
+      0 0 26px rgba(111,242,255,.06),
+      0 0 52px rgba(255,77,166,.035);
+    backdrop-filter:blur(2px);
+    animation:titleSplashReveal 1s cubic-bezier(.18,.8,.18,1) both;
+  }
+  @keyframes titleSplashReveal {
+    0% { opacity:0; transform:translateY(14px) scale(.988); filter:blur(8px); }
+    100% { opacity:1; transform:translateY(0) scale(1); filter:blur(0); }
+  }
+
+  .titleSplashEyebrow {
+    color:#ffc2df;
+    font:700 11px/1 Consolas, "Courier New", monospace;
+    letter-spacing:3.2px;
+    text-transform:uppercase;
+    text-shadow:0 0 10px rgba(255,77,166,.16);
+  }
+  .titleSplashLogo {
+    margin:16px 0 10px;
+    color:#75f3ff;
+    font:700 clamp(58px, 12vw, 124px)/.9 "Courier New", monospace;
+    letter-spacing:10px;
+    text-transform:uppercase;
+    text-shadow:
+      0 0 10px rgba(111,242,255,.24),
+      0 0 20px rgba(111,242,255,.18),
+      0 0 44px rgba(111,242,255,.10);
+  }
+  .titleSplashSub {
+    color:rgba(230,248,255,.95);
+    font:700 12px/1.6 Consolas, "Courier New", monospace;
+    letter-spacing:2.4px;
+    text-transform:uppercase;
+  }
+  .titleSplashCallout {
+    margin-top:14px;
+    color:rgba(198,246,255,.82);
+    font:600 10px/1.55 Consolas, "Courier New", monospace;
+    letter-spacing:1.1px;
+    text-transform:uppercase;
+  }
+
+  #enterMenuBtn {
+    margin-top:20px;
+    min-width:240px;
+    min-height:54px;
+    padding:0 24px;
+    border:1px solid rgba(111,242,255,.72);
+    background:
+      linear-gradient(90deg, rgba(8,18,34,.88), rgba(17,9,29,.82)),
+      linear-gradient(180deg, rgba(255,255,255,.03), rgba(255,255,255,0));
+    color:#effdff;
+    font:700 13px/1 Consolas, "Courier New", monospace;
+    letter-spacing:2.8px;
+    text-transform:uppercase;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.03),
+      0 0 18px rgba(111,242,255,.10),
+      0 0 30px rgba(255,77,166,.05);
+    cursor:pointer;
+    transition:transform .08s ease, box-shadow .16s ease, border-color .16s ease;
+  }
+  #enterMenuBtn:hover,
+  #enterMenuBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(174,250,255,.96);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.03),
+      0 0 24px rgba(111,242,255,.16),
+      0 0 40px rgba(255,77,166,.08);
+  }
+  .titleSplashHint {
+    margin-top:12px;
+    color:rgba(212,248,255,.74);
+    font:600 10px/1.55 Consolas, "Courier New", monospace;
+    letter-spacing:.95px;
+  }
+
+  #titleScreen.dismissed {
+    opacity:0;
+    visibility:hidden;
+    pointer-events:none;
+  }
+
+  body.intro-active .menuLayout,
+  body.intro-active .buildTag {
+    opacity:.16;
+    filter:blur(7px);
+    transform:scale(1.012);
+    pointer-events:none;
+    transition:opacity .35s ease, filter .35s ease, transform .35s ease;
+  }
+
+  .menuDeckBlock {
+    min-height:auto !important;
+    justify-content:flex-start !important;
+  }
+  .menuDeckTitle {
+    margin-top:6px;
+    color:#74f3ff;
+    font:700 clamp(24px, 4.4vw, 40px)/1.02 "Courier New", monospace;
+    letter-spacing:4px;
+    text-transform:uppercase;
+    text-shadow:0 0 12px rgba(111,242,255,.12);
+  }
+  .menuInfoNote {
+    margin-top:12px;
+    color:rgba(194,244,255,.72);
+    font:600 10px/1.5 Consolas, "Courier New", monospace;
+    letter-spacing:1.2px;
+    text-transform:uppercase;
+  }
+
+  @media (max-width: 980px) {
+    #titleScreen { padding:16px; }
+    .titleNebulaField { inset:-12%; opacity:.68; }
+    .titleNebulaBlob { filter:blur(30px) saturate(1.08); }
+    .titleNebulaBlob.cyanA    { width:58vw; height:38vw; left:2%; top:10%; min-width:180px; min-height:120px; }
+    .titleNebulaBlob.magentaA { width:74vw; height:48vw; left:14%; top:2%; min-width:240px; min-height:160px; }
+    .titleNebulaBlob.violetA  { width:60vw; height:40vw; right:-2%; top:12%; min-width:200px; min-height:140px; }
+    .titleNebulaBlob.pinkB    { width:54vw; height:36vw; left:6%; bottom:20%; min-width:170px; min-height:120px; }
+    .titleNebulaBlob.blueB    { width:60vw; height:38vw; right:8%; bottom:18%; min-width:200px; min-height:140px; }
+    .titleNebulaBlob.whiteCore{ width:34vw; height:22vw; left:38%; top:18%; min-width:110px; min-height:78px; }
+    .titleSplashInner { padding:24px 16px 20px; width:min(94vw, 560px); }
+    .titleSplashEyebrow { font-size:9px; letter-spacing:2.2px; }
+    .titleSplashLogo { font-size:clamp(42px, 17vw, 78px); letter-spacing:6px; margin:12px 0 8px; }
+    .titleSplashSub { font-size:9px; letter-spacing:1.6px; line-height:1.45; }
+    .titleSplashCallout { font-size:8px; letter-spacing:.8px; line-height:1.45; }
+    #enterMenuBtn { min-width:0; width:100%; min-height:46px; font-size:11px; letter-spacing:2.1px; margin-top:16px; }
+    .titleSplashHint { font-size:9px; letter-spacing:.7px; }
+
+    .menuDeckTitle {
+      font-size:clamp(18px, 7vw, 28px);
+      letter-spacing:2.5px;
+      text-align:center;
+    }
+    .menuInfoNote {
+      font-size:8px;
+      line-height:1.4;
+      letter-spacing:.8px;
+      text-align:center;
+    }
+    .menuStats {
+      justify-content:center;
+    }
+  }
+
+  @media (min-width:981px) and (pointer:fine) {
+    .menuDeckTitle { font-family:Consolas, "Courier New", monospace; }
+    .menuInfoNote {
+      font-size:11px !important;
+      line-height:1.48 !important;
+      letter-spacing:.55px !important;
+      color:#d6f9ff !important;
+      text-shadow:none !important;
+    }
+    #enterMenuBtn { font-family:Consolas, "Courier New", monospace; }
+  }
+
+
+  /* ---------- MAIN MENU COMPACT LOADOUT ---------- */
+  /* The splash owns the dramatic title. The actual main menu is now just the useful loadout UI. */
+  body.in-menu .menuLayout {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:min(660px, 94vw) !important;
+    max-width:660px !important;
+    height:100% !important;
+    margin:0 auto !important;
+    padding:24px 0 !important;
+    gap:0 !important;
+  }
+
+  body.in-menu .loadoutPanel {
+    justify-self:auto !important;
+    width:100% !important;
+    max-width:620px !important;
+    margin:0 auto !important;
+  }
+
+  body.in-menu .hullHeader {
+    margin-bottom:6px !important;
+  }
+
+  body.in-menu .loadoutMetaBar {
+    display:block !important;
+    width:100% !important;
+    box-sizing:border-box !important;
+    margin:0 0 14px !important;
+    padding:6px 9px !important;
+    border:0 !important;
+    border-left:1px solid rgba(255,117,197,.48) !important;
+    background:linear-gradient(90deg, rgba(111,242,255,.045), rgba(255,77,166,.018), transparent 88%) !important;
+    color:rgba(219,249,255,.84) !important;
+    font-family:Consolas, "Courier New", monospace !important;
+    font-size:9px !important;
+    font-weight:600 !important;
+    line-height:1.35 !important;
+    letter-spacing:.45px !important;
+    text-align:left !important;
+    white-space:normal !important;
+    opacity:1 !important;
+    text-shadow:none !important;
+    box-shadow:none !important;
+  }
+
+  /* Any old left-side hero rules can remain in the stylesheet, but the element is gone. */
+  body.in-menu .menuTitleBlock,
+  body.in-menu .menuDeckBlock {
+    display:none !important;
+  }
+
+  @media (max-width:760px) {
+    body.in-menu .menuLayout {
+      width:100% !important;
+      max-width:620px !important;
+      height:auto !important;
+      min-height:100% !important;
+      padding:
+        max(14px, env(safe-area-inset-top))
+        max(10px, env(safe-area-inset-right))
+        max(24px, env(safe-area-inset-bottom))
+        max(10px, env(safe-area-inset-left)) !important;
+    }
+    body.in-menu .loadoutMetaBar {
+      margin-bottom:10px !important;
+      padding:5px 7px !important;
+      font-size:8px !important;
+      line-height:1.3 !important;
+      text-align:center !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    body.in-menu .menuLayout {
+      width:min(640px, 96vw) !important;
+      max-width:640px !important;
+      padding:8px 0 10px !important;
+    }
+    body.in-menu .loadoutPanel {
+      max-width:620px !important;
+    }
+    body.in-menu .loadoutMetaBar {
+      margin-bottom:5px !important;
+      padding:3px 6px !important;
+      font-size:7px !important;
+      line-height:1.2 !important;
+    }
+  }
+
+
+  /* ---------- MAIN MENU TWO-COLUMN LOADOUT ---------- */
+  body.in-menu .menuLayout {
+    width:min(960px, 96vw) !important;
+    max-width:960px !important;
+  }
+
+  body.in-menu .loadoutPanel {
+    width:100% !important;
+    max-width:900px !important;
+    padding:18px 20px 16px !important;
+  }
+
+  body.in-menu .loadoutMetaBar {
+    display:grid !important;
+    grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+    gap:0 !important;
+    width:100% !important;
+    margin:0 0 16px !important;
+    padding:0 !important;
+    border:1px solid rgba(111,242,255,.11) !important;
+    border-left:1px solid rgba(111,242,255,.11) !important;
+    background:rgba(3,9,20,.46) !important;
+    overflow:hidden;
+  }
+  body.in-menu .loadoutMetaBar .metaCell {
+    display:flex;
+    align-items:baseline;
+    justify-content:center;
+    gap:8px;
+    min-width:0;
+    padding:7px 10px;
+    border-right:1px solid rgba(111,242,255,.09);
+    text-align:center;
+  }
+  body.in-menu .loadoutMetaBar .metaCell:last-child { border-right:0; }
+  body.in-menu .loadoutMetaBar small {
+    color:rgba(168,238,255,.58);
+    font:700 8px/1 Consolas, "Courier New", monospace;
+    letter-spacing:1.15px;
+  }
+  body.in-menu .loadoutMetaBar b {
+    color:#e9fdff;
+    font:700 11px/1 Consolas, "Courier New", monospace;
+    letter-spacing:.25px;
+  }
+
+  body.in-menu .loadoutColumns {
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    align-items:stretch;
+    gap:0;
+  }
+
+  body.in-menu .loadoutSection {
+    min-width:0;
+    padding:0 18px 2px;
+  }
+  body.in-menu .hullSection {
+    padding-left:4px;
+    padding-right:20px;
+  }
+  body.in-menu .buildSection {
+    padding-left:20px;
+    padding-right:4px;
+    border-left:1px solid rgba(111,242,255,.12);
+  }
+
+  body.in-menu .loadoutHeader {
+    margin-bottom:10px !important;
+  }
+
+  body.in-menu .shipHoloRing {
+    width:122px !important;
+    height:122px !important;
+  }
+  body.in-menu #shipPreviewCanvas {
+    width:110px !important;
+    height:110px !important;
+  }
+  body.in-menu .shipPreviewRow {
+    gap:13px !important;
+    padding-top:0 !important;
+  }
+
+  body.in-menu .shipDescLabel,
+  body.in-menu .weaponDescLabel {
+    max-width:100% !important;
+    min-height:44px !important;
+  }
+
+  body.in-menu .shipStatsLabel,
+  body.in-menu .weaponStatsLabel {
+    width:100% !important;
+    box-sizing:border-box !important;
+    min-height:82px;
+  }
+
+  body.in-menu .weaponSelect {
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    min-height:100%;
+    padding-top:22px !important;
+  }
+  body.in-menu .weaponSelectRow {
+    gap:12px !important;
+  }
+  body.in-menu .weaponNameLabel {
+    min-width:150px !important;
+  }
+
+  body.in-menu .menuActions {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) 42px auto !important;
+    align-items:center !important;
+    gap:8px !important;
+    margin-top:16px !important;
+  }
+
+  body.in-menu #startBtn {
+    width:100% !important;
+    min-height:42px !important;
+  }
+
+  body.in-menu #testGroundBtn.testGroundIconBtn {
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+    min-height:42px !important;
+    padding:0 !important;
+    margin:0 !important;
+    display:grid !important;
+    place-items:center !important;
+    border:1px solid rgba(255,208,114,.34) !important;
+    background:linear-gradient(180deg,rgba(255,208,114,.065),rgba(255,117,197,.025)) !important;
+    color:#ffe7a8 !important;
+  }
+  body.in-menu #testGroundBtn.testGroundIconBtn .uiIcon {
+    width:18px;
+    height:18px;
+  }
+
+  body.in-menu .menuIconRow {
+    grid-column:auto !important;
+    display:flex !important;
+    justify-content:flex-end !important;
+    gap:6px !important;
+    padding:0 !important;
+  }
+  body.in-menu .menuIconBtn {
+    width:42px !important;
+    height:42px !important;
+  }
+
+  /* Tablet / phone portrait: keep the two-column concept but scale it intelligently. */
+  @media (max-width:760px) {
+    body.in-menu .menuLayout {
+      width:100% !important;
+      max-width:none !important;
+    }
+    body.in-menu .loadoutPanel {
+      max-width:none !important;
+      padding:11px 9px 10px !important;
+    }
+    body.in-menu .loadoutMetaBar {
+      margin-bottom:10px !important;
+    }
+    body.in-menu .loadoutMetaBar .metaCell {
+      flex-direction:column;
+      gap:2px;
+      padding:5px 3px;
+    }
+    body.in-menu .loadoutMetaBar small {
+      font-size:6.8px;
+      letter-spacing:.65px;
+    }
+    body.in-menu .loadoutMetaBar b {
+      font-size:9px;
+    }
+
+    body.in-menu .loadoutSection {
+      padding:0 7px 1px;
+    }
+    body.in-menu .hullSection {
+      padding-left:1px;
+      padding-right:7px;
+    }
+    body.in-menu .buildSection {
+      padding-left:7px;
+      padding-right:1px;
+    }
+
+    body.in-menu .loadoutHeader {
+      font-size:7px !important;
+      letter-spacing:1.6px !important;
+      margin-bottom:6px !important;
+    }
+
+    body.in-menu .shipHoloRing {
+      width:82px !important;
+      height:82px !important;
+    }
+    body.in-menu #shipPreviewCanvas {
+      width:74px !important;
+      height:74px !important;
+    }
+    body.in-menu .shipPreviewRow {
+      gap:4px !important;
+    }
+    body.in-menu .shipArrowBtn,
+    body.in-menu .weaponArrowBtn {
+      width:25px !important;
+      height:25px !important;
+      min-width:25px !important;
+      padding:0 !important;
+    }
+
+    body.in-menu .shipNameLabel,
+    body.in-menu .weaponNameLabel {
+      font-size:10px !important;
+      letter-spacing:1px !important;
+    }
+    body.in-menu .weaponNameLabel {
+      min-width:72px !important;
+    }
+
+    body.in-menu .shipDescLabel,
+    body.in-menu .weaponDescLabel {
+      min-height:46px !important;
+      font-size:7.6px !important;
+      line-height:1.35 !important;
+    }
+    body.in-menu .shipStatsLabel,
+    body.in-menu .weaponStatsLabel {
+      min-height:70px !important;
+      padding:5px 4px !important;
+      font-size:7.2px !important;
+      line-height:1.35 !important;
+    }
+
+    body.in-menu #customHullBtn {
+      min-height:30px !important;
+      padding:5px 6px !important;
+      font-size:6.8px !important;
+      letter-spacing:.7px !important;
+    }
+
+    body.in-menu .weaponSelect {
+      padding-top:16px !important;
+    }
+
+    body.in-menu .menuActions {
+      grid-template-columns:minmax(0,1fr) 36px auto !important;
+      gap:5px !important;
+      margin-top:9px !important;
+    }
+    body.in-menu #startBtn {
+      min-height:36px !important;
+      font-size:9px !important;
+    }
+    body.in-menu #testGroundBtn.testGroundIconBtn,
+    body.in-menu .menuIconBtn {
+      width:36px !important;
+      height:36px !important;
+      min-width:36px !important;
+      min-height:36px !important;
+    }
+    body.in-menu .menuIconRow {
+      gap:4px !important;
+    }
+  }
+
+  /* Very narrow phones: maintain side-by-side loadout sections, but allow the
+     utility icons to move onto their own centered row before crushing content. */
+  @media (max-width:430px) {
+    body.in-menu .menuActions {
+      grid-template-columns:minmax(0,1fr) 36px !important;
+    }
+    body.in-menu .menuIconRow {
+      grid-column:1 / -1 !important;
+      justify-content:center !important;
+      margin-top:1px !important;
+    }
+  }
+
+  /* Short mobile landscape stays compact and side-by-side. */
+  @media (orientation:landscape) and (max-height:520px) {
+    body.in-menu .loadoutPanel {
+      width:min(900px,98vw) !important;
+      max-width:900px !important;
+      padding:7px 10px 7px !important;
+    }
+    body.in-menu .loadoutMetaBar {
+      margin-bottom:5px !important;
+    }
+    body.in-menu .loadoutMetaBar .metaCell { padding:3px 6px !important; }
+    body.in-menu .shipHoloRing {
+      width:68px !important;
+      height:68px !important;
+    }
+    body.in-menu #shipPreviewCanvas {
+      width:62px !important;
+      height:62px !important;
+    }
+    body.in-menu .shipDescLabel,
+    body.in-menu .weaponDescLabel {
+      min-height:26px !important;
+    }
+    body.in-menu .shipStatsLabel,
+    body.in-menu .weaponStatsLabel {
+      min-height:48px !important;
+    }
+    body.in-menu .weaponSelect {
+      padding-top:5px !important;
+    }
+    body.in-menu .menuActions {
+      margin-top:5px !important;
+    }
+  }
+
+
+  /* ---------- WEAPON SCHEMATIC + ACTION BAR REBALANCE ---------- */
+  body.in-menu .weaponSelect {
+    padding-top:0 !important;
+  }
+
+  body.in-menu .weaponSchematicFrame {
+    --weapon-color:#74e8ff;
+    position:relative;
+    width:min(260px, 92%);
+    height:122px;
+    margin:0 auto 8px;
+    display:grid;
+    place-items:center;
+    border:1px solid color-mix(in srgb, var(--weapon-color) 24%, transparent);
+    background:
+      radial-gradient(circle at center, color-mix(in srgb, var(--weapon-color) 7%, transparent) 0%, transparent 58%),
+      linear-gradient(180deg,rgba(4,10,22,.44),rgba(2,7,17,.18));
+    box-shadow:
+      inset 0 0 24px rgba(0,0,0,.18),
+      0 0 18px color-mix(in srgb, var(--weapon-color) 6%, transparent);
+    overflow:hidden;
+  }
+  body.in-menu .weaponSchematicFrame::before,
+  body.in-menu .weaponSchematicFrame::after {
+    content:"";
+    position:absolute;
+    pointer-events:none;
+  }
+  body.in-menu .weaponSchematicFrame::before {
+    width:78px;
+    height:78px;
+    border:1px solid color-mix(in srgb, var(--weapon-color) 18%, transparent);
+    border-radius:50%;
+    box-shadow:
+      0 0 0 9px color-mix(in srgb, var(--weapon-color) 3%, transparent),
+      0 0 20px color-mix(in srgb, var(--weapon-color) 6%, transparent);
+  }
+  body.in-menu .weaponSchematicFrame::after {
+    inset:8px;
+    background:
+      linear-gradient(90deg, transparent 49.8%, color-mix(in srgb, var(--weapon-color) 10%, transparent) 50%, transparent 50.2%),
+      linear-gradient(transparent 49.8%, color-mix(in srgb, var(--weapon-color) 8%, transparent) 50%, transparent 50.2%);
+    opacity:.55;
+  }
+  body.in-menu .weaponSchematicIcon {
+    position:relative;
+    z-index:1;
+    width:88%;
+    height:88%;
+    display:grid;
+    place-items:center;
+    filter:drop-shadow(0 0 7px color-mix(in srgb, var(--weapon-color) 34%, transparent));
+  }
+  body.in-menu .weaponSchematicIcon svg {
+    width:100%;
+    height:100%;
+    overflow:visible;
+  }
+
+  body.in-menu .menuActions {
+    display:grid !important;
+    grid-template-columns:auto minmax(180px,1fr) !important;
+    align-items:center !important;
+    gap:10px !important;
+  }
+
+  body.in-menu .menuUtilityCluster {
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    gap:6px;
+    min-width:0;
+  }
+
+  body.in-menu .menuIconRow {
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-start !important;
+    gap:6px !important;
+    padding:0 !important;
+  }
+
+  body.in-menu #startBtn {
+    grid-column:2 !important;
+    justify-self:stretch !important;
+    width:100% !important;
+    min-width:180px !important;
+  }
+
+  @media (max-width:760px) {
+    body.in-menu .weaponSchematicFrame {
+      width:min(190px,94%);
+      height:84px;
+      margin-bottom:5px;
+    }
+    body.in-menu .weaponSchematicFrame::before {
+      width:54px;
+      height:54px;
+    }
+    body.in-menu .weaponSchematicIcon {
+      width:92%;
+      height:92%;
+    }
+
+    body.in-menu .menuActions {
+      grid-template-columns:auto minmax(92px,1fr) !important;
+      gap:5px !important;
+    }
+    body.in-menu .menuUtilityCluster {
+      gap:4px;
+    }
+    body.in-menu .menuIconRow {
+      gap:4px !important;
+    }
+    body.in-menu #startBtn {
+      min-width:92px !important;
+    }
+  }
+
+  @media (max-width:430px) {
+    body.in-menu .weaponSchematicFrame {
+      height:74px;
+    }
+    body.in-menu .menuActions {
+      grid-template-columns:auto minmax(86px,1fr) !important;
+    }
+    body.in-menu #testGroundBtn.testGroundIconBtn,
+    body.in-menu .menuIconBtn {
+      width:32px !important;
+      height:32px !important;
+      min-width:32px !important;
+      min-height:32px !important;
+    }
+    body.in-menu #testGroundBtn.testGroundIconBtn .uiIcon,
+    body.in-menu .menuIconBtn .uiIcon {
+      width:14px !important;
+      height:14px !important;
+    }
+    body.in-menu #startBtn {
+      min-height:32px !important;
+      min-width:86px !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    body.in-menu .weaponSchematicFrame {
+      width:min(210px,88%);
+      height:66px;
+      margin-bottom:3px;
+    }
+    body.in-menu .weaponSchematicFrame::before {
+      width:46px;
+      height:46px;
+    }
+  }
+
+
+  /* ---------- THREE-PANEL MAIN MENU REWORK ---------- */
+  body.in-menu .menuLayout {
+    width:min(1140px, 97vw) !important;
+    max-width:1140px !important;
+  }
+  body.in-menu .loadoutPanel {
+    width:100% !important;
+    max-width:1100px !important;
+    padding:18px 20px 18px !important;
+  }
+
+  body.in-menu .loadoutMetaBar {
+    margin-bottom:18px !important;
+  }
+
+  body.in-menu .loadoutColumns {
+    display:grid !important;
+    grid-template-columns:minmax(0,1.08fr) minmax(0,1fr) minmax(190px,.74fr) !important;
+    align-items:stretch !important;
+    gap:0 !important;
+  }
+
+  body.in-menu .loadoutSection {
+    min-width:0;
+    padding:0 18px 2px;
+  }
+  body.in-menu .hullSection {
+    padding-left:4px;
+    padding-right:20px;
+  }
+  body.in-menu .buildSection {
+    padding-left:20px;
+    padding-right:18px;
+    border-left:1px solid rgba(111,242,255,.12);
+  }
+  body.in-menu .runSection {
+    padding-left:18px;
+    padding-right:4px;
+    border-left:1px solid rgba(111,242,255,.12);
+    display:flex;
+    flex-direction:column;
+  }
+
+  body.in-menu .weaponSelect {
+    padding-top:30px !important;
+    min-height:100%;
+  }
+
+  body.in-menu .runControlCard {
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-start;
+    gap:12px;
+    min-height:100%;
+    padding:16px 14px 14px;
+    border:1px solid rgba(111,242,255,.14);
+    background:
+      linear-gradient(180deg, rgba(5,11,24,.56), rgba(3,8,18,.36)),
+      linear-gradient(90deg, rgba(111,242,255,.02), rgba(255,77,166,.015));
+    box-shadow: inset 0 0 0 1px rgba(255,255,255,.015);
+  }
+  body.in-menu .runCardKicker {
+    color:#7ef3ff;
+    font:700 9px/1 Consolas, "Courier New", monospace;
+    letter-spacing:1.6px;
+    text-transform:uppercase;
+  }
+  body.in-menu .runCardBody {
+    color:rgba(210,247,255,.78);
+    font:600 10px/1.55 Consolas, "Courier New", monospace;
+    letter-spacing:.45px;
+    min-height:52px;
+  }
+
+  body.in-menu #startBtn {
+    align-self:stretch !important;
+    width:100% !important;
+    min-width:0 !important;
+    min-height:42px !important;
+    margin-top:2px !important;
+  }
+
+  body.in-menu .menuActions {
+    margin-top:auto !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:space-between !important;
+    gap:8px !important;
+  }
+
+  body.in-menu #testGroundBtn.testGroundIconBtn {
+    width:42px !important;
+    height:42px !important;
+    min-width:42px !important;
+    min-height:42px !important;
+    flex:0 0 auto;
+    display:grid !important;
+    place-items:center !important;
+  }
+
+  body.in-menu .menuIconRow {
+    display:flex !important;
+    justify-content:flex-end !important;
+    align-items:center !important;
+    gap:6px !important;
+    flex-wrap:wrap;
+    min-width:0;
+  }
+
+  /* Remove previous weapon schematic spacing if present in inherited CSS */
+  body.in-menu .weaponSchematicFrame {
+    display:none !important;
+  }
+
+  @media (max-width:980px) {
+    body.in-menu .menuLayout {
+      width:100% !important;
+      max-width:none !important;
+    }
+    body.in-menu .loadoutPanel {
+      max-width:none !important;
+      padding:12px 10px 12px !important;
+    }
+    body.in-menu .loadoutColumns {
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+      row-gap:10px !important;
+    }
+    body.in-menu .runSection {
+      grid-column:1 / -1;
+      border-left:0 !important;
+      border-top:1px solid rgba(111,242,255,.12);
+      padding:10px 2px 0 !important;
+    }
+    body.in-menu .buildSection {
+      padding-right:2px;
+    }
+    body.in-menu .hullSection {
+      padding-left:2px;
+    }
+    body.in-menu .weaponSelect {
+      padding-top:18px !important;
+    }
+    body.in-menu .runControlCard {
+      flex-direction:row;
+      align-items:center;
+      gap:10px;
+      padding:10px;
+    }
+    body.in-menu .runCardBody {
+      flex:1 1 auto;
+      min-height:auto;
+      font-size:8px;
+      line-height:1.45;
+    }
+    body.in-menu #startBtn {
+      width:auto !important;
+      min-width:118px !important;
+      align-self:center !important;
+      margin-top:0 !important;
+    }
+    body.in-menu .menuActions {
+      margin-top:0 !important;
+      flex:0 0 auto;
+      gap:6px !important;
+    }
+  }
+
+  @media (max-width:760px) {
+    body.in-menu .loadoutMetaBar .metaCell {
+      flex-direction:column;
+      gap:2px;
+      padding:5px 3px;
+    }
+    body.in-menu .loadoutMetaBar small {
+      font-size:6.8px;
+      letter-spacing:.65px;
+    }
+    body.in-menu .loadoutMetaBar b {
+      font-size:9px;
+    }
+    body.in-menu .loadoutSection {
+      padding:0 7px 1px;
+    }
+    body.in-menu .hullSection {
+      padding-left:1px;
+      padding-right:7px;
+    }
+    body.in-menu .buildSection {
+      padding-left:7px;
+      padding-right:1px;
+    }
+    body.in-menu .loadoutHeader {
+      font-size:7px !important;
+      letter-spacing:1.6px !important;
+      margin-bottom:6px !important;
+    }
+    body.in-menu .shipHoloRing {
+      width:82px !important;
+      height:82px !important;
+    }
+    body.in-menu #shipPreviewCanvas {
+      width:74px !important;
+      height:74px !important;
+    }
+    body.in-menu .shipPreviewRow {
+      gap:4px !important;
+    }
+    body.in-menu .shipArrowBtn,
+    body.in-menu .weaponArrowBtn {
+      width:25px !important;
+      height:25px !important;
+      min-width:25px !important;
+      padding:0 !important;
+    }
+    body.in-menu .shipNameLabel,
+    body.in-menu .weaponNameLabel {
+      font-size:10px !important;
+      letter-spacing:1px !important;
+    }
+    body.in-menu .weaponNameLabel {
+      min-width:72px !important;
+    }
+    body.in-menu .shipDescLabel,
+    body.in-menu .weaponDescLabel {
+      min-height:46px !important;
+      font-size:7.6px !important;
+      line-height:1.35 !important;
+    }
+    body.in-menu .shipStatsLabel,
+    body.in-menu .weaponStatsLabel {
+      min-height:70px !important;
+      padding:5px 4px !important;
+      font-size:7.2px !important;
+      line-height:1.35 !important;
+    }
+    body.in-menu #customHullBtn {
+      min-height:30px !important;
+      padding:5px 6px !important;
+      font-size:6.8px !important;
+      letter-spacing:.7px !important;
+    }
+    body.in-menu .weaponSelect {
+      padding-top:16px !important;
+    }
+    body.in-menu .runSection {
+      padding-top:8px !important;
+    }
+    body.in-menu .runControlCard {
+      display:grid;
+      grid-template-columns:minmax(0,1fr) auto;
+      grid-template-areas:
+        "kicker kicker"
+        "body body"
+        "icons start";
+      gap:6px;
+      padding:8px 8px 7px;
+    }
+    body.in-menu .runCardKicker {
+      grid-area:kicker;
+      font-size:7px;
+      letter-spacing:1.1px;
+    }
+    body.in-menu .runCardBody {
+      grid-area:body;
+      font-size:7.3px;
+      line-height:1.4;
+    }
+    body.in-menu .menuActions {
+      grid-area:icons;
+      justify-content:flex-start !important;
+      gap:4px !important;
+    }
+    body.in-menu #startBtn {
+      grid-area:start;
+      min-height:36px !important;
+      min-width:92px !important;
+      font-size:9px !important;
+    }
+    body.in-menu #testGroundBtn.testGroundIconBtn,
+    body.in-menu .menuIconBtn {
+      width:36px !important;
+      height:36px !important;
+      min-width:36px !important;
+      min-height:36px !important;
+    }
+    body.in-menu .menuIconRow {
+      gap:4px !important;
+    }
+  }
+
+  @media (max-width:430px) {
+    body.in-menu .loadoutColumns {
+      grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    }
+    body.in-menu .runControlCard {
+      grid-template-columns:minmax(0,1fr);
+      grid-template-areas:
+        "kicker"
+        "body"
+        "start"
+        "icons";
+    }
+    body.in-menu #startBtn {
+      width:100% !important;
+      min-width:0 !important;
+    }
+    body.in-menu .menuActions {
+      justify-content:center !important;
+      flex-wrap:wrap;
+    }
+    body.in-menu #testGroundBtn.testGroundIconBtn,
+    body.in-menu .menuIconBtn {
+      width:32px !important;
+      height:32px !important;
+      min-width:32px !important;
+      min-height:32px !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    body.in-menu .loadoutPanel {
+      width:min(1080px, 98vw) !important;
+      max-width:1080px !important;
+      padding:7px 10px 7px !important;
+    }
+    body.in-menu .loadoutMetaBar {
+      margin-bottom:5px !important;
+    }
+    body.in-menu .loadoutMetaBar .metaCell { padding:3px 6px !important; }
+    body.in-menu .shipHoloRing {
+      width:68px !important;
+      height:68px !important;
+    }
+    body.in-menu #shipPreviewCanvas {
+      width:62px !important;
+      height:62px !important;
+    }
+    body.in-menu .shipDescLabel,
+    body.in-menu .weaponDescLabel {
+      min-height:26px !important;
+    }
+    body.in-menu .shipStatsLabel,
+    body.in-menu .weaponStatsLabel {
+      min-height:48px !important;
+    }
+    body.in-menu .weaponSelect {
+      padding-top:5px !important;
+    }
+    body.in-menu .runControlCard {
+      padding:6px 8px !important;
+      gap:5px !important;
+    }
+    body.in-menu .runCardBody {
+      min-height:auto !important;
+      font-size:7px !important;
+      line-height:1.3 !important;
+    }
+    body.in-menu #startBtn {
+      min-height:30px !important;
+    }
+    body.in-menu #testGroundBtn.testGroundIconBtn,
+    body.in-menu .menuIconBtn {
+      width:28px !important;
+      height:28px !important;
+      min-width:28px !important;
+      min-height:28px !important;
+    }
+  }
+
+
+  /* ---------- CLEAN TWO-COLUMN LOADOUT // WEAPON + RUN STACK ---------- */
+  body.in-menu .menuLayout {
+    display:flex !important;
+    flex-direction:column !important;
+    align-items:center !important;
+    justify-content:center !important;
+    width:min(960px, 96vw) !important;
+    max-width:960px !important;
+    height:100% !important;
+    margin:0 auto !important;
+    padding:22px 0 !important;
+    gap:10px !important;
+  }
+
+  body.in-menu .loadoutPanel {
+    width:100% !important;
+    max-width:900px !important;
+    padding:18px 20px 16px !important;
+  }
+
+  body.in-menu .loadoutColumns {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    align-items:stretch !important;
+    gap:0 !important;
+  }
+
+  body.in-menu .hullSection {
+    padding:0 22px 2px 4px !important;
+  }
+
+  body.in-menu .rightLoadoutStack {
+    min-width:0;
+    display:flex;
+    flex-direction:column;
+    border-left:1px solid rgba(111,242,255,.12);
+    padding-left:22px;
+  }
+
+  body.in-menu .rightLoadoutStack .buildSection,
+  body.in-menu .rightLoadoutStack .runSection {
+    border-left:0 !important;
+    padding:0 4px 0 0 !important;
+  }
+
+  body.in-menu .rightLoadoutStack .buildSection {
+    flex:1 1 auto;
+  }
+
+  body.in-menu .weaponSelect {
+    min-height:auto !important;
+    padding-top:18px !important;
+    padding-bottom:10px !important;
+  }
+
+  body.in-menu .runSection {
+    margin-top:12px;
+    padding-top:12px !important;
+    border-top:1px solid rgba(111,242,255,.10) !important;
+  }
+
+  body.in-menu .runControlCard {
+    min-height:0 !important;
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(150px,44%) !important;
+    align-items:center !important;
+    gap:12px !important;
+    padding:10px 0 0 !important;
+    border:0 !important;
+    background:none !important;
+    box-shadow:none !important;
+  }
+
+  body.in-menu .runReadyLine {
+    display:flex;
+    align-items:center;
+    gap:8px;
+    color:rgba(202,248,255,.72);
+    font:700 9px/1 Consolas, "Courier New", monospace;
+    letter-spacing:1.45px;
+  }
+
+  body.in-menu .runReadyDot {
+    width:6px;
+    height:6px;
+    border-radius:50%;
+    background:#77f4ff;
+    box-shadow:0 0 10px rgba(111,242,255,.50);
+    flex:0 0 auto;
+  }
+
+  body.in-menu #startBtn {
+    width:100% !important;
+    min-width:0 !important;
+    min-height:40px !important;
+    margin:0 !important;
+    align-self:center !important;
+  }
+
+  /* Utilities no longer live inside the loadout box. */
+  body.in-menu .menuUtilityDock {
+    width:min(900px, 100%) !important;
+    display:flex !important;
+    align-items:center !important;
+    justify-content:flex-end !important;
+    gap:6px !important;
+    padding:0 2px !important;
+    box-sizing:border-box;
+  }
+
+  body.in-menu .menuUtilityDock .menuIconBtn,
+  body.in-menu .menuUtilityDock #testGroundBtn {
+    width:38px !important;
+    height:38px !important;
+    min-width:38px !important;
+    min-height:38px !important;
+    margin:0 !important;
+    padding:0 !important;
+    display:grid !important;
+    place-items:center !important;
+    background:rgba(3,9,20,.38) !important;
+  }
+
+  body.in-menu .menuUtilityDock #testGroundBtn {
+    border-color:rgba(255,208,114,.30) !important;
+    color:#ffe7a8 !important;
+  }
+
+  body.in-menu .menuUtilityDock .uiIcon {
+    width:16px !important;
+    height:16px !important;
+  }
+
+  /* Hide remnants from the previous nested action experiment. */
+  body.in-menu .menuUtilityCluster,
+  body.in-menu .menuActions {
+    display:none !important;
+  }
+
+  @media (max-width:760px) {
+    body.in-menu .menuLayout {
+      width:100% !important;
+      max-width:none !important;
+      height:auto !important;
+      min-height:100% !important;
+      padding:
+        max(12px,env(safe-area-inset-top))
+        max(9px,env(safe-area-inset-right))
+        max(20px,env(safe-area-inset-bottom))
+        max(9px,env(safe-area-inset-left)) !important;
+      gap:7px !important;
+    }
+
+    body.in-menu .loadoutPanel {
+      max-width:none !important;
+      padding:10px 9px !important;
+    }
+
+    body.in-menu .hullSection {
+      padding:0 7px 1px 1px !important;
+    }
+
+    body.in-menu .rightLoadoutStack {
+      padding-left:7px;
+    }
+
+    body.in-menu .rightLoadoutStack .buildSection,
+    body.in-menu .rightLoadoutStack .runSection {
+      padding-right:1px !important;
+    }
+
+    body.in-menu .weaponSelect {
+      padding-top:12px !important;
+      padding-bottom:4px !important;
+    }
+
+    body.in-menu .runSection {
+      margin-top:6px;
+      padding-top:6px !important;
+    }
+
+    body.in-menu .runControlCard {
+      grid-template-columns:minmax(0,1fr) minmax(86px,44%) !important;
+      gap:6px !important;
+      padding-top:5px !important;
+    }
+
+    body.in-menu .runReadyLine {
+      gap:5px;
+      font-size:6.5px;
+      letter-spacing:.7px;
+    }
+
+    body.in-menu .runReadyDot {
+      width:4px;
+      height:4px;
+    }
+
+    body.in-menu #startBtn {
+      min-height:32px !important;
+      font-size:8px !important;
+      letter-spacing:.8px !important;
+    }
+
+    body.in-menu .menuUtilityDock {
+      width:100% !important;
+      justify-content:center !important;
+      gap:5px !important;
+    }
+
+    body.in-menu .menuUtilityDock .menuIconBtn,
+    body.in-menu .menuUtilityDock #testGroundBtn {
+      width:34px !important;
+      height:34px !important;
+      min-width:34px !important;
+      min-height:34px !important;
+    }
+  }
+
+  @media (max-width:430px) {
+    body.in-menu .runControlCard {
+      grid-template-columns:1fr !important;
+      gap:5px !important;
+    }
+    body.in-menu .runReadyLine {
+      justify-content:center;
+    }
+    body.in-menu #startBtn {
+      width:100% !important;
+    }
+    body.in-menu .menuUtilityDock .menuIconBtn,
+    body.in-menu .menuUtilityDock #testGroundBtn {
+      width:31px !important;
+      height:31px !important;
+      min-width:31px !important;
+      min-height:31px !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    body.in-menu .menuLayout {
+      width:min(920px,98vw) !important;
+      max-width:920px !important;
+      padding:6px 0 8px !important;
+      gap:4px !important;
+    }
+    body.in-menu .loadoutPanel {
+      max-width:900px !important;
+      padding:7px 10px !important;
+    }
+    body.in-menu .weaponSelect {
+      padding-top:4px !important;
+      padding-bottom:2px !important;
+    }
+    body.in-menu .runSection {
+      margin-top:3px;
+      padding-top:3px !important;
+    }
+    body.in-menu .runControlCard {
+      padding-top:2px !important;
+    }
+    body.in-menu #startBtn {
+      min-height:28px !important;
+    }
+    body.in-menu .menuUtilityDock .menuIconBtn,
+    body.in-menu .menuUtilityDock #testGroundBtn {
+      width:28px !important;
+      height:28px !important;
+      min-width:28px !important;
+      min-height:28px !important;
+    }
+  }
+
+
+  /* ---------- BALANCED RIGHT STACK + OUTER META BAR ---------- */
+  body.in-menu .menuLayout {
+    width:min(980px, 96vw) !important;
+    max-width:980px !important;
+    gap:10px !important;
+  }
+
+  body.in-menu .outerMetaBar {
+    align-self:center !important;
+    width:min(900px, 100%) !important;
+    margin:0 !important;
+    order:0;
+  }
+
+  body.in-menu .loadoutPanel {
+    width:100% !important;
+    max-width:900px !important;
+    padding:16px 20px 16px !important;
+  }
+
+  body.in-menu .loadoutColumns {
+    display:grid !important;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr) !important;
+    align-items:stretch !important;
+    gap:0 !important;
+    min-height:0 !important;
+  }
+
+  body.in-menu .hullSection {
+    padding:0 22px 2px 4px !important;
+    min-width:0 !important;
+  }
+
+  body.in-menu .rightLoadoutStack {
+    min-width:0 !important;
+    display:grid !important;
+    grid-template-rows:minmax(0,1fr) minmax(0,1fr) !important;
+    align-items:stretch !important;
+    gap:0 !important;
+    border-left:1px solid rgba(111,242,255,.12);
+    padding-left:22px !important;
+  }
+
+  body.in-menu .rightLoadoutStack .buildSection,
+  body.in-menu .rightLoadoutStack .runSection {
+    min-width:0 !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    padding:0 4px 0 0 !important;
+    border-left:0 !important;
+  }
+
+  body.in-menu .rightLoadoutStack .buildSection {
+    padding-bottom:12px !important;
+    border-bottom:1px solid rgba(111,242,255,.10) !important;
+  }
+
+  body.in-menu .rightLoadoutStack .runSection {
+    margin-top:0 !important;
+    padding-top:12px !important;
+    border-top:0 !important;
+    justify-content:flex-start !important;
+  }
+
+  body.in-menu .weaponSelect {
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    display:flex !important;
+    flex-direction:column !important;
+    justify-content:center !important;
+    padding-top:0 !important;
+    padding-bottom:0 !important;
+  }
+
+  body.in-menu .runControlCard {
+    flex:1 1 auto !important;
+    min-height:0 !important;
+    display:grid !important;
+    grid-template-columns:1fr !important;
+    align-content:center !important;
+    justify-items:stretch !important;
+    gap:12px !important;
+    padding:8px 0 0 !important;
+    border:0 !important;
+    background:none !important;
+    box-shadow:none !important;
+  }
+
+  body.in-menu .runReadyLine {
+    justify-content:flex-start !important;
+    font-size:9px !important;
+    letter-spacing:1.35px !important;
+  }
+
+  body.in-menu #startBtn {
+    width:100% !important;
+    min-width:0 !important;
+    min-height:40px !important;
+    max-width:none !important;
+    margin:0 !important;
+    justify-self:stretch !important;
+  }
+
+  body.in-menu .menuUtilityDock {
+    align-self:center !important;
+    width:min(900px, 100%) !important;
+    justify-content:flex-end !important;
+    gap:6px !important;
+  }
+
+  @media (max-width:760px) {
+    body.in-menu .menuLayout {
+      width:100% !important;
+      max-width:none !important;
+      gap:7px !important;
+    }
+
+    body.in-menu .outerMetaBar {
+      width:100% !important;
+    }
+
+    body.in-menu .loadoutPanel {
+      max-width:none !important;
+      padding:10px 9px !important;
+    }
+
+    body.in-menu .hullSection {
+      padding:0 7px 1px 1px !important;
+    }
+
+    body.in-menu .rightLoadoutStack {
+      padding-left:7px !important;
+    }
+
+    body.in-menu .rightLoadoutStack .buildSection,
+    body.in-menu .rightLoadoutStack .runSection {
+      padding-right:1px !important;
+    }
+
+    body.in-menu .rightLoadoutStack .buildSection {
+      padding-bottom:8px !important;
+    }
+
+    body.in-menu .rightLoadoutStack .runSection {
+      padding-top:8px !important;
+    }
+
+    body.in-menu .runControlCard {
+      gap:8px !important;
+      padding-top:4px !important;
+    }
+
+    body.in-menu .runReadyLine {
+      font-size:6.8px !important;
+      letter-spacing:.8px !important;
+    }
+
+    body.in-menu #startBtn {
+      min-height:32px !important;
+      font-size:8px !important;
+      letter-spacing:.8px !important;
+    }
+
+    body.in-menu .menuUtilityDock {
+      width:100% !important;
+      justify-content:center !important;
+      gap:5px !important;
+    }
+  }
+
+  @media (max-width:430px) {
+    body.in-menu .runControlCard {
+      gap:6px !important;
+    }
+    body.in-menu #startBtn {
+      width:100% !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    body.in-menu .menuLayout {
+      width:min(940px, 98vw) !important;
+      max-width:940px !important;
+      gap:4px !important;
+      padding:6px 0 8px !important;
+    }
+
+    body.in-menu .outerMetaBar,
+    body.in-menu .menuUtilityDock,
+    body.in-menu .loadoutPanel {
+      max-width:900px !important;
+    }
+
+    body.in-menu .loadoutPanel {
+      padding:7px 10px !important;
+    }
+
+    body.in-menu .rightLoadoutStack .buildSection {
+      padding-bottom:4px !important;
+    }
+
+    body.in-menu .rightLoadoutStack .runSection {
+      padding-top:4px !important;
+    }
+
+    body.in-menu .runControlCard {
+      gap:5px !important;
+      padding-top:2px !important;
+    }
+
+    body.in-menu #startBtn {
+      min-height:28px !important;
+    }
+  }
+
+
+  /* ---------- POPUP CLOSE BUTTONS ---------- */
+  .popupCloseHost {
+    position:relative !important;
+  }
+
+  .popupCloseBtn {
+    position:absolute;
+    top:10px;
+    right:10px;
+    z-index:12;
+    width:38px;
+    height:38px;
+    min-width:38px;
+    min-height:38px;
+    display:grid;
+    place-items:center;
+    margin:0;
+    padding:0 0 2px;
+    border:1px solid rgba(111,242,255,.28);
+    background:rgba(3,9,20,.72);
+    color:rgba(224,251,255,.90);
+    font:400 26px/1 Arial, sans-serif;
+    cursor:pointer;
+    touch-action:manipulation;
+    -webkit-tap-highlight-color:transparent;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.018),
+      0 0 12px rgba(111,242,255,.045);
+    transition:
+      color .12s ease,
+      border-color .12s ease,
+      background .12s ease,
+      transform .08s ease,
+      box-shadow .12s ease;
+  }
+
+  .popupCloseBtn:hover,
+  .popupCloseBtn:focus-visible {
+    color:#ffffff;
+    border-color:rgba(255,100,181,.66);
+    background:rgba(35,8,30,.82);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.025),
+      0 0 14px rgba(255,77,166,.13);
+    outline:none;
+  }
+
+  .popupCloseBtn:active {
+    transform:scale(.93);
+  }
+
+  /* Don't let the new X overlap existing top-right CANCEL/BACK buttons. */
+  .hwPanel.popupCloseHost .hwHeader,
+  .testLoadoutPanel.popupCloseHost .testLoadoutHeader {
+    padding-right:48px;
+  }
+
+  @media (max-width:760px) {
+    .popupCloseBtn {
+      top:7px;
+      right:7px;
+      width:40px;
+      height:40px;
+      min-width:40px;
+      min-height:40px;
+      font-size:27px;
+    }
+
+    .htpPanel.popupCloseHost,
+    .settingsPanel.popupCloseHost,
+    .pausePanel.popupCloseHost {
+      padding-top:max(46px, env(safe-area-inset-top)) !important;
+    }
+
+    .hwPanel.popupCloseHost .hwHeader,
+    .testLoadoutPanel.popupCloseHost .testLoadoutHeader {
+      padding-right:48px;
+    }
+  }
+
+
+  /* ---------- SPLASH COPY MINIMAL / AI-LIKE ---------- */
+  .titleSplashInner {
+    gap:0 !important;
+  }
+  .titleSplashInner .titleSplashLogo {
+    margin:0 0 10px !important;
+  }
+  .titleSplashInner .titleSplashSub {
+    margin:0 auto 14px !important;
+    max-width:420px !important;
+    color:rgba(220,248,255,.86) !important;
+    letter-spacing:2.8px !important;
+  }
+  .titleSplashInner #enterMenuBtn {
+    margin-top:0 !important;
+  }
+  .titleSplashInner .titleSplashHint {
+    margin-top:12px !important;
+  }
+
+  @media (max-width:980px) {
+    .titleSplashInner .titleSplashLogo {
+      margin-bottom:8px !important;
+    }
+    .titleSplashInner .titleSplashSub {
+      margin-bottom:12px !important;
+      letter-spacing:2px !important;
+    }
+  }
+
+  @media (max-width:430px) {
+    .titleSplashInner .titleSplashSub {
+      letter-spacing:1.4px !important;
+    }
+  }
+
+
+  /* ---------- MOBILE TOUCH CONTROLS // ROUND SYNTHWAVE LAYOUT ---------- */
+  #leftCluster, #rightCluster {
+    pointer-events:none;
+    display:flex;
+    align-items:flex-end;
+  }
+
+  #movePad,
+  #actionPad {
+    pointer-events:auto;
+    display:flex;
+    touch-action:none;
+    -webkit-user-select:none;
+    user-select:none;
+  }
+
+  #movePad {
+    --move-btn:82px;
+    --move-gap:12px;
+    width:auto !important;
+    flex-direction:row;
+    align-items:center;
+    justify-content:flex-start;
+    gap:var(--move-gap);
+    filter:drop-shadow(0 0 12px rgba(111,242,255,.10));
+  }
+
+  #actionPad {
+    flex-direction:column;
+    align-items:center;
+    justify-content:flex-end;
+    gap:12px;
+    filter:drop-shadow(0 0 14px rgba(255,77,166,.10));
+  }
+
+  .movePadThrustRow,
+  .movePadTurnRow {
+    display:contents !important;
+  }
+
+  .ctrlBtn {
+    width:var(--move-btn,82px) !important;
+    height:var(--move-btn,82px) !important;
+    border-radius:50% !important;
+    border:1.5px solid rgba(111,242,255,.74) !important;
+    color:#c6fbff;
+    background:
+      radial-gradient(circle at 50% 42%, rgba(111,242,255,.16) 0%, rgba(111,242,255,.06) 28%, rgba(6,14,30,.88) 68%, rgba(4,9,20,.96) 100%) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.028),
+      inset 0 0 20px rgba(111,242,255,.10),
+      inset 0 -10px 18px rgba(0,0,0,.28),
+      0 0 14px rgba(111,242,255,.14),
+      0 0 28px rgba(111,242,255,.05) !important;
+    text-shadow:0 0 10px rgba(111,242,255,.46) !important;
+    overflow:hidden;
+  }
+
+  .ctrlBtn::before {
+    left:19%;
+    right:19%;
+    top:19%;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(111,242,255,.24), rgba(255,77,166,.12), transparent) !important;
+  }
+
+  .ctrlBtn::after {
+    inset:8px;
+    border:1px solid rgba(111,242,255,.10);
+    border-radius:50% !important;
+  }
+
+  .ctrlGlyph {
+    font-size:24px !important;
+  }
+
+  .ctrlLabel {
+    font:700 7px/1 "Courier New",monospace;
+    letter-spacing:1.55px;
+  }
+
+  .turnBtn {
+    clip-path:none !important;
+  }
+
+  #leftBtn, #rightBtn {
+    width:82px !important;
+    height:82px !important;
+  }
+
+  .thrustBtn {
+    width:90px !important;
+    height:90px !important;
+    clip-path:none !important;
+    border-color:rgba(114,242,255,.86) !important;
+    background:
+      radial-gradient(circle at 50% 40%, rgba(111,242,255,.18) 0%, rgba(111,242,255,.07) 30%, rgba(7,18,35,.89) 68%, rgba(4,9,20,.97) 100%) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.03),
+      inset 0 0 22px rgba(111,242,255,.13),
+      0 0 16px rgba(111,242,255,.18),
+      0 0 32px rgba(111,242,255,.08) !important;
+  }
+
+  .thrustBtn .ctrlGlyph {
+    font-size:25px !important;
+    color:#e2feff;
+  }
+
+  #fireBtn {
+    width:104px !important;
+    height:104px !important;
+    border-radius:50% !important;
+    border-color:rgba(255,96,180,.86) !important;
+    color:#ffd4e9;
+    background:
+      radial-gradient(circle at center, rgba(255,77,166,.18) 0 30%, rgba(255,77,166,.06) 31% 44%, rgba(13,10,29,.93) 72%, rgba(5,7,18,.98) 100%) !important;
+    box-shadow:
+      inset 0 0 18px rgba(255,77,166,.15),
+      inset 0 0 30px rgba(111,242,255,.04),
+      0 0 18px rgba(255,77,166,.22),
+      0 0 34px rgba(255,77,166,.10),
+      0 0 16px rgba(111,242,255,.06) !important;
+    text-shadow:0 0 10px rgba(255,77,166,.55) !important;
+  }
+
+  #fireBtn::before {
+    left:22%;
+    right:22%;
+    top:50%;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,117,190,.36), transparent) !important;
+  }
+
+  #fireBtn::after {
+    inset:10px;
+    border-radius:50% !important;
+    border-color:rgba(255,117,190,.12) !important;
+  }
+
+  #fireBtn .fireLabel {
+    font-size:12px !important;
+    letter-spacing:2.7px !important;
+  }
+
+  .moveBtn.active,
+  .ctrlBtn:active {
+    transform:scale(.965);
+    color:#f7feff;
+    border-color:rgba(230,253,255,.98) !important;
+    box-shadow:
+      inset 0 0 24px rgba(111,242,255,.18),
+      0 0 22px rgba(111,242,255,.24),
+      0 0 36px rgba(255,77,166,.08) !important;
+  }
+
+  #fireBtn:active,
+  #fireBtn.active {
+    border-color:rgba(255,172,214,.98) !important;
+    box-shadow:
+      inset 0 0 26px rgba(255,77,166,.22),
+      0 0 24px rgba(255,77,166,.30),
+      0 0 42px rgba(255,77,166,.12),
+      0 0 14px rgba(111,242,255,.07) !important;
+  }
+
+  @media (max-width:760px) {
+    #controls {
+      padding:10px max(10px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)) !important;
+    }
+
+    #movePad {
+      --move-btn:clamp(68px, 20vw, 82px);
+      --move-gap:clamp(8px, 2.8vw, 12px);
+    }
+
+    #leftBtn, #rightBtn {
+      width:clamp(68px, 20vw, 82px) !important;
+      height:clamp(68px, 20vw, 82px) !important;
+    }
+
+    .thrustBtn {
+      width:clamp(76px, 22vw, 90px) !important;
+      height:clamp(76px, 22vw, 90px) !important;
+    }
+
+    #fireBtn {
+      width:clamp(88px, 24vw, 104px) !important;
+      height:clamp(88px, 24vw, 104px) !important;
+    }
+
+    .ctrlGlyph {
+      font-size:clamp(20px, 5vw, 24px) !important;
+    }
+
+    #fireBtn .fireLabel {
+      font-size:clamp(10px, 2.7vw, 12px) !important;
+      letter-spacing:clamp(1.8px, .6vw, 2.7px) !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:500px) {
+    #controls {
+      padding:7px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)) !important;
+    }
+
+    #movePad {
+      --move-btn:64px;
+      --move-gap:7px;
+    }
+
+    #actionPad {
+      gap:8px;
+    }
+
+    #leftBtn, #rightBtn {
+      width:64px !important;
+      height:64px !important;
+    }
+
+    .thrustBtn {
+      width:70px !important;
+      height:70px !important;
+    }
+
+    #fireBtn {
+      width:82px !important;
+      height:82px !important;
+    }
+
+    .ctrlGlyph {
+      font-size:19px !important;
+    }
+
+    .ctrlLabel {
+      font-size:6.4px !important;
+      letter-spacing:1.1px !important;
+    }
+
+    #fireBtn .fireLabel {
+      font-size:9px !important;
+      letter-spacing:1.9px !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -3034,92 +5748,126 @@
   <div id="controls">
     <div id="leftCluster">
       <div id="movePad" aria-label="Touch movement controls">
-        <div class="movePadThrustRow">
-          <button class="ctrlBtn moveBtn thrustBtn" id="thrustBtn" type="button" aria-label="Thrust">
-            <span class="ctrlGlyph">▲</span>
-            <span class="ctrlLabel">THRUST</span>
-          </button>
-        </div>
-        <div class="movePadTurnRow">
-          <button class="ctrlBtn moveBtn turnBtn" id="leftBtn" type="button" aria-label="Turn left">
-            <span class="ctrlGlyph">◀</span>
-            <span class="ctrlLabel">LEFT</span>
-          </button>
-          <button class="ctrlBtn moveBtn turnBtn" id="rightBtn" type="button" aria-label="Turn right">
-            <span class="ctrlGlyph">▶</span>
-            <span class="ctrlLabel">RIGHT</span>
-          </button>
-        </div>
+        <button class="ctrlBtn moveBtn turnBtn" id="leftBtn" type="button" aria-label="Turn left">
+          <span class="ctrlGlyph">◀</span>
+          <span class="ctrlLabel">LEFT</span>
+        </button>
+        <button class="ctrlBtn moveBtn turnBtn" id="rightBtn" type="button" aria-label="Turn right">
+          <span class="ctrlGlyph">▶</span>
+          <span class="ctrlLabel">RIGHT</span>
+        </button>
       </div>
     </div>
     <div id="rightCluster">
-      <button class="ctrlBtn fireControlBtn" id="fireBtn" type="button">
-        <span class="ctrlLabel fireLabel">FIRE</span>
-      </button>
+      <div id="actionPad" aria-label="Touch action controls">
+        <button class="ctrlBtn moveBtn thrustBtn" id="thrustBtn" type="button" aria-label="Thrust">
+          <span class="ctrlGlyph">▲</span>
+          <span class="ctrlLabel">THRUST</span>
+        </button>
+        <button class="ctrlBtn fireControlBtn" id="fireBtn" type="button" aria-label="Fire">
+          <span class="ctrlLabel fireLabel">FIRE</span>
+        </button>
+      </div>
     </div>
   </div>
 
   <div id="overlay">
+    <div id="titleScreen" aria-label="Title screen">
+      <div class="titleSplashScene titleStarfield" aria-hidden="true">
+        <div class="titleNebulaField layer-far">
+          <span class="titleNebulaBlob cyanA"></span>
+          <span class="titleNebulaBlob blueB"></span>
+        </div>
+        <div class="titleNebulaField layer-mid">
+          <span class="titleNebulaBlob magentaA"></span>
+          <span class="titleNebulaBlob violetA"></span>
+          <span class="titleNebulaBlob whiteCore"></span>
+        </div>
+        <div class="titleNebulaField layer-near">
+          <span class="titleNebulaBlob pinkB"></span>
+        </div>
+        <div class="titleStarLayer layer-far" id="titleStarsFar"></div>
+        <div class="titleStarLayer layer-mid" id="titleStarsMid"></div>
+        <div class="titleStarLayer layer-near" id="titleStarsNear"></div>
+      </div>
+      <div class="titleSplashInner">
+        <h1 class="titleSplashLogo">ASTEROIDS</h1>
+        <div class="titleSplashSub">INTERCEPT // EVOLVE // SURVIVE THE BELT</div>
+        <button id="enterMenuBtn" type="button">ENTER FLIGHT DECK</button>
+        <div class="titleSplashHint">Tap, click, or press Enter / Space to continue.</div>
+      </div>
+    </div>
+
     <div class="menuLayout">
-      <section class="menuTitleBlock">
-        <div class="menuEyebrow">RETRO VECTOR COMBAT</div>
-        <h1 class="menuTitle">ASTEROIDS</h1>
-        <div class="menuSubtitle">CUSTOM HULLS // WEAPON BUILDS // SURVIVE THE ASTEROID BELT</div>
-        <div class="menuStats" id="menuStats">BEST SCORE 0   ·   TOP LEVEL 0   ·   SALVAGE 0</div>
-      </section>
+      <div class="menuStats loadoutMetaBar outerMetaBar" id="menuStats">
+        <span class="metaCell"><small>BEST SCORE</small><b id="menuBestScore">0</b></span>
+        <span class="metaCell"><small>TOP LEVEL</small><b id="menuTopLevel">0</b></span>
+        <span class="metaCell"><small>SALVAGE</small><b id="menuSalvage">0</b></span>
+      </div>
 
       <section class="loadoutPanel" aria-label="Loadout selection">
-        <div class="loadoutSection hullSection">
-          <div class="loadoutHeader"><span>01</span> HULL</div>
-          <div class="shipPreview">
-            <div class="shipPreviewRow">
-              <button id="shipPrevBtn" class="shipArrowBtn" type="button" aria-label="Previous hull">◀</button>
-              <div class="shipHoloRing"><canvas id="shipPreviewCanvas" width="112" height="112"></canvas></div>
-              <button id="shipNextBtn" class="shipArrowBtn" type="button" aria-label="Next hull">▶</button>
+        <div class="loadoutColumns">
+          <div class="loadoutSection hullSection">
+            <div class="loadoutHeader hullHeader"><span>01</span> HULL</div>
+            <div class="shipPreview">
+              <div class="shipPreviewRow">
+                <button id="shipPrevBtn" class="shipArrowBtn" type="button" aria-label="Previous hull">◀</button>
+                <div class="shipHoloRing"><canvas id="shipPreviewCanvas" width="112" height="112"></canvas></div>
+                <button id="shipNextBtn" class="shipArrowBtn" type="button" aria-label="Next hull">▶</button>
+              </div>
+              <div class="shipNameLabel" id="shipNameLabel">INTERCEPTOR</div>
+              <div class="shipDescLabel" id="shipDescLabel">Balanced all-rounder. No surprises.</div>
+              <div class="shipStatsLabel" id="shipStatsLabel"></div>
+              <button id="customHullBtn" type="button">BUILD CUSTOM HULL</button>
             </div>
-            <div class="shipNameLabel" id="shipNameLabel">INTERCEPTOR</div>
-            <div class="shipDescLabel" id="shipDescLabel">Balanced all-rounder. No surprises.</div>
-            <div class="shipStatsLabel" id="shipStatsLabel"></div>
-            <button id="customHullBtn" type="button">BUILD CUSTOM HULL</button>
           </div>
-        </div>
 
-        <div class="loadoutDivider"></div>
-
-        <div class="loadoutSection buildSection">
-          <div class="loadoutHeader"><span>02</span> WEAPON BUILD</div>
-          <div class="weaponSelect">
-            <div class="weaponSelectRow">
-              <button id="weaponPrevBtn" class="weaponArrowBtn" type="button" aria-label="Previous weapon">◀</button>
-              <div class="weaponNameLabel" id="weaponNameLabel">LONGBOW</div>
-              <button id="weaponNextBtn" class="weaponArrowBtn" type="button" aria-label="Next weapon">▶</button>
+          <div class="rightLoadoutStack">
+            <div class="loadoutSection buildSection">
+              <div class="loadoutHeader"><span>02</span> WEAPON BUILD</div>
+              <div class="weaponSelect">
+                <div class="weaponSelectRow">
+                  <button id="weaponPrevBtn" class="weaponArrowBtn" type="button" aria-label="Previous weapon">◀</button>
+                  <div class="weaponNameLabel" id="weaponNameLabel">LONGBOW</div>
+                  <button id="weaponNextBtn" class="weaponArrowBtn" type="button" aria-label="Next weapon">▶</button>
+                </div>
+                <div class="weaponDescLabel" id="weaponDescLabel"></div>
+                <div class="weaponStatsLabel" id="weaponStatsLabel"></div>
+              </div>
             </div>
-            <div class="weaponDescLabel" id="weaponDescLabel"></div>
-            <div class="weaponStatsLabel" id="weaponStatsLabel"></div>
-          </div>
-        </div>
 
-        <div class="menuActions">
-          <button id="startBtn">START RUN</button>
-          <button id="testGroundBtn" class="secondaryBtn" type="button">TEST GROUND</button>
-          <div class="menuIconRow">
-            <button id="howToPlayBtn" class="menuIconBtn" type="button" title="How To Play" aria-label="How To Play"></button>
-            <button id="achievementsBtn" class="menuIconBtn" type="button" title="Achievements" aria-label="Achievements"></button>
-            <button id="shopBtn" class="menuIconBtn" type="button" title="Salvage Vault" aria-label="Salvage Vault"></button>
-            <button id="settingsBtn" class="menuIconBtn" type="button" title="Settings" aria-label="Settings"></button>
+            <div class="loadoutSection runSection">
+              <div class="loadoutHeader"><span>03</span> RUN</div>
+              <div class="runControlCard">
+                <div class="runReadyLine">
+                  <span class="runReadyDot"></span>
+                  <span>FLIGHT READY</span>
+                </div>
+                <button id="startBtn">START RUN</button>
+              </div>
+            </div>
           </div>
         </div>
       </section>
+
+      <div class="menuUtilityDock" aria-label="Menu utilities">
+        <button id="testGroundBtn" class="menuIconBtn testGroundIconBtn" type="button" title="Test Ground" aria-label="Test Ground"></button>
+        <button id="howToPlayBtn" class="menuIconBtn" type="button" title="How To Play" aria-label="How To Play"></button>
+        <button id="achievementsBtn" class="menuIconBtn" type="button" title="Achievements" aria-label="Achievements"></button>
+        <button id="shopBtn" class="menuIconBtn" type="button" title="Salvage Vault" aria-label="Salvage Vault"></button>
+        <button id="settingsBtn" class="menuIconBtn" type="button" title="Settings" aria-label="Settings"></button>
+      </div>
     </div>
     <div class="buildTag">SYNTHWAVE FLIGHT DECK // HULL WORKSHOP ACTIVE</div>
   </div>
 
   <div id="howToPlayOverlay" class="hidden">
-    <div class="htpPanel">
+    <div class="htpPanel popupCloseHost">
+      <button id="htpCloseBtn" class="popupCloseBtn" type="button" aria-label="Close How to Play" title="Close">×</button>
       <h2>HOW TO PLAY</h2>
       <div class="htpSection">
         <h3>Controls</h3>
-        <p>Keyboard: A/D rotate, W thrust, SPACE fires, and R manually reloads magazine weapons. Arrow keys still work.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire. A secondary reload key or mouse side button can be assigned in Settings.<br>Touch: Use LEFT / RIGHT to rotate and the THRUST button above them to accelerate. Hold FIRE on the right to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
+        <p>Keyboard: A/D rotate, W thrust, SPACE fires, and R manually reloads magazine weapons. Arrow keys still work.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire. A secondary reload key or mouse side button can be assigned in Settings.<br>Touch: Use LEFT / RIGHT on the left side to rotate. On the right side, use THRUST to accelerate and hold FIRE to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
@@ -3151,14 +5899,15 @@
       </div>
       <div class="htpSection">
         <h3>Enemies</h3>
-        <p>UFO pressure rises with the run. Early motherships are simple threats; later fields introduce Gunner, Hunter, and Carrier variants that fire faster, pursue you, or deploy pods. Every 10th level replaces the normal field with a boss encounter.</p>
+        <p>UFO pressure rises with the run. Early motherships are simple threats; later fields introduce Gunner, Hunter, and Carrier variants that fire faster, pursue you, or deploy Drone Pods. Every 10th level replaces the normal field with a boss encounter.</p>
       </div>
       <button id="htpBackBtn" class="secondaryBtn">BACK</button>
     </div>
   </div>
 
   <div id="achievementsOverlay" class="hidden">
-    <div class="htpPanel">
+    <div class="htpPanel popupCloseHost">
+      <button id="achCloseBtn" class="popupCloseBtn" type="button" aria-label="Close Achievements" title="Close">×</button>
       <h2>ACHIEVEMENTS</h2>
       <p class="htpIntro">Complete challenges to recover the four original factory hull blueprints.</p>
       <div id="achievementsList"></div>
@@ -3167,7 +5916,8 @@
   </div>
 
   <div id="shopOverlay" class="hidden">
-    <div class="htpPanel">
+    <div class="htpPanel popupCloseHost">
+      <button id="shopCloseBtn" class="popupCloseBtn" type="button" aria-label="Close Salvage Vault" title="Close">×</button>
       <h2>SALVAGE VAULT</h2>
       <p class="htpIntro" id="shopBalance">SALVAGE: 0</p>
       <div id="shopList"></div>
@@ -3176,7 +5926,8 @@
   </div>
 
   <div id="settingsOverlay" class="hidden">
-    <div class="htpPanel settingsPanel">
+    <div class="htpPanel settingsPanel popupCloseHost">
+      <button id="settingsCloseBtn" class="popupCloseBtn" type="button" aria-label="Close Settings" title="Close">×</button>
       <div class="settingsKicker">SYSTEM CONFIGURATION</div>
       <h2>SETTINGS</h2>
       <p class="htpIntro">Audio, controls, and arena behavior. Changes are saved on this device.</p>
@@ -3232,7 +5983,8 @@
 
 
   <div id="hullWorkshopOverlay" class="hidden">
-    <div class="hwPanel">
+    <div class="hwPanel popupCloseHost">
+      <button id="hwCloseBtn" class="popupCloseBtn" type="button" aria-label="Close Hull Workshop" title="Close">×</button>
       <div class="hwHeader">
         <div>
           <div class="hwTitle">HULL WORKSHOP</div>
@@ -3337,13 +6089,13 @@
   </div>
 
   <div id="testLoadoutOverlay" class="hidden">
-    <div class="testLoadoutPanel">
+    <div class="testLoadoutPanel popupCloseHost">
+      <button id="testConfigCloseBtn" class="popupCloseBtn" type="button" aria-label="Close Test Build Config" title="Close">×</button>
       <div class="testLoadoutHeader">
         <div>
           <div class="testLoadoutTitle">TEST LAB // BUILD CONFIG</div>
           <div class="testLoadoutSub">Choose exact ranks before entering. Test Ground ignores normal run choice restrictions.</div>
         </div>
-        <button id="testConfigBackBtn" class="secondaryBtn" type="button" style="margin:0">BACK</button>
       </div>
 
       <div class="testWeaponRow">
@@ -3398,8 +6150,8 @@
           <button class="testSpawnBtn" data-spawn="gunner">GUNNER</button>
           <button class="testSpawnBtn" data-spawn="hunter">HUNTER</button>
           <button class="testSpawnBtn" data-spawn="carrier">CARRIER</button>
-          <button class="testSpawnBtn" data-spawn="pod">ESCAPE POD</button>
-          <button class="testSpawnBtn" data-spawn="debris">DEBRIS</button>
+          <button class="testSpawnBtn" data-spawn="pod">DRONE POD</button>
+          <button class="testSpawnBtn debrisDisabled" data-spawn="debris" hidden aria-hidden="true" tabindex="-1">DEBRIS</button>
         </div>
       </div>
       <div class="testSpawnerGroup">
@@ -3424,7 +6176,8 @@
   </div>
 
   <div id="pauseOverlay" class="hidden">
-    <div class="pausePanel">
+    <div class="pausePanel popupCloseHost">
+      <button id="pauseCloseBtn" class="popupCloseBtn" type="button" aria-label="Resume Game" title="Resume">×</button>
       <div class="pauseHeader">
         <h1>PAUSED</h1>
         <div id="pauseRunMeta" class="pauseRunMeta">RUN LOADOUT</div>
@@ -3557,6 +6310,116 @@
   const ctx = canvas.getContext('2d');
   const overlay = document.getElementById('overlay');
   const mainMenuHTML = overlay.innerHTML; // pristine copy, restored on "quit to menu"
+  let titleSplashDismissed = false;
+
+  function setTitleSplashVisible(visible) {
+    const splash = overlay.querySelector('#titleScreen');
+    if (!splash) return;
+    if (visible) {
+      splash.classList.remove('dismissed');
+      splash.setAttribute('aria-hidden', 'false');
+      document.body.classList.add('intro-active');
+    } else {
+      splash.classList.add('dismissed');
+      splash.setAttribute('aria-hidden', 'true');
+      document.body.classList.remove('intro-active');
+    }
+  }
+
+  function dismissTitleSplash() {
+    if (titleSplashDismissed) return;
+    titleSplashDismissed = true;
+    stopTitleSplashMotion();
+    initAudioOnFirstInteraction();
+    setTitleSplashVisible(false);
+  }
+  let titleSplashAutoRAF = 0;
+  let titleSplashCleanup = null;
+
+  function stopTitleSplashMotion() {
+    if (titleSplashCleanup) {
+      titleSplashCleanup();
+      titleSplashCleanup = null;
+    }
+    if (titleSplashAutoRAF) {
+      cancelAnimationFrame(titleSplashAutoRAF);
+      titleSplashAutoRAF = 0;
+    }
+  }
+
+  function buildTitleStarLayer(el, count, minSize, maxSize, glowBoost) {
+    if (!el || el.dataset.built === '1') return;
+    const palette = ['#ffffff', '#d8fbff', '#79f3ff', '#ffc1df'];
+    let html = '';
+    for (let i = 0; i < count; i++) {
+      const size = (Math.random() * (maxSize - minSize) + minSize).toFixed(2);
+      const x = (Math.random() * 100).toFixed(2);
+      const y = (Math.random() * 100).toFixed(2);
+      const opacity = (Math.random() * 0.55 + 0.28).toFixed(2);
+      const color = palette[(Math.random() * palette.length) | 0];
+      const glow = (parseFloat(size) * glowBoost + (Math.random() * 3 + 2)).toFixed(2);
+      const dur = (Math.random() * 3.6 + 2.4).toFixed(2);
+      const delay = (Math.random() * 4.5).toFixed(2);
+      html += `<span class="titleStar" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;opacity:${opacity};background:${color};box-shadow:0 0 ${glow}px ${color};animation-duration:${dur}s;animation-delay:-${delay}s"></span>`;
+    }
+    el.innerHTML = html;
+    el.dataset.built = '1';
+  }
+
+  function initTitleSplashMotion() {
+    stopTitleSplashMotion();
+    const splash = overlay.querySelector('#titleScreen');
+    if (!splash || titleSplashDismissed) return;
+
+    const setParallax = (x, y) => {
+      splash.style.setProperty('--title-parallax-x', `${x.toFixed(2)}px`);
+      splash.style.setProperty('--title-parallax-y', `${y.toFixed(2)}px`);
+    };
+
+    const desktopMode = window.matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+    // Match density to screen/use-case spectrum:
+    // desktop gets a richer starfield because it has much more visible space,
+    // while mobile keeps the lighter density that already reads well.
+    const farCount = desktopMode ? 128 : 70;
+    const midCount = desktopMode ? 88 : 48;
+    const nearCount = desktopMode ? 44 : 26;
+
+    buildTitleStarLayer(overlay.querySelector('#titleStarsFar'), farCount, 0.8, 1.8, 2.8);
+    buildTitleStarLayer(overlay.querySelector('#titleStarsMid'), midCount, 1.1, 2.4, 3.8);
+    buildTitleStarLayer(overlay.querySelector('#titleStarsNear'), nearCount, 1.5, 3.2, 4.6);
+
+    if (desktopMode) {
+      const onMove = (e) => {
+        const r = splash.getBoundingClientRect();
+        const nx = ((e.clientX - r.left) / Math.max(1, r.width) - 0.5) * 2;
+        const ny = ((e.clientY - r.top) / Math.max(1, r.height) - 0.5) * 2;
+        setParallax(nx * 22, ny * 15);
+      };
+      const onLeave = () => setParallax(0, 0);
+      splash.addEventListener('mousemove', onMove);
+      splash.addEventListener('mouseleave', onLeave);
+      titleSplashCleanup = () => {
+        splash.removeEventListener('mousemove', onMove);
+        splash.removeEventListener('mouseleave', onLeave);
+      };
+    } else {
+      let t = 0;
+      const tick = () => {
+        const liveSplash = overlay.querySelector('#titleScreen');
+        if (!liveSplash || titleSplashDismissed) {
+          titleSplashAutoRAF = 0;
+          return;
+        }
+        t += 0.016;
+        const x = Math.sin(t * 0.75) * 18 + Math.cos(t * 0.23) * 5;
+        const y = Math.cos(t * 0.58) * 12 + Math.sin(t * 0.19) * 4;
+        setParallax(x, y);
+        titleSplashAutoRAF = requestAnimationFrame(tick);
+      };
+      tick();
+    }
+  }
   const howToPlayOverlay = document.getElementById('howToPlayOverlay');
   const achievementsOverlay = document.getElementById('achievementsOverlay');
   const shopOverlay = document.getElementById('shopOverlay');
@@ -4226,11 +7089,16 @@
   let rangeLevel = 0, spreadLevel = 0, rayGunLevel = 0, rayGunCooldown = 0;
   let weaponMode = 'normal', weaponModeTimer = 0;
 
+  function weaponStatBars(power, rate, range) {
+    const bar = n => '▰'.repeat(n) + '▱'.repeat(5 - n);
+    return `POWER  ${bar(power)}\nRATE   ${bar(rate)}\nRANGE  ${bar(range)}`;
+  }
+
   const WEAPON_BUILDS = [
-    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration.', stats:'POWER █████   RATE ██░░░   RANGE ████░', cooldown:660, speed:13.5, life:42, recoil:0.72 },
-    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Tight blasts can overwhelm a target; range falls off hard. Starts with two shells and can build into a deep tube.', stats:'POWER ████░   RATE ███░░   RANGE █░░░░', cooldown:440, speed:8.2, life:18, recoil:1.05 },
-    { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, punishes packed targets.', stats:'POWER █████   RATE █░░░░   RANGE ████░', cooldown:980, speed:5.1, life:110, recoil:1.35 },
-    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Shorter-range pressure weapon; tiny rounds build heat and can overheat.', stats:'POWER ██░░░   RATE █████   RANGE ██░░░', cooldown:92, speed:8.8, life:36, recoil:0.04 }
+    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration.', stats:weaponStatBars(5,2,4), cooldown:660, speed:13.5, life:42, recoil:0.72 },
+    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Tight blasts can overwhelm a target; range falls off hard. Starts with two shells and can build into a deep tube.', stats:weaponStatBars(4,3,1), cooldown:440, speed:8.2, life:18, recoil:1.05 },
+    { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, punishes packed targets.', stats:weaponStatBars(5,1,4), cooldown:980, speed:5.1, life:110, recoil:1.35 },
+    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Shorter-range pressure weapon; tiny rounds build heat and can overheat.', stats:weaponStatBars(2,5,2), cooldown:92, speed:8.8, life:36, recoil:0.04 }
   ];
 
   let selectedWeaponIndex = 0;
@@ -4465,12 +7333,19 @@
       desc:'Balanced twin-engine package.'},
     {id:'vector', name:'VECTOR', nozzles:2, demand:1.08, thrust:1.16, speed:1.12, mass:.98, recoil:.84,
       desc:'High-output vectored drive. Fast, but wants more reactor power.'},
-    {id:'heavy', name:'HEAVY', nozzles:3, demand:1.28, thrust:1.08, speed:.98, mass:1.27, recoil:.58,
+    {id:'heavy', name:'HEAVY', nozzles:3, demand:1.28, thrust:1.34, speed:.98, mass:1.27, recoil:.58,
       desc:'Massive triple drive. Strong thrust and recoil control; very power hungry.'}
   ];
 
+  // PART BALANCE AUDIT:
+  // - Nose: speed / mass / ram tradeoff.
+  // - Frame: literal collision size / mass / turn tradeoff.
+  // - Wings: collision span / speed / turn / recoil stability tradeoff.
+  // - Engine: thrust / speed / recoil control / reactor demand tradeoff.
+  // - Reactor: power delivery / mass / turn tradeoff.
+  // Display bars below are derived from these actual gameplay multipliers.
   const CUSTOM_REACTORS = [
-    {id:'micro', name:'MICRO', output:.72, mass:.76, turn:1.06, design:'spine',
+    {id:'micro', name:'MICRO', output:.86, mass:.76, turn:1.06, design:'spine',
       desc:'Tiny lightweight reactor. Great with Light/Twin engines; struggles with large drives.'},
     {id:'standard', name:'STANDARD', output:1.00, mass:1.00, turn:1.00, design:'rails',
       desc:'Balanced twin-rail reactor.'},
@@ -4543,6 +7418,9 @@
     const delivery=.60+.40*powerRatio;
     const totalMass=nose.mass*frame.mass*wings.mass*engine.mass*reactor.mass;
     const recoilMult=engine.recoil*(1/Math.max(.62,totalMass*wings.stability));
+    const hitFactor=frame.hit*(.98+nose.shoulder*.035);
+    const hitSpan=Math.max(.55,Math.min(.92,Math.max(frame.half*.96,.68*wings.span)*.95));
+    const sizeMetric=hitFactor*hitSpan; // exactly mirrors gameplay collision reach
 
     return {
       name:`CUSTOM // ${nose.name}`,
@@ -4556,10 +7434,11 @@
         customHue(cfg.hue ?? cfg.primaryHue ?? 188,95,88)
       ],
       points:makeCustomHullPoints(nose,frame,wings),
-      hitFactor:frame.hit*(.98+nose.shoulder*.035),
+      hitFactor,
       // Collision reach follows the widest point of the outline we actually draw.
       // Floors at the old 0.60 so narrow hulls behave exactly as before.
-      hitSpan:Math.max(.55,Math.min(.92,Math.max(frame.half*.96,.68*wings.span)*.95)),
+      hitSpan,
+      sizeMetric,
       thrustMult:engine.thrust*delivery*(1/Math.sqrt(Math.max(.72,totalMass)))*1.05,
       turnMult:frame.turn*wings.turn*reactor.turn,
       maxSpeedMult:nose.speed*wings.speed*engine.speed*delivery,
@@ -6042,6 +8921,24 @@
     }
   }
 
+  // Extra "kill" sparkle layer used specifically for destroyed enemies / asteroids.
+  // Denser and a touch faster than the generic impact burst so kills feel punchier.
+  function spawnKillBurst(x, y, count, color, speedBias=1) {
+    for (let i = 0; i < count; i++) {
+      const angle = rand(0, Math.PI * 2);
+      const speed = rand(1.0, 4.7) * speedBias;
+      particles.push({
+        x, y,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed,
+        life: rand(24, 48),
+        maxLife: 48,
+        size: rand(1.1, 2.9),
+        color: Math.random() < 0.20 ? '#ffffff' : (color || '#6ff2ff')
+      });
+    }
+  }
+
   // Quick expanding ring right where a bullet connects — a small, cheap confirmation hit
   // separate from the bigger burst that plays when the target actually gets destroyed.
   // "big" gets a much larger, longer-lived ring for Overcharge — differs only in SIZE, the
@@ -6399,6 +9296,17 @@
 
     // UFO movement + firing
     for (const u of ufos) {
+      // Track turret angles toward ship for gunner variant
+      if (u.variant === 'gunner') {
+        const targetAngle = Math.atan2(ship.y - u.y, ship.x - u.x);
+        if (u._turretAngle === undefined) u._turretAngle = targetAngle;
+        // Smoothly rotate turret toward player — eased chase
+        let delta = targetAngle - u._turretAngle;
+        while (delta > Math.PI)  delta -= Math.PI * 2;
+        while (delta < -Math.PI) delta += Math.PI * 2;
+        u._turretAngle += delta * 0.045;
+      }
+
       if (u.boss) {
         updateBossMovement(u);
       } else if (u.variant === 'hunter' && u.tier === 2) {
@@ -6530,7 +9438,9 @@
       if (saveData.totalAsteroidsDestroyed >= 500) checkAchievementUnlocks(true);
     }
     updateHUD();
-    spawnExplosion(a.x, a.y, powerful ? 20 : 12, powerful ? '#ff7a4d' : '#ffd76f');
+    const asteroidBurstColor = powerful ? '#ff7a4d' : '#ffd76f';
+    spawnExplosion(a.x, a.y, powerful ? 28 : 18, asteroidBurstColor);
+    spawnKillBurst(a.x, a.y, a.size === 3 ? 16 : a.size === 2 ? 12 : 9, asteroidBurstColor, powerful ? 1.15 : 1);
     SFX.explosion(a.size, powerful);
     if (powerful && a.size === 3) hitStopFrames = Math.max(hitStopFrames, 2);
     asteroids.splice(index, 1);
@@ -6727,6 +9637,8 @@
   }
 
 
+  const ENABLE_UFO_DEBRIS = false; // Disabled for now; keep tier-0 debris code available for later.
+
   function spawnEscapePod(x, y, ejectAngle, broodId, fromTestGround = false) {
     const r = 15;
     const speed = rand(1.6, 2.2);
@@ -6740,6 +9652,7 @@
   }
 
   function spawnDebris(x, y, ejectAngle, fromTestGround = false) {
+    if (!ENABLE_UFO_DEBRIS) return;
     const r = 9;
     const speed = rand(2, 2.8);
     ufos.push({
@@ -6794,7 +9707,9 @@
       if (saveData.totalUfosDestroyed >= 20) checkAchievementUnlocks(true);
     }
     updateHUD();
-    spawnExplosion(u.x, u.y, u.tier === 2 ? 26 : u.tier === 1 ? 16 : 10, '#ff6fe8');
+    const ufoBurstColor = '#ff6fe8';
+    spawnExplosion(u.x, u.y, u.tier === 2 ? 34 : u.tier === 1 ? 22 : 15, ufoBurstColor);
+    spawnKillBurst(u.x, u.y, u.tier === 2 ? 20 : u.tier === 1 ? 14 : 10, ufoBurstColor, u.tier === 2 ? 1.18 : 1.04);
     triggerShake(u.tier === 2 ? 7 : u.tier === 1 ? 4 : 2, u.tier === 2 ? 10 : u.tier === 1 ? 6 : 4);
     SFX.ufoExplosion(u.tier);
     ufos.splice(index, 1);
@@ -6813,8 +9728,8 @@
       spawnEscapePod(u.x, u.y, angle, broodId, !!u.testGround);
       spawnEscapePod(u.x, u.y, angle + Math.PI, broodId, !!u.testGround);
       SFX.escapePodEject();
-    } else if (!powerful && u.tier === 1 && level >= 10) {
-      // Escape pod breaks down further — 2 debris pieces scatter
+    } else if (ENABLE_UFO_DEBRIS && !powerful && u.tier === 1 && level >= 10) {
+      // Drone Pod breakdown is currently disabled; retained behind a feature flag.
       const angle = rand(0, Math.PI * 2);
       spawnDebris(u.x, u.y, angle, !!u.testGround);
       spawnDebris(u.x, u.y, angle + Math.PI, !!u.testGround);
@@ -7186,36 +10101,82 @@
     ctx.translate(a.x, a.y);
     ctx.rotate(a.angle);
 
-    // Near-white translucent outline (not flat opaque grey) + a soft glow that's a DIFFERENT,
-    // dimmer cyan tint rather than matching the stroke exactly — reads as backlit rather than
-    // "glowing in its own color," which is what gives it that crisper, more crystalline look.
-    ctx.strokeStyle = 'rgba(224,238,255,0.85)';
-    ctx.lineWidth = 1.5;
-    ctx.shadowColor = 'rgba(141,242,255,0.3)';
-    ctx.shadowBlur = 8;
-    ctx.beginPath();
     const vertCount = a.verts.length;
-    for (let i = 0; i <= vertCount; i++) {
-      const idx = i % vertCount;
-      const angle = (idx / vertCount) * Math.PI * 2;
-      const rr = a.r * a.verts[idx];
-      const x = Math.cos(angle) * rr;
-      const y = Math.sin(angle) * rr;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+
+    function traceAsteroidPath() {
+      ctx.beginPath();
+      for (let i = 0; i <= vertCount; i++) {
+        const idx = i % vertCount;
+        const angle = (idx / vertCount) * Math.PI * 2;
+        const rr = a.r * a.verts[idx];
+        const x = Math.cos(angle) * rr;
+        const y = Math.sin(angle) * rr;
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      }
+      ctx.closePath();
     }
-    ctx.closePath();
+
+    // Faint glowing spin-wave: two low-alpha contour echoes lag slightly behind the
+    // current rotation so even slow-spinning rocks feel a little more alive.
+    const spinWaveAlpha = Math.min(0.16, 0.055 + Math.abs(a.spin) * 1.9);
+    if (spinWaveAlpha > 0.03) {
+      ctx.save();
+      ctx.rotate(-a.spin * 14);
+      ctx.scale(1.018, 1.018);
+      ctx.globalAlpha = spinWaveAlpha;
+      ctx.strokeStyle = 'rgba(111,242,255,0.32)';
+      ctx.shadowColor = 'rgba(111,242,255,0.42)';
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 1.1;
+      traceAsteroidPath();
+      ctx.stroke();
+      ctx.restore();
+
+      ctx.save();
+      ctx.rotate(-a.spin * 26);
+      ctx.scale(1.035, 1.035);
+      ctx.globalAlpha = spinWaveAlpha * 0.72;
+      ctx.strokeStyle = 'rgba(255,117,190,0.20)';
+      ctx.shadowColor = 'rgba(255,117,190,0.26)';
+      ctx.shadowBlur = 7;
+      ctx.lineWidth = 0.95;
+      traceAsteroidPath();
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Stronger bloom pass first, then a crisp icy edge on top.
+    ctx.strokeStyle = 'rgba(208,246,255,0.38)';
+    ctx.lineWidth = 2.35;
+    ctx.shadowColor = 'rgba(111,242,255,0.64)';
+    ctx.shadowBlur = 16;
+    traceAsteroidPath();
+    ctx.stroke();
+
+    // Subtle luminous body tint.
+    ctx.fillStyle = 'rgba(111,242,255,0.038)';
+    traceAsteroidPath();
+    ctx.fill();
+
+    // Crisp primary edge.
+    ctx.strokeStyle = 'rgba(240,246,255,0.97)';
+    ctx.lineWidth = 1.55;
+    ctx.shadowColor = 'rgba(164,246,255,0.58)';
+    ctx.shadowBlur = 11;
+    traceAsteroidPath();
     ctx.stroke();
     ctx.shadowBlur = 0;
 
-    // Faint internal fracture line, derived from this asteroid's own vertex data so each one
-    // gets a slightly different crack instead of a repeated identical pattern.
+    // Brighter fracture read without getting messy.
     const idxA = 1 % vertCount;
     const idxB = Math.floor(vertCount / 2) % vertCount;
     const angA = (idxA / vertCount) * Math.PI * 2;
     const angB = (idxB / vertCount) * Math.PI * 2;
     const rA = a.r * a.verts[idxA] * 0.5;
     const rB = a.r * a.verts[idxB] * 0.5;
-    ctx.strokeStyle = 'rgba(141,242,255,0.12)';
+    ctx.strokeStyle = 'rgba(141,242,255,0.18)';
+    ctx.shadowColor = 'rgba(111,242,255,0.18)';
+    ctx.shadowBlur = 4;
     ctx.lineWidth = 1;
     ctx.beginPath();
     ctx.moveTo(Math.cos(angA) * rA, Math.sin(angA) * rA);
@@ -7245,14 +10206,38 @@
   }
 
   function drawUfoBullets() {
-    ctx.fillStyle = '#ff7085';
-    ctx.shadowColor = '#ff7085';
-    ctx.shadowBlur = 8;
     for (const b of ufoBullets) {
+      const color = b.bossShot ? '#ff9ab0' : '#ff7085';
+
+      // Soft neon trail behind the shot so incoming fire reads faster.
+      ctx.globalAlpha = b.bossShot ? 0.60 : 0.48;
+      ctx.strokeStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = b.bossShot ? 12 : 9;
+      ctx.lineWidth = b.bossShot ? 2.1 : 1.55;
+      ctx.beginPath();
+      ctx.moveTo(b.x - b.vx * (b.bossShot ? 3.4 : 2.8), b.y - b.vy * (b.bossShot ? 3.4 : 2.8));
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+
+      ctx.globalAlpha = b.bossShot ? 0.32 : 0.25;
+      ctx.lineWidth = b.bossShot ? 3.4 : 2.5;
+      ctx.beginPath();
+      ctx.moveTo(b.x - b.vx * (b.bossShot ? 5.2 : 4.3), b.y - b.vy * (b.bossShot ? 5.2 : 4.3));
+      ctx.lineTo(b.x, b.y);
+      ctx.stroke();
+
+      // Bright shot head on top.
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = b.bossShot ? 13 : 10;
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
       ctx.fill();
     }
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur = 0;
   }
 
 
@@ -7454,68 +10439,276 @@
     for (const u of ufos) {
       ctx.save();
       ctx.translate(u.x, u.y);
+
       const scale = u.ejectTimer > 0 ? Math.max(0.15, 1 - u.ejectTimer / 18) : 1;
       ctx.scale(scale, scale);
 
       const color = u.boss
-        ? (u.bossType==='DREADNOUGHT' ? '#ff5e66' : u.bossType==='CARRIER PRIME' ? '#ff4db8' : '#ff8b5e')
-        : u.variant==='gunner' ? '#ff7b72'
-        : u.variant==='hunter' ? '#ffb347'
-        : u.variant==='carrier' ? '#c98cff'
+        ? (u.bossType === 'DREADNOUGHT' ? '#ff5e66'
+          : u.bossType === 'CARRIER PRIME' ? '#ff4db8'
+          : '#ff8b5e')
+        : u.variant === 'gunner'  ? '#ff7b72'
+        : u.variant === 'hunter'  ? '#ffb347'
+        : u.variant === 'carrier' ? '#c98cff'
         : u.tier === 2 ? '#ff6fe8'
         : u.tier === 1 ? '#ff8fe8'
         : '#ffb3f0';
 
-      ctx.strokeStyle = color;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = u.boss ? 10 : 7;
-      ctx.lineWidth = u.boss ? 1.9 : 1.7;
-      ctx.globalAlpha = 0.92;
       const r = u.r;
 
+      if (!u._pulsePhase) u._pulsePhase = Math.random() * Math.PI * 2;
+      u._pulsePhase += u.boss ? 0.045 : 0.072;
+      const pulse = 0.5 + 0.5 * Math.sin(u._pulsePhase);
+
       if (u.boss) {
-        if (u.bossType==='DREADNOUGHT') drawDreadnoughtVector(u,color);
-        else if (u.bossType==='CARRIER PRIME') drawCarrierPrimeVector(u,color);
-        else drawHunterAceVector(u,color);
-
-        // Subtle boss hitbox/energy halo: visually separates the boss from normal UFOs
-        // without hiding the actual collision footprint.
-        ctx.globalAlpha=.16;
-        ctx.setLineDash([4,7]);
-        ctx.beginPath();
-        ctx.arc(0,0,r*.92,0,Math.PI*2);
-        ctx.stroke();
+        // ── BOSS — unchanged ─────────────────────────────────────────────────
+        ctx.strokeStyle = color; ctx.shadowColor = color;
+        ctx.shadowBlur = 20; ctx.lineWidth = 2.8; ctx.globalAlpha = 0.34;
+        if (u.bossType === 'DREADNOUGHT') drawDreadnoughtVector(u, color);
+        else if (u.bossType === 'CARRIER PRIME') drawCarrierPrimeVector(u, color);
+        else drawHunterAceVector(u, color);
+        ctx.globalAlpha = 0.18; ctx.setLineDash([4,7]);
+        ctx.beginPath(); ctx.arc(0,0,r*.96,0,Math.PI*2); ctx.stroke();
         ctx.setLineDash([]);
-      } else {
-        // Existing UFO family keeps the classic saucer vocabulary.
-        ctx.beginPath();
-        ctx.ellipse(0, 0, r, r * 0.4, 0, 0, Math.PI * 2);
-        ctx.stroke();
+        ctx.strokeStyle = color; ctx.shadowBlur = 13; ctx.lineWidth = 2.0; ctx.globalAlpha = 0.97;
+        if (u.bossType === 'DREADNOUGHT') drawDreadnoughtVector(u, color);
+        else if (u.bossType === 'CARRIER PRIME') drawCarrierPrimeVector(u, color);
+        else drawHunterAceVector(u, color);
+        ctx.globalAlpha = 0.22; ctx.setLineDash([4,7]);
+        ctx.beginPath(); ctx.arc(0,0,r*.96,0,Math.PI*2); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.globalAlpha = 1;
+        ctx.restore();
+        continue;
+      }
 
-        ctx.beginPath();
-        ctx.ellipse(0, -r * 0.25, r * 0.45, r * 0.35, 0, Math.PI, 0, true);
-        ctx.stroke();
+      for (let pass = 0; pass < 2; pass++) {
+        const isBloom = pass === 0;
+        ctx.strokeStyle = color;
+        ctx.shadowColor = color;
+        ctx.shadowBlur = isBloom ? 18 : 9;
+        ctx.lineWidth = isBloom ? 3.2 : 1.75;
+        ctx.globalAlpha = isBloom ? 0.28 : 0.97;
+        ctx.lineJoin = 'round';
+        ctx.lineCap = 'round';
 
-        if (u.variant==='gunner') {
+        if (u.tier === 2 && (u.variant === 'standard' || !u.variant)) {
+          // ── STANDARD — crescent (variant A: outer arc + offset inner arc) ──────
+          const outerR = r * 0.88;
+          const innerR = r * 0.62;
+          const innerOffsetX = r * 0.28;
+          const outerSweep = Math.PI * 0.28;
+          const innerSweep = Math.PI * 0.38;
+
+          // Outer arc — almost full circle, small gap on the right
           ctx.beginPath();
-          ctx.moveTo(-r*.72,-r*.05); ctx.lineTo(-r*1.05,-r*.05);
-          ctx.moveTo(r*.72,-r*.05); ctx.lineTo(r*1.05,-r*.05);
+          ctx.arc(0, 0, outerR, outerSweep, -outerSweep, false);
           ctx.stroke();
-        } else if (u.variant==='hunter') {
+
+          // Inner arc — shifted right to carve the crescent hollow
+          ctx.globalAlpha = isBloom ? .18 : .72;
+          ctx.lineWidth = isBloom ? 2.2 : 1.2;
           ctx.beginPath();
-          ctx.moveTo(-r*.8,r*.25); ctx.lineTo(0,r*.5); ctx.lineTo(r*.8,r*.25);
+          ctx.arc(innerOffsetX, 0, innerR, innerSweep, -innerSweep, false);
           ctx.stroke();
-        } else if (u.variant==='carrier') {
+
+          // Horn connectors — bridge outer to inner arc at top and bottom tips
+          const topOX = Math.cos(outerSweep)  * outerR;
+          const topOY = Math.sin(outerSweep)  * outerR;
+          const topIX = innerOffsetX + Math.cos(innerSweep) * innerR;
+          const topIY = Math.sin(innerSweep)  * innerR;
+          const botOX = Math.cos(-outerSweep) * outerR;
+          const botOY = Math.sin(-outerSweep) * outerR;
+          const botIX = innerOffsetX + Math.cos(-innerSweep) * innerR;
+          const botIY = Math.sin(-innerSweep) * innerR;
+
+          ctx.globalAlpha = isBloom ? .22 : .82;
+          ctx.lineWidth = isBloom ? 2.4 : 1.4;
           ctx.beginPath();
-          ctx.rect(-r*.22,-r*.1,r*.44,r*.35);
-          ctx.stroke();
+          ctx.moveTo(topOX, topOY); ctx.lineTo(topIX, topIY); ctx.stroke();
+          ctx.beginPath();
+          ctx.moveTo(botOX, botOY); ctx.lineTo(botIX, botIY); ctx.stroke();
+
+          // Engine ports on rear of outer arc
+          ctx.globalAlpha = isBloom ? .18 : .70;
+          ctx.lineWidth = isBloom ? 1.8 : 1.1;
+          for (const oy of [-r*.22, 0, r*.22]) {
+            ctx.beginPath();
+            ctx.moveTo(-outerR * 0.90, oy);
+            ctx.lineTo(-outerR * 0.90 - r * (.14 + pulse * .10), oy);
+            ctx.stroke();
+          }
+
+        } else if (u.variant === 'gunner') {
+          // ── GUNNER — long hull, twin turrets tracking the player ─────────────
+          const turretAngle = u._turretAngle || 0;
+
+          // Main hull
+          ctx.beginPath();
+          ctx.moveTo( r*.88, -r*.18); ctx.lineTo( r*.88,  r*.18);
+          ctx.lineTo( r*.56,  r*.28); ctx.lineTo(-r*.56,  r*.28);
+          ctx.lineTo(-r*.88,  r*.18); ctx.lineTo(-r*.88, -r*.18);
+          ctx.lineTo(-r*.56, -r*.28); ctx.lineTo( r*.56, -r*.28);
+          ctx.closePath(); ctx.stroke();
+
+          // Hull spine
+          ctx.globalAlpha = isBloom ? .13 : .44;
+          ctx.lineWidth = isBloom ? 1.4 : .9;
+          ctx.beginPath();
+          ctx.moveTo(-r*.76, 0); ctx.lineTo(r*.76, 0); ctx.stroke();
+
+          // Both turrets rotate to face the player
+          for (const side of [-1, 1]) {
+            const turretCY = side * r * .28;
+
+            // Turret base ring — sits on hull, doesn't rotate
+            ctx.globalAlpha = isBloom ? .20 : .82;
+            ctx.lineWidth = isBloom ? 2.0 : 1.2;
+            ctx.beginPath();
+            ctx.arc(0, turretCY, r * .17, 0, Math.PI * 2);
+            ctx.stroke();
+
+            // Barrel — rotates to track player from turret center
+            ctx.save();
+            ctx.translate(0, turretCY);
+            ctx.rotate(turretAngle);
+
+            ctx.globalAlpha = isBloom ? .24 : .92;
+            ctx.lineWidth = isBloom ? 2.4 : 1.4;
+            // Twin barrels with slight spread
+            const barrelLen = r * (.44 + pulse * .08);
+            for (const spread of [-r*.055, r*.055]) {
+              // Perpendicular offset from aim direction
+              const perpX = Math.cos(turretAngle + Math.PI/2) * spread - Math.cos(turretAngle + Math.PI/2) * spread;
+              const perpY = spread;
+              ctx.beginPath();
+              ctx.moveTo(0, perpY);
+              ctx.lineTo(barrelLen, perpY);
+              ctx.stroke();
+            }
+            // Barrel tip cap
+            ctx.globalAlpha = isBloom ? .20 : .82;
+            ctx.lineWidth = isBloom ? 1.8 : 1.1;
+            ctx.beginPath();
+            ctx.moveTo(barrelLen, -r*.065);
+            ctx.lineTo(barrelLen,  r*.065);
+            ctx.stroke();
+
+            ctx.restore();
+          }
+
+          // Engine ports both ends
+          ctx.globalAlpha = isBloom ? .18 : .70;
+          ctx.lineWidth = isBloom ? 1.8 : 1.1;
+          for (const sx of [-1, 1]) {
+            ctx.beginPath();
+            ctx.moveTo(sx*r*.88, -r*.10); ctx.lineTo(sx*r*(.98+pulse*.08), -r*.10);
+            ctx.moveTo(sx*r*.88,  r*.10); ctx.lineTo(sx*r*(.98+pulse*.08),  r*.10);
+            ctx.stroke();
+          }
+
+        } else if (u.variant === 'hunter') {
+          // ── HUNTER — unchanged ───────────────────────────────────────────
+          const spd = Math.hypot(u.vx, u.vy);
+          const facing = spd > 0.05 ? Math.atan2(u.vy, u.vx) : 0;
+          ctx.save(); ctx.rotate(facing);
+          ctx.beginPath();
+          ctx.moveTo(r*1.02,0); ctx.lineTo(r*.12,-r*.22);
+          ctx.lineTo(-r*.18,-r*.54); ctx.lineTo(-r*.52,-r*.30);
+          ctx.lineTo(-r*.74,0);
+          ctx.lineTo(-r*.52,r*.30); ctx.lineTo(-r*.18,r*.54);
+          ctx.lineTo(r*.12,r*.22); ctx.closePath(); ctx.stroke();
+          ctx.globalAlpha = isBloom?.14:.50; ctx.lineWidth = isBloom?1.6:1.0;
+          ctx.beginPath();
+          ctx.moveTo(r*.64,0); ctx.lineTo(-r*.10,-r*.14);
+          ctx.lineTo(-r*.40,0); ctx.lineTo(-r*.10,r*.14);
+          ctx.closePath(); ctx.stroke();
+          ctx.globalAlpha = isBloom?.20:.74; ctx.lineWidth = isBloom?1.8:1.1;
+          for (const sy of [-0.20, 0.20]) {
+            ctx.beginPath();
+            ctx.moveTo(-r*.74,r*sy); ctx.lineTo(-r*(.92+pulse*.14),r*sy); ctx.stroke();
+          }
+          ctx.restore();
+
+        } else if (u.variant === 'carrier') {
+          // ── CARRIER — unchanged ──────────────────────────────────────────
+          ctx.beginPath();
+          ctx.arc(0,0,r*.88,-Math.PI*.68,Math.PI*.68); ctx.stroke();
+          ctx.beginPath();
+          ctx.arc(0,0,r*.52,Math.PI*.68,-Math.PI*.68,true); ctx.stroke();
+          ctx.globalAlpha = isBloom?.16:.62; ctx.lineWidth = isBloom?1.6:1.0;
+          const cpXo=Math.cos(Math.PI*.68)*r*.88, cpYo=Math.sin(Math.PI*.68)*r*.88;
+          const cpXi=Math.cos(Math.PI*.68)*r*.52, cpYi=Math.sin(Math.PI*.68)*r*.52;
+          ctx.beginPath();
+          ctx.moveTo(cpXo,cpYo); ctx.lineTo(cpXi,cpYi);
+          ctx.moveTo(cpXo,-cpYo); ctx.lineTo(cpXi,-cpYi); ctx.stroke();
+          ctx.globalAlpha = isBloom?.14:.56; ctx.lineWidth = isBloom?1.4:.9;
+          for (const sa of [-0.34,0,0.34]) {
+            const bx=Math.cos(sa)*r*.66, by=Math.sin(sa)*r*.66;
+            ctx.save(); ctx.translate(bx,by); ctx.rotate(sa);
+            ctx.beginPath(); ctx.rect(-r*.09,-r*.055,r*.18,r*.11); ctx.stroke();
+            ctx.restore();
+          }
+          ctx.globalAlpha = isBloom?.18:.68; ctx.lineWidth = isBloom?1.8:1.1;
+          ctx.beginPath();
+          ctx.moveTo(-r*.20,0); ctx.lineTo(-r*(.36+pulse*.10),0); ctx.stroke();
+
+        } else if (u.tier === 1) {
+          // ── DRONE POD — renamed, unchanged shape ─────────────────────────
+          const spd = Math.hypot(u.vx, u.vy);
+          const facing = spd > 0.05 ? Math.atan2(u.vy, u.vx) : 0;
+          ctx.save(); ctx.rotate(facing);
+          ctx.beginPath();
+          ctx.moveTo(r*.60,-r*.18); ctx.lineTo(r*.72,0); ctx.lineTo(r*.60,r*.18);
+          ctx.lineTo(-r*.46,r*.24); ctx.lineTo(-r*.60,r*.12);
+          ctx.lineTo(-r*.60,-r*.12); ctx.lineTo(-r*.46,-r*.24);
+          ctx.closePath(); ctx.stroke();
+          ctx.globalAlpha = isBloom?.14:.52; ctx.lineWidth = isBloom?1.4:.9;
+          ctx.beginPath();
+          ctx.moveTo(r*.62,-r*.12); ctx.lineTo(r*.62,r*.12); ctx.stroke();
+          ctx.globalAlpha = isBloom?.18:.66; ctx.lineWidth = isBloom?1.6:1.0;
+          for (const sy of [-1,1]) {
+            ctx.beginPath();
+            ctx.moveTo(-r*.08,sy*r*.24); ctx.lineTo(-r*.18,sy*r*.38);
+            ctx.lineTo(-r*.38,sy*r*.38); ctx.lineTo(-r*.46,sy*r*.24); ctx.stroke();
+          }
+          ctx.globalAlpha = isBloom?.20:.72; ctx.lineWidth = isBloom?1.8:1.1;
+          ctx.beginPath();
+          ctx.moveTo(-r*.60,0); ctx.lineTo(-r*(.78+pulse*.14),0); ctx.stroke();
+          ctx.restore();
+
+        } else {
+          // ── DEBRIS — unchanged ───────────────────────────────────────────
+          if (!u._debrisShape) {
+            const rng=(a,b)=>a+(b-a)*Math.random();
+            u._debrisShape=[
+              [rng(.35,.60),rng(-.12,.12)],
+              [rng(-.10,.18),rng(.28,.52)],
+              [rng(-.42,-.22),rng(.12,.34)],
+              [rng(-.48,-.28),rng(-.30,-.10)],
+              [rng(-.08,.14),rng(-.46,-.26)]
+            ];
+          }
+          ctx.beginPath();
+          u._debrisShape.forEach(([px,py],i) => {
+            i===0 ? ctx.moveTo(px*r,py*r) : ctx.lineTo(px*r,py*r);
+          });
+          ctx.closePath(); ctx.stroke();
         }
+      }
 
-        ctx.beginPath();
-        ctx.moveTo(-r * 0.5, r * 0.05); ctx.lineTo(-r * 0.5, r * 0.25);
-        ctx.moveTo(0, r * 0.15); ctx.lineTo(0, r * 0.35);
-        ctx.moveTo(r * 0.5, r * 0.05); ctx.lineTo(r * 0.5, r * 0.25);
-        ctx.stroke();
+      // Reactor core — all non-debris non-boss UFOs
+      if (u.tier > 0) {
+        const coreR = u.tier === 1 ? r*.13 : r*.16;
+        // Core position varies by variant so it sits in the thick part of the hull
+        let coreX = 0, coreY = 0;
+        if (u.tier === 2 && (u.variant === 'standard' || !u.variant)) coreX = -r*.28; // crescent body mass
+        ctx.shadowColor = color; ctx.shadowBlur = 10 + pulse*8;
+        ctx.fillStyle = color;
+        ctx.globalAlpha = 0.18 + pulse*.12;
+        ctx.beginPath(); ctx.arc(coreX, coreY, coreR*1.7, 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = 0.92;
+        ctx.beginPath(); ctx.arc(coreX, coreY, coreR, 0, Math.PI*2); ctx.fill();
       }
 
       ctx.globalAlpha = 1;
@@ -8332,13 +11525,60 @@
     return 'Locked.';
   }
 
-  // Renders a 5-segment bar like ▰▰▰▱▱ — quick visual stat comparison between ships,
-  // clearer at a glance than the text description alone. invert flips high-value-is-worse
-  // stats (hitbox size) so a full bar always reads as "good" regardless of which stat it is.
-  function statBar(value, max, invert = false) {
-    let n = Math.max(1, Math.min(5, Math.round((value / max) * 5)));
-    if (invert) n = 6 - n;
+  // Literal 5-segment stat display. A larger bar now always means MORE of the named
+  // attribute. SIZE is therefore actually larger for Broad/Manta builds instead of being
+  // inverted as an old "smaller hitbox = better" rating.
+  function ratingBar(n) {
+    n = Math.max(1, Math.min(5, Math.round(n)));
     return '▰'.repeat(n) + '▱'.repeat(5 - n);
+  }
+
+  function rangedStatBar(value, low, high) {
+    const t = Math.max(0, Math.min(1, (value - low) / Math.max(.0001, high - low)));
+    return ratingBar(1 + Math.round(t * 4));
+  }
+
+  function customSizeBar(skin) {
+    // Actual collision footprint = ship.r(hitFactor) × hitSpan.
+    // Thresholds are tuned so Standard Wings read:
+    // SLIM = 1 bar, STANDARD = 2 bars, BROAD = 3 bars.
+    // Large Manta combinations continue upward into 4–5.
+    const size = skin.sizeMetric ?? ((skin.hitFactor || 1) * (skin.hitSpan || .6));
+    if (size < .58) return ratingBar(1);
+    if (size < .68) return ratingBar(2);
+    if (size < .78) return ratingBar(3);
+    if (size < .90) return ratingBar(4);
+    return ratingBar(5);
+  }
+
+  function legacySizeBar(skin) {
+    const size = skin.hitFactor || 1;
+    if (size < .80) return ratingBar(1);
+    if (size < .95) return ratingBar(2);
+    if (size < 1.10) return ratingBar(3);
+    if (size < 1.25) return ratingBar(4);
+    return ratingBar(5);
+  }
+
+  function customHullStatBar(kind, skin) {
+    switch (kind) {
+      case 'speed':     return rangedStatBar(skin.maxSpeedMult || 1, .71, 1.31);
+      case 'turn':      return rangedStatBar(skin.turnMult || 1, .735, 1.34);
+      case 'size':      return customSizeBar(skin);
+      case 'thrust':    return rangedStatBar(skin.thrustMult || 1, .68, 1.52);
+      case 'stability': return rangedStatBar(1 / (skin.recoilMult || 1), .66, 1.85);
+      case 'ram':       return rangedStatBar(skin.ramMult || 1, .75, 1.25);
+      default:          return ratingBar(3);
+    }
+  }
+
+  function legacyHullStatBar(kind, skin) {
+    switch (kind) {
+      case 'speed': return rangedStatBar(skin.maxSpeedMult || 1, .86, 1.14);
+      case 'turn':  return rangedStatBar(skin.turnMult || 1, .85, 1.20);
+      case 'size':  return legacySizeBar(skin);
+      default:      return ratingBar(3);
+    }
   }
 
   function refreshShipPreviewUI() {
@@ -8352,8 +11592,8 @@
     if (statsEl2) {
       statsEl2.textContent = unlocked
         ? (skin.custom
-          ? `SPEED ${statBar(skin.maxSpeedMult||1,1.28)}\nTURN  ${statBar(skin.turnMult||1,1.30)}\nSIZE  ${statBar(skin.hitFactor||1,1.25,true)}\nSTAB  ${statBar(1/(skin.recoilMult||1),3.0)}${skin.underpowered?'\nPOWER ENGINE UNDERFED':'\nPOWER NOMINAL'}`
-          : `SPEED ${statBar(skin.maxSpeedMult || 1, 1.14)}\nTURN  ${statBar(skin.turnMult, 1.2)}\nSIZE  ${statBar(skin.hitFactor, 1.3, true)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`)
+          ? `SPEED ${customHullStatBar('speed',skin)}\nTURN  ${customHullStatBar('turn',skin)}\nSIZE  ${customHullStatBar('size',skin)}\nSTAB  ${customHullStatBar('stability',skin)}${skin.underpowered?'\nPOWER ENGINE UNDERFED':'\nPOWER NOMINAL'}`
+          : `SPEED ${legacyHullStatBar('speed',skin)}\nTURN  ${legacyHullStatBar('turn',skin)}\nSIZE  ${legacyHullStatBar('size',skin)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`)
         : 'SPEED ?????\nTURN  ?????\nSIZE  ?????\nARMOR ?????';
     }
     const customBtn=overlay.querySelector('#customHullBtn');
@@ -8661,9 +11901,7 @@
     }
     renderTestBuildConfigurator();
     const enterBtn=document.getElementById('testEnterBtn');
-    const backBtn=document.getElementById('testConfigBackBtn');
     if (enterBtn) enterBtn.textContent=testConfigOpenedFromGround?'APPLY & RETURN':'ENTER TEST GROUND';
-    if (backBtn) backBtn.textContent=testConfigOpenedFromGround?'CANCEL':'BACK';
     testLoadoutOverlay.classList.remove('hidden');
   }
   function closeTestBuildConfigurator(applyLive=false) {
@@ -8685,7 +11923,6 @@
     if(n){n.textContent=w.name;n.style.color=w.color;} if(d)d.textContent=w.desc; if(st)st.textContent=w.stats;
   }
 
-  document.getElementById('testConfigBackBtn')?.addEventListener('click',()=>{SFX.uiTick();closeTestBuildConfigurator(false);});
   document.getElementById('testWeaponPrevBtn')?.addEventListener('click',()=>{
     selectedWeaponIndex=(selectedWeaponIndex-1+WEAPON_BUILDS.length)%WEAPON_BUILDS.length;
     SFX.uiTick(); renderTestBuildConfigurator();
@@ -8816,12 +12053,12 @@
     }
 
     set('hwStats',
-      `SPEED     ${statBar(skin.maxSpeedMult||1,1.30)}\n`+
-      `TURN      ${statBar(skin.turnMult||1,1.30)}\n`+
-      `SIZE      ${statBar(skin.hitFactor||1,1.25,true)}\n`+
-      `THRUST    ${statBar(skin.thrustMult||1,1.35)}\n`+
-      `STABILITY ${statBar(1/(skin.recoilMult||1),3.0)}\n`+
-      `RAM       ${statBar(skin.ramMult||1,1.50)}`
+      `SPEED     ${customHullStatBar('speed',skin)}\n`+
+      `TURN      ${customHullStatBar('turn',skin)}\n`+
+      `SIZE      ${customHullStatBar('size',skin)}\n`+
+      `THRUST    ${customHullStatBar('thrust',skin)}\n`+
+      `STABILITY ${customHullStatBar('stability',skin)}\n`+
+      `RAM       ${customHullStatBar('ram',skin)}`
     );
 
     const colorSlider=document.getElementById('hwColor');
@@ -9001,6 +12238,59 @@
   });
 
   // ---------- Main menu (re)binding — needed because "quit to menu" restores fresh markup ----------
+  function weaponMenuSchematic(weapon) {
+    const color = weapon?.color || '#6ff2ff';
+    const common = `fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"`;
+    const soft = `fill="none" stroke="${color}" stroke-width="1" opacity=".32" vector-effect="non-scaling-stroke"`;
+    const id = weapon?.id || 'sniper';
+
+    if (id === 'sniper') {
+      return `<svg viewBox="0 0 180 90" aria-hidden="true">
+        <path ${soft} d="M18 45h144M90 14v62"/>
+        <circle ${soft} cx="90" cy="45" r="28"/>
+        <path ${common} d="M24 45h96"/>
+        <path ${common} d="M120 39v12h25l11-6-11-6h-25Z"/>
+        <path ${common} d="M42 36h16v18H42zM65 39h19v12H65z"/>
+        <path ${common} d="M28 45 18 39v12l10-6Z"/>
+        <path ${soft} d="M151 31v28M158 34v22"/>
+      </svg>`;
+    }
+
+    if (id === 'shotgun') {
+      return `<svg viewBox="0 0 180 90" aria-hidden="true">
+        <path ${soft} d="M20 45h140M90 14v62"/>
+        <circle ${soft} cx="90" cy="45" r="28"/>
+        <path ${common} d="M30 34h86l25 7v8l-25 7H30"/>
+        <path ${common} d="M38 39h70M38 51h70"/>
+        <path ${common} d="M29 34 18 40v10l11 6"/>
+        <path ${soft} d="M140 41 164 29M140 45h28M140 49l24 12"/>
+      </svg>`;
+    }
+
+    if (id === 'rocket') {
+      return `<svg viewBox="0 0 180 90" aria-hidden="true">
+        <path ${soft} d="M20 45h140M90 14v62"/>
+        <circle ${soft} cx="90" cy="45" r="29"/>
+        <rect ${common} x="39" y="28" width="58" height="34" rx="4"/>
+        <path ${common} d="M49 34v22M61 34v22M73 34v22M85 34v22"/>
+        <path ${common} d="M101 45h29"/>
+        <path ${common} d="M130 34 159 45l-29 11 7-11-7-11Z"/>
+        <path ${soft} d="M32 24v42M104 22v46"/>
+      </svg>`;
+    }
+
+    return `<svg viewBox="0 0 180 90" aria-hidden="true">
+      <path ${soft} d="M20 45h140M90 14v62"/>
+      <circle ${soft} cx="90" cy="45" r="29"/>
+      <path ${common} d="M30 45h34"/>
+      <circle ${common} cx="82" cy="45" r="18"/>
+      <circle ${soft} cx="82" cy="45" r="10"/>
+      <path ${common} d="M82 27v36M64 45h36M69 32l26 26M95 32 69 58"/>
+      <path ${common} d="M100 38h37l19 7-19 7h-37"/>
+      <path ${soft} d="M145 31v28M153 35v20"/>
+    </svg>`;
+  }
+
   function bindMainMenuUI() {
     const startBtn = overlay.querySelector('#startBtn');
     const testGroundBtn = overlay.querySelector('#testGroundBtn');
@@ -9012,7 +12302,7 @@
     const musicVolSlider = overlay.querySelector('.musicVolumeSlider');
     if (startBtn) startBtn.addEventListener('click', (e) => { if (!mainMenuIsActuallyInteractive()) { e.preventDefault(); e.stopPropagation(); return; } SFX.uiTick(); startGame(); });
     if (testGroundBtn) {
-      testGroundBtn.innerHTML = `${uiIcon('lab')} TEST GROUND`;
+      testGroundBtn.innerHTML = uiIcon('lab');
       testGroundBtn.addEventListener('click', (e) => { if (!mainMenuIsActuallyInteractive()) { e.preventDefault(); e.stopPropagation(); return; } SFX.uiTick(); openTestBuildConfigurator(false); });
     }
     if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
@@ -9050,8 +12340,20 @@
     shipNameLabelEl = overlay.querySelector('#shipNameLabel');
     shipDescLabelEl = overlay.querySelector('#shipDescLabel');
     const weaponNameEl=overlay.querySelector('#weaponNameLabel'); const weaponDescEl=overlay.querySelector('#weaponDescLabel'); const weaponStatsEl=overlay.querySelector('#weaponStatsLabel');
+    const weaponSchematicEl=overlay.querySelector('#weaponSchematicIcon');
+    const weaponSchematicFrame=overlay.querySelector('#weaponSchematicFrame');
     const weaponPrevBtn=overlay.querySelector('#weaponPrevBtn'); const weaponNextBtn=overlay.querySelector('#weaponNextBtn');
-    const refreshWeaponUI=()=>{ const w=WEAPON_BUILDS[selectedWeaponIndex]; if(weaponNameEl){weaponNameEl.textContent=w.name; weaponNameEl.style.color=w.color;} if(weaponDescEl)weaponDescEl.textContent=w.desc; if(weaponStatsEl)weaponStatsEl.textContent=w.stats; };
+    const refreshWeaponUI=()=>{ 
+      const w=WEAPON_BUILDS[selectedWeaponIndex];
+      if(weaponNameEl){weaponNameEl.textContent=w.name; weaponNameEl.style.color=w.color;}
+      if(weaponDescEl)weaponDescEl.textContent=w.desc;
+      if(weaponStatsEl)weaponStatsEl.textContent=w.stats;
+      if(weaponSchematicEl)weaponSchematicEl.innerHTML=weaponMenuSchematic(w);
+      if(weaponSchematicFrame){
+        weaponSchematicFrame.style.setProperty('--weapon-color', w.color);
+        weaponSchematicFrame.dataset.weapon=w.id;
+      }
+    };
     if(weaponPrevBtn)weaponPrevBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+WEAPON_BUILDS.length-1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
     if(weaponNextBtn)weaponNextBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
     refreshWeaponUI();
@@ -9068,9 +12370,41 @@
     refreshShipPreviewUI();
 
     const statsEl = overlay.querySelector('#menuStats');
-    if (statsEl) statsEl.textContent = `BEST SCORE ${saveData.highScore}   ·   TOP LEVEL ${saveData.bestLevel}   ·   SALVAGE ${saveData.salvage}`;
+    if (statsEl) {
+      const bestEl = statsEl.querySelector('#menuBestScore');
+      const levelEl = statsEl.querySelector('#menuTopLevel');
+      const salvageEl = statsEl.querySelector('#menuSalvage');
+      if (bestEl) bestEl.textContent = saveData.highScore;
+      if (levelEl) levelEl.textContent = saveData.bestLevel;
+      if (salvageEl) salvageEl.textContent = saveData.salvage;
+    }
+
+    const enterMenuBtn = overlay.querySelector('#enterMenuBtn');
+    if (enterMenuBtn) {
+      enterMenuBtn.addEventListener('click', () => { SFX.uiTick(); dismissTitleSplash(); });
+    }
+
+    const titleScreen = overlay.querySelector('#titleScreen');
+    if (titleScreen) {
+      titleScreen.addEventListener('click', (e) => {
+        if (e.target === titleScreen) { SFX.uiTick(); dismissTitleSplash(); }
+      });
+    }
+
+    if (document.body.classList.contains('in-menu')) MUSIC.setIntensity(0);
+    if (!titleSplashDismissed) initTitleSplashMotion(); else stopTitleSplashMotion();
+    setTitleSplashVisible(!titleSplashDismissed);
   }
   bindMainMenuUI();
+
+  document.addEventListener('keydown', (e) => {
+    if (!document.body.classList.contains('in-menu') || titleSplashDismissed) return;
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      SFX.uiTick();
+      dismissTitleSplash();
+    }
+  });
 
   // Audio starts on the very first tap/click/key anywhere on the page — including just landing
   // on the menu — so both music AND button sound effects are already live before Start is ever pressed.
@@ -9183,6 +12517,16 @@
   resumeBtn.addEventListener('click', () => { SFX.uiTick(); setPaused(false); });
   howToPlayBtnPause.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
   htpBackBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.add('hidden'); });
+
+  // Top-right X buttons use the same existing close/back actions so touch and mouse
+  // behave identically without bypassing cleanup, pause state, or live-config handling.
+  document.getElementById('htpCloseBtn')?.addEventListener('click', () => htpBackBtn.click());
+  document.getElementById('achCloseBtn')?.addEventListener('click', () => achBackBtn.click());
+  document.getElementById('shopCloseBtn')?.addEventListener('click', () => shopBackBtn.click());
+  document.getElementById('settingsCloseBtn')?.addEventListener('click', () => settingsBackBtn.click());
+  document.getElementById('pauseCloseBtn')?.addEventListener('click', () => resumeBtn.click());
+  document.getElementById('hwCloseBtn')?.addEventListener('click', () => document.getElementById('hwCancel')?.click());
+  document.getElementById('testConfigCloseBtn')?.addEventListener('click', () => { SFX.uiTick(); closeTestBuildConfigurator(false); });
   achievementsBtnPause.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
   settingsBackBtn.addEventListener('click', () => {
     reloadBindListening = false;
