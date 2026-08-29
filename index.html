@@ -1021,137 +1021,164 @@
     pointer-events: none;
   }
 
-  /* Directional virtual joystick. The direction of the knob is the direction
-     the ship tries to face; distance from center controls thrust amount. */
-  #moveJoystick {
-    --joy-size: 152px;
-    --knob-size: 62px;
-    pointer-events: auto;
-    position: relative;
-    width: var(--joy-size);
-    height: var(--joy-size);
-    border-radius: 50%;
-    touch-action: none;
-    -webkit-user-select: none;
-    user-select: none;
-    border: 2px solid rgba(111,242,255,.56);
-    background:
-      radial-gradient(circle at center, rgba(255,255,255,.07) 0 7%, rgba(111,242,255,.16) 8% 10%, transparent 11%),
-      radial-gradient(circle at center, transparent 0 32%, rgba(111,242,255,.11) 33% 34%, transparent 35% 60%, rgba(255,77,166,.09) 61% 62%, transparent 63%),
-      linear-gradient(180deg, rgba(22,16,48,.34), rgba(5,11,24,.74));
-    box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.03),
-      inset 0 0 26px rgba(111,242,255,.10),
-      inset 0 0 46px rgba(255,77,166,.05),
-      0 0 22px rgba(111,242,255,.14),
-      0 0 34px rgba(255,77,166,.06);
-    overflow: hidden;
+  /* Three-button mobile movement pad. These are direct digital flight inputs,
+     matching keyboard A / D / W instead of a target-heading joystick. */
+  #movePad {
+    --move-btn:76px;
+    --move-gap:9px;
+    width:calc(var(--move-btn) * 2 + var(--move-gap));
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:7px;
+    pointer-events:auto;
+    touch-action:none;
+    -webkit-user-select:none;
+    user-select:none;
+    filter:drop-shadow(0 0 10px rgba(111,242,255,.08));
   }
-  #moveJoystick::before,
-  #moveJoystick::after {
+  .movePadThrustRow,
+  .movePadTurnRow {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    pointer-events:none;
+  }
+  .movePadTurnRow { gap:var(--move-gap); }
+
+  .ctrlBtn {
+    pointer-events:auto;
+    position:relative;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:2px;
+    width:var(--move-btn,76px);
+    height:var(--move-btn,76px);
+    margin:0;
+    padding:0;
+    border:1.5px solid rgba(111,242,255,.70);
+    border-radius:12px;
+    color:#aefaff;
+    background:
+      linear-gradient(135deg,transparent 0 11px,rgba(111,242,255,.035) 11px 12px,transparent 12px),
+      linear-gradient(315deg,transparent 0 11px,rgba(255,77,166,.035) 11px 12px,transparent 12px),
+      linear-gradient(180deg,rgba(15,18,42,.64),rgba(5,10,23,.82));
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.025),
+      inset 0 0 16px rgba(111,242,255,.07),
+      0 0 12px rgba(111,242,255,.10),
+      0 0 22px rgba(255,77,166,.035);
+    text-shadow:0 0 8px rgba(111,242,255,.48);
+    touch-action:none;
+    -webkit-tap-highlight-color:transparent;
+    transition:transform .045s ease,border-color .06s ease,box-shadow .06s ease,background .06s ease;
+    overflow:hidden;
+  }
+  .ctrlBtn::before,
+  .ctrlBtn::after {
     content:'';
     position:absolute;
     pointer-events:none;
-    opacity:.42;
   }
-  #moveJoystick::before {
-    left:50%; top:11%; bottom:11%; width:1px; transform:translateX(-50%);
-    background:linear-gradient(180deg, transparent, rgba(111,242,255,.62), rgba(255,77,166,.22), transparent);
-    box-shadow:0 0 8px rgba(111,242,255,.18);
+  .ctrlBtn::before {
+    left:8px;
+    right:8px;
+    top:7px;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(111,242,255,.32),rgba(255,77,166,.14),transparent);
   }
-  #moveJoystick::after {
-    top:50%; left:11%; right:11%; height:1px; transform:translateY(-50%);
-    background:linear-gradient(90deg, transparent, rgba(111,242,255,.58), rgba(255,77,166,.20), transparent);
-    box-shadow:0 0 8px rgba(111,242,255,.18);
+  .ctrlBtn::after {
+    inset:5px;
+    border:1px solid rgba(111,242,255,.08);
+    border-radius:8px;
   }
-  #joystickKnob {
-    position:absolute;
-    left:50%; top:50%;
-    width:var(--knob-size);
-    height:var(--knob-size);
-    border-radius:50%;
-    transform:translate(-50%,-50%);
-    border:2px solid rgba(111,242,255,.88);
-    background:
-      radial-gradient(circle at 34% 30%, rgba(255,255,255,.30), rgba(255,255,255,.06) 18%, rgba(111,242,255,.18) 40%, rgba(255,77,166,.08) 58%, rgba(6,16,30,.92) 76%);
-    box-shadow:
-      0 0 18px rgba(111,242,255,.34),
-      0 0 28px rgba(255,77,166,.10),
-      inset 0 0 14px rgba(111,242,255,.14),
-      inset 0 0 18px rgba(255,255,255,.05);
-    pointer-events:none;
-    transition:box-shadow .08s ease, border-color .08s ease, transform .04s linear;
-    will-change:transform;
+  .ctrlGlyph {
+    position:relative;
+    z-index:1;
+    font-size:22px;
+    line-height:1;
   }
-  #moveJoystick.active {
-    border-color:rgba(111,242,255,.84);
-    box-shadow:
-      inset 0 0 0 1px rgba(255,255,255,.04),
-      inset 0 0 30px rgba(111,242,255,.14),
-      inset 0 0 54px rgba(255,77,166,.08),
-      0 0 24px rgba(111,242,255,.18),
-      0 0 40px rgba(255,77,166,.10);
+  .ctrlLabel {
+    position:relative;
+    z-index:1;
+    font:700 7px/1 "Courier New",monospace;
+    letter-spacing:1.35px;
   }
-  #moveJoystick.active #joystickKnob {
-    border-color:#dcfeff;
-    box-shadow:
-      0 0 26px rgba(111,242,255,.52),
-      0 0 38px rgba(255,77,166,.14),
-      inset 0 0 16px rgba(111,242,255,.20),
-      inset 0 0 18px rgba(255,255,255,.07);
-  }
-  .ctrlBtn {
-    pointer-events: auto;
-    width: 72px;
-    height: 72px;
-    border-radius: 50%;
-    border: 2px solid rgba(111,242,255,.62);
-    background:
-      radial-gradient(circle at 35% 30%, rgba(255,255,255,.12), rgba(111,242,255,.08) 28%, rgba(8,16,31,.88) 74%),
-      linear-gradient(180deg, rgba(18,16,42,.20), rgba(6,12,24,.58));
-    color: #88f7ff;
-    font-size: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 6px;
-    touch-action:none;
-    box-shadow:
-      inset 0 0 12px rgba(111,242,255,.10),
-      0 0 14px rgba(111,242,255,.12);
-    text-shadow:0 0 9px rgba(111,242,255,.34);
-    transition:transform .05s ease, box-shadow .08s ease, border-color .08s ease;
-  }
+  .moveBtn.active,
   .ctrlBtn:active {
-    transform:scale(.975);
+    transform:scale(.965);
+    color:#f0feff;
+    border-color:rgba(163,251,255,.98);
+    background:linear-gradient(180deg,rgba(19,33,57,.78),rgba(6,15,29,.90));
     box-shadow:
-      inset 0 0 16px rgba(111,242,255,.16),
-      0 0 18px rgba(111,242,255,.18),
+      inset 0 0 20px rgba(111,242,255,.15),
+      0 0 17px rgba(111,242,255,.24),
       0 0 28px rgba(255,77,166,.08);
   }
-  #fireBtn {
-    width: 102px;
-    height: 102px;
-    font-size: 15px;
-    font-weight: 700;
-    letter-spacing: 2.4px;
-    border-color: rgba(255,97,170,.74);
-    background:
-      radial-gradient(circle at 35% 30%, rgba(255,255,255,.16), rgba(255,108,170,.10) 26%, rgba(36,10,28,.18) 40%, rgba(9,13,24,.90) 76%),
-      linear-gradient(180deg, rgba(34,14,40,.24), rgba(7,11,22,.70));
-    color: #ffb8da;
-    box-shadow:
-      inset 0 0 14px rgba(255,97,170,.14),
-      0 0 18px rgba(255,97,170,.16),
-      0 0 30px rgba(111,242,255,.06);
-    text-shadow:0 0 10px rgba(255,97,170,.30);
+  .thrustBtn {
+    width:82px;
+    height:69px;
+    border-color:rgba(111,242,255,.78);
+    clip-path:polygon(14% 0,86% 0,100% 19%,100% 100%,0 100%,0 19%);
   }
-  #fireBtn:active {
-    transform:scale(.97);
+  .thrustBtn .ctrlGlyph {
+    font-size:25px;
+    color:#d8fdff;
+  }
+  .turnBtn {
+    width:76px;
+    height:72px;
+  }
+  #leftBtn {
+    clip-path:polygon(14% 0,100% 0,100% 100%,14% 100%,0 82%,0 18%);
+  }
+  #rightBtn {
+    clip-path:polygon(0 0,86% 0,100% 18%,100% 82%,86% 100%,0 100%);
+  }
+  #fireBtn {
+    --move-btn:102px;
+    width:102px;
+    height:102px;
+    border-radius:50%;
+    border-color:rgba(255,86,174,.82);
+    color:#ffc4e0;
+    background:
+      radial-gradient(circle at center,rgba(255,77,166,.11) 0 31%,transparent 32%),
+      radial-gradient(circle at center,transparent 0 52%,rgba(255,77,166,.13) 53% 55%,transparent 56%),
+      linear-gradient(180deg,rgba(43,13,42,.66),rgba(9,10,25,.90));
     box-shadow:
-      inset 0 0 18px rgba(255,97,170,.20),
-      0 0 22px rgba(255,97,170,.22),
-      0 0 34px rgba(111,242,255,.09);
+      inset 0 0 18px rgba(255,77,166,.10),
+      inset 0 0 34px rgba(111,242,255,.035),
+      0 0 17px rgba(255,77,166,.16),
+      0 0 30px rgba(111,242,255,.055);
+    text-shadow:0 0 10px rgba(255,77,166,.52);
+  }
+  #fireBtn::before {
+    left:20%;
+    right:20%;
+    top:50%;
+    height:1px;
+    background:linear-gradient(90deg,transparent,rgba(255,117,190,.35),transparent);
+  }
+  #fireBtn::after {
+    inset:10px;
+    border-radius:50%;
+    border-color:rgba(255,117,190,.11);
+  }
+  #fireBtn .fireLabel {
+    font-size:12px;
+    letter-spacing:2.7px;
+  }
+  #fireBtn:active,
+  #fireBtn.active {
+    color:#fff1f8;
+    border-color:rgba(255,154,208,.98);
+    box-shadow:
+      inset 0 0 24px rgba(255,77,166,.18),
+      0 0 21px rgba(255,77,166,.27),
+      0 0 36px rgba(111,242,255,.08);
   }
 
   /* ---------- Main menu cleanup: one identity column + one loadout panel ---------- */
@@ -1397,9 +1424,9 @@
     #muteBtn, #pauseBtn { right:7px; transform:scale(.88); transform-origin:top right; }
     #pauseBtn { top:45px; }
     #controls { padding:10px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); }
-    #moveJoystick { --joy-size:clamp(118px,33vw,144px); --knob-size:clamp(48px,14vw,58px); }
-    .ctrlBtn { width:clamp(48px,16vw,62px); height:clamp(48px,16vw,62px); margin:3px; font-size:20px; }
-    #fireBtn { width:clamp(78px,24vw,96px); height:clamp(78px,24vw,96px); font-size:13px; }
+    #movePad { --move-btn:clamp(66px,19vw,76px); --move-gap:clamp(6px,2vw,9px); }
+    .ctrlBtn { margin:0; }
+    #fireBtn { width:clamp(82px,24vw,96px); height:clamp(82px,24vw,96px); }
   }
 
   /* Phone landscape: keep two columns, but aggressively compact vertical content. */
@@ -1439,9 +1466,12 @@
     .buildTag { display:none; }
     .htpPanel, .settingsPanel, .upgradePanel { max-height:88vh; }
     #controls { padding:7px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
-    #moveJoystick { --joy-size:118px; --knob-size:48px; }
-    .ctrlBtn { width:50px; height:50px; margin:2px; font-size:18px; }
-    #fireBtn { width:78px; height:78px; font-size:12px; }
+    #movePad { --move-btn:66px; --move-gap:6px; }
+    .thrustBtn { width:72px; height:60px; }
+    .turnBtn { width:66px; height:62px; }
+    .ctrlBtn { margin:0; }
+    #fireBtn { width:80px; height:80px; }
+    #fireBtn .fireLabel { font-size:10px; }
   }
 
   /* Very small portrait devices if the player dismisses the landscape recommendation. */
@@ -3003,12 +3033,29 @@
 
   <div id="controls">
     <div id="leftCluster">
-      <div id="moveJoystick" role="application" aria-label="Movement joystick">
-        <div id="joystickKnob"></div>
+      <div id="movePad" aria-label="Touch movement controls">
+        <div class="movePadThrustRow">
+          <button class="ctrlBtn moveBtn thrustBtn" id="thrustBtn" type="button" aria-label="Thrust">
+            <span class="ctrlGlyph">▲</span>
+            <span class="ctrlLabel">THRUST</span>
+          </button>
+        </div>
+        <div class="movePadTurnRow">
+          <button class="ctrlBtn moveBtn turnBtn" id="leftBtn" type="button" aria-label="Turn left">
+            <span class="ctrlGlyph">◀</span>
+            <span class="ctrlLabel">LEFT</span>
+          </button>
+          <button class="ctrlBtn moveBtn turnBtn" id="rightBtn" type="button" aria-label="Turn right">
+            <span class="ctrlGlyph">▶</span>
+            <span class="ctrlLabel">RIGHT</span>
+          </button>
+        </div>
       </div>
     </div>
     <div id="rightCluster">
-      <div class="ctrlBtn" id="fireBtn">FIRE</div>
+      <button class="ctrlBtn fireControlBtn" id="fireBtn" type="button">
+        <span class="ctrlLabel fireLabel">FIRE</span>
+      </button>
     </div>
   </div>
 
@@ -3072,7 +3119,7 @@
       <h2>HOW TO PLAY</h2>
       <div class="htpSection">
         <h3>Controls</h3>
-        <p>Keyboard: A/D rotate, W thrust, SPACE fires, and R manually reloads magazine weapons. Arrow keys still work.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire. A secondary reload key or mouse side button can be assigned in Settings.<br>Touch: Push the left stick LEFT/RIGHT to rotate and UP to thrust; diagonals turn and thrust together. Hold FIRE on the right to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
+        <p>Keyboard: A/D rotate, W thrust, SPACE fires, and R manually reloads magazine weapons. Arrow keys still work.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire. A secondary reload key or mouse side button can be assigned in Settings.<br>Touch: Use LEFT / RIGHT to rotate and the THRUST button above them to accelerate. Hold FIRE on the right to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
@@ -3462,16 +3509,16 @@
   }
 
   function desktopTouchCaptureActive() {
-    // During desktop Test Ground mobile-control testing, an active virtual joystick
-    // should temporarily own gameplay input so PC mouse/keyboard do not hijack steering.
-    return DESKTOP_TEST_TOUCH_CONTROLS && touchJoystickActive;
+    // While simulated mobile movement is held in desktop Test Ground,
+    // suppress PC flight input so these controls can be tested cleanly.
+    return DESKTOP_TEST_TOUCH_CONTROLS && touchMovementActive();
   }
 
   function setDesktopTestTouchControls(enabled) {
     DESKTOP_TEST_TOUCH_CONTROLS = !TOUCH_INPUT_MODE && !!enabled;
     document.body.classList.toggle('touch-controls-enabled', touchControlsEnabledNow());
     document.body.classList.toggle('desktop-test-touch', DESKTOP_TEST_TOUCH_CONTROLS);
-    if (!touchControlsEnabledNow()) resetTouchJoystick();
+    if (!touchControlsEnabledNow()) resetTouchMovement();
   }
 
   document.body.classList.toggle('touch-input-mode', TOUCH_INPUT_MODE);
@@ -5235,7 +5282,7 @@
     lastMouseIntentY = null;
     mouseIntentTravel = 0;
     refreshControlModeUI();
-    resetTouchJoystick();
+    resetTouchMovement();
     spawnWave();
     updateHUD();
   }
@@ -5658,138 +5705,67 @@
     }
   }
 
-  const moveJoystick = document.getElementById('moveJoystick');
-  const joystickKnob = document.getElementById('joystickKnob');
+  const leftBtn = document.getElementById('leftBtn');
+  const rightBtn = document.getElementById('rightBtn');
+  const thrustBtn = document.getElementById('thrustBtn');
   const fireBtn = document.getElementById('fireBtn');
 
-  // Touch joystick state is intentionally separate from the desktop mouse layer.
-  // Direction controls heading; displacement from center controls thrust strength.
-  let touchJoystickActive = false;
-  let touchJoystickId = null;
-  let touchJoystickAngle = -Math.PI / 2; // retained for UI/debug compatibility
-  let touchJoystickMagnitude = 0;
-  let touchJoystickTurn = 0;   // -1 = full left, +1 = full right
-  let touchJoystickThrust = 0; // 0 = coast, 1 = full forward thrust
-  const JOYSTICK_AXIS_DEADZONE = 0.12;
-  const JOYSTICK_THRUST_EXP = 1.28;
+  // Three-button touch controls mirror keyboard A / D / W directly.
+  let touchTurnLeft = false;
+  let touchTurnRight = false;
+  let touchThrustHeld = false;
 
-  function applyJoystickAxisDeadzone(value, deadzone=JOYSTICK_AXIS_DEADZONE) {
-    const sign = Math.sign(value);
-    const amount = Math.abs(value);
-    if (amount <= deadzone) return 0;
-    return sign * Math.min(1, (amount - deadzone) / (1 - deadzone));
+  function touchMovementActive() {
+    return touchTurnLeft || touchTurnRight || touchThrustHeld;
   }
 
-  function resetTouchJoystick() {
-    touchJoystickActive = false;
-    touchJoystickId = null;
-    touchJoystickMagnitude = 0;
-    touchJoystickTurn = 0;
-    touchJoystickThrust = 0;
-    moveJoystick.classList.remove('active');
-    joystickKnob.style.transform = 'translate(-50%, -50%)';
+  function resetTouchMovement() {
+    touchTurnLeft = false;
+    touchTurnRight = false;
+    touchThrustHeld = false;
+    [leftBtn,rightBtn,thrustBtn].forEach(btn => btn && btn.classList.remove('active'));
     mouseThrust = false;
   }
 
-  function updateTouchJoystick(clientX, clientY) {
-    const rect = moveJoystick.getBoundingClientRect();
-    const cx = rect.left + rect.width / 2;
-    const cy = rect.top + rect.height / 2;
-    let dx = clientX - cx;
-    let dy = clientY - cy;
-    const maxRadius = Math.max(1, rect.width * 0.5 - joystickKnob.offsetWidth * 0.5 - 7);
-    const rawDist = Math.hypot(dx, dy);
-    const clampedDist = Math.min(rawDist, maxRadius);
-
-    if (rawDist > 0.001) {
-      dx = dx / rawDist * clampedDist;
-      dy = dy / rawDist * clampedDist;
-      touchJoystickAngle = Math.atan2(dy, dx);
-    }
-
-    touchJoystickMagnitude = Math.max(0, Math.min(1, clampedDist / maxRadius));
-
-    // True Asteroids-style mobile input:
-    // horizontal stick = direct left/right turn, upward stick = forward thrust.
-    // This mirrors A/D + W instead of asking the ship to chase a target heading.
-    const normalizedX = Math.max(-1, Math.min(1, dx / maxRadius));
-    const normalizedY = Math.max(-1, Math.min(1, dy / maxRadius));
-    touchJoystickTurn = applyJoystickAxisDeadzone(normalizedX);
-    touchJoystickThrust = Math.max(0, -applyJoystickAxisDeadzone(normalizedY));
-
-    joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
+  function beginTouchMovement(btn, setter) {
+    if (!touchControlsEnabledNow()) return;
+    clearMouseGameplayState();
+    clearKeyboardGameplayState();
+    mouseActive = false;
+    setter(true);
+    if (btn) btn.classList.add('active');
   }
 
-  if (moveJoystick) {
-    if (TOUCH_INPUT_MODE) {
-      moveJoystick.addEventListener('touchstart', (e) => {
-        mouseActive = false;
-        mouseThrust = false;
-        clearMouseGameplayState();
-        clearKeyboardGameplayState();
-        if (touchJoystickId !== null) return;
-        const t = e.changedTouches[0];
-        if (!t) return;
-        e.preventDefault();
-        touchJoystickId = t.identifier;
-        touchJoystickActive = true;
-        moveJoystick.classList.add('active');
-        updateTouchJoystick(t.clientX, t.clientY);
-      }, {passive:false});
-
-      moveJoystick.addEventListener('touchmove', (e) => {
-        if (touchJoystickId === null) return;
-        const t = Array.from(e.changedTouches).find(touch => touch.identifier === touchJoystickId) ||
-                  Array.from(e.touches).find(touch => touch.identifier === touchJoystickId);
-        if (!t) return;
-        e.preventDefault();
-        updateTouchJoystick(t.clientX, t.clientY);
-      }, {passive:false});
-
-      const finishJoystickTouch = (e) => {
-        if (touchJoystickId === null) return;
-        const ended = Array.from(e.changedTouches).some(touch => touch.identifier === touchJoystickId);
-        if (!ended) return;
-        e.preventDefault();
-        resetTouchJoystick();
-      };
-      moveJoystick.addEventListener('touchend', finishJoystickTouch, {passive:false});
-      moveJoystick.addEventListener('touchcancel', finishJoystickTouch, {passive:false});
-    } else {
-      let testJoystickMouseDown = false;
-
-      moveJoystick.addEventListener('mousedown', (e) => {
-        if (!DESKTOP_TEST_TOUCH_CONTROLS || e.button !== 0) return;
-        e.preventDefault();
-        testJoystickMouseDown = true;
-        clearMouseGameplayState();
-        clearKeyboardGameplayState();
-        mouseActive = false;
-        touchJoystickActive = true;
-        touchJoystickId = 'test-mouse';
-        moveJoystick.classList.add('active');
-        updateTouchJoystick(e.clientX, e.clientY);
-      });
-
-      window.addEventListener('mousemove', (e) => {
-        if (!DESKTOP_TEST_TOUCH_CONTROLS || !testJoystickMouseDown) return;
-        e.preventDefault();
-        updateTouchJoystick(e.clientX, e.clientY);
-      });
-
-      window.addEventListener('mouseup', (e) => {
-        if (e.button !== 0 || !testJoystickMouseDown) return;
-        testJoystickMouseDown = false;
-        resetTouchJoystick();
-      });
-    }
+  function endTouchMovement(btn, setter) {
+    setter(false);
+    if (btn) btn.classList.remove('active');
   }
+
+  bindHold(
+    leftBtn,
+    () => beginTouchMovement(leftBtn, value => { touchTurnLeft = value; }),
+    () => endTouchMovement(leftBtn, value => { touchTurnLeft = value; })
+  );
+  bindHold(
+    rightBtn,
+    () => beginTouchMovement(rightBtn, value => { touchTurnRight = value; }),
+    () => endTouchMovement(rightBtn, value => { touchTurnRight = value; })
+  );
+  bindHold(
+    thrustBtn,
+    () => beginTouchMovement(thrustBtn, value => { touchThrustHeld = value; }),
+    () => endTouchMovement(thrustBtn, value => { touchThrustHeld = value; })
+  );
 
   bindHold(fireBtn, () => {
     if (!touchControlsEnabledNow()) return;
     fireHeld = true;
+    fireBtn.classList.add('active');
     fireBullet();
-  }, () => { fireHeld = false; });
+  }, () => {
+    fireHeld = false;
+    fireBtn.classList.remove('active');
+  });
 
   // ---------- Mouse controls (desktop only) ----------
   // IMPORTANT: this entire gameplay mouse layer is omitted on touch devices. That prevents
@@ -6185,12 +6161,16 @@
       ship.angularVelocity += delta * turnStrength;
       ship.angularVelocity = Math.max(-ship.maxAngular * 3, Math.min(ship.maxAngular * 3, ship.angularVelocity));
       ship.angularVelocity *= 0.75; // dampen so it settles instead of oscillating
-    } else if (touchControlsEnabledNow() && touchJoystickActive) {
-      // Mobile now uses the same flight idea as keyboard:
-      // stick X directly commands left/right rotation instead of chasing a target angle.
-      if (Math.abs(touchJoystickTurn) > 0.001) {
-        ship.angularVelocity += touchJoystickTurn * ship.angularAccel;
-        ship.angularVelocity = Math.max(-ship.maxAngular, Math.min(ship.maxAngular, ship.angularVelocity));
+    } else if (touchControlsEnabledNow() && touchMovementActive()) {
+      // LEFT / RIGHT use the exact same rotational model as keyboard A / D.
+      let touchTurnInput = 0;
+      if (touchTurnLeft) touchTurnInput -= 1;
+      if (touchTurnRight) touchTurnInput += 1;
+
+      if (touchTurnInput !== 0) {
+        ship.angularVelocity += touchTurnInput * ship.angularAccel;
+        if (ship.angularVelocity > ship.maxAngular) ship.angularVelocity = ship.maxAngular;
+        if (ship.angularVelocity < -ship.maxAngular) ship.angularVelocity = -ship.maxAngular;
       } else {
         ship.angularVelocity *= ship.angularDamping;
         if (Math.abs(ship.angularVelocity) < 0.001) ship.angularVelocity = 0;
@@ -6216,16 +6196,13 @@
     ship.angle += ship.angularVelocity;
 
     // Thrust — keyboard/right-click are unchanged; touch joystick adds analog thrust.
-    const joystickThrust = touchControlsEnabledNow() && touchJoystickActive && touchJoystickThrust > 0.001;
+    const touchThrustActive = touchControlsEnabledNow() && touchThrustHeld;
     const keyboardThrust = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
     const mouseThrustActive = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcMouseControlsEnabled() && mouseThrust;
-    const thrusting = keyboardThrust || mouseThrustActive || joystickThrust;
+    const thrusting = keyboardThrust || mouseThrustActive || touchThrustActive;
     if (thrusting) {
-      // Upward stick travel is analog forward thrust. Horizontal travel is reserved for turning,
-      // so a player can make a hard turn without accidentally receiving full engine power.
-      const thrustScale = joystickThrust ? Math.pow(touchJoystickThrust, JOYSTICK_THRUST_EXP) : 1;
-      ship.vx += Math.cos(ship.angle) * ship.thrustPower * thrustScale;
-      ship.vy += Math.sin(ship.angle) * ship.thrustPower * thrustScale;
+      ship.vx += Math.cos(ship.angle) * ship.thrustPower;
+      ship.vy += Math.sin(ship.angle) * ship.thrustPower;
       spawnThrustTrail();
     }
     SFX.setThrust(thrusting);
@@ -6983,7 +6960,7 @@
     const hullColor = shipDisplayColor(skin);
     const keyboardThrustVisual = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
     const mouseThrustVisual = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcMouseControlsEnabled() && mouseThrust;
-    const thrusting = keyboardThrustVisual || mouseThrustVisual || (touchControlsEnabledNow() && touchJoystickActive && touchJoystickThrust > 0.001);
+    const thrusting = keyboardThrustVisual || mouseThrustVisual || (touchControlsEnabledNow() && touchThrustHeld);
     const shipSpeed = Math.hypot(ship.vx, ship.vy);
 
     function strokeShipHull(ctxRef, alpha=0.9, shadowBlur=7, lineWidth=1.7, accentAlpha=1) {
