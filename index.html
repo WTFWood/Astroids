@@ -986,7 +986,7 @@
     max-width: 260px;
   }
   @media (orientation: portrait) and (max-width: 900px) {
-    #rotateOverlay:not(.dismissed) { display: flex; }
+    body.touch-input-mode #rotateOverlay:not(.dismissed) { display: flex; }
   }
 
   /* Touch controls */
@@ -994,13 +994,27 @@
   #controls {
     position: absolute;
     bottom: 0; left: 0; right: 0;
-    display: flex;
+    display: none;
     justify-content: space-between;
     align-items: flex-end;
     padding: 18px;
     pointer-events: none;
     z-index: 12;
   }
+  body.touch-controls-enabled #controls { display:flex; }
+  body.desktop-test-touch #controls::before {
+    content:'TEST INPUT // TOUCH';
+    position:absolute;
+    left:50%;
+    bottom:7px;
+    transform:translateX(-50%);
+    pointer-events:none;
+    color:rgba(111,242,255,.42);
+    font:7px/1 "Courier New",monospace;
+    letter-spacing:1.4px;
+    white-space:nowrap;
+  }
+
   #leftCluster, #rightCluster {
     display: flex;
     align-items: flex-end;
@@ -1010,8 +1024,8 @@
   /* Directional virtual joystick. The direction of the knob is the direction
      the ship tries to face; distance from center controls thrust amount. */
   #moveJoystick {
-    --joy-size: 138px;
-    --knob-size: 56px;
+    --joy-size: 152px;
+    --knob-size: 62px;
     pointer-events: auto;
     position: relative;
     width: var(--joy-size);
@@ -1020,25 +1034,36 @@
     touch-action: none;
     -webkit-user-select: none;
     user-select: none;
-    border: 2px solid rgba(111,242,255,.48);
+    border: 2px solid rgba(111,242,255,.56);
     background:
-      radial-gradient(circle at center, rgba(111,242,255,.10) 0 13%, transparent 14%),
-      radial-gradient(circle at center, transparent 0 43%, rgba(111,242,255,.10) 44% 46%, transparent 47%),
-      rgba(4,10,20,.34);
+      radial-gradient(circle at center, rgba(255,255,255,.07) 0 7%, rgba(111,242,255,.16) 8% 10%, transparent 11%),
+      radial-gradient(circle at center, transparent 0 32%, rgba(111,242,255,.11) 33% 34%, transparent 35% 60%, rgba(255,77,166,.09) 61% 62%, transparent 63%),
+      linear-gradient(180deg, rgba(22,16,48,.34), rgba(5,11,24,.74));
     box-shadow:
-      inset 0 0 22px rgba(111,242,255,.08),
-      0 0 18px rgba(111,242,255,.10);
+      inset 0 0 0 1px rgba(255,255,255,.03),
+      inset 0 0 26px rgba(111,242,255,.10),
+      inset 0 0 46px rgba(255,77,166,.05),
+      0 0 22px rgba(111,242,255,.14),
+      0 0 34px rgba(255,77,166,.06);
+    overflow: hidden;
   }
   #moveJoystick::before,
   #moveJoystick::after {
     content:'';
     position:absolute;
     pointer-events:none;
-    opacity:.26;
-    background:#6ff2ff;
+    opacity:.42;
   }
-  #moveJoystick::before { left:50%; top:12%; bottom:12%; width:1px; transform:translateX(-50%); }
-  #moveJoystick::after { top:50%; left:12%; right:12%; height:1px; transform:translateY(-50%); }
+  #moveJoystick::before {
+    left:50%; top:11%; bottom:11%; width:1px; transform:translateX(-50%);
+    background:linear-gradient(180deg, transparent, rgba(111,242,255,.62), rgba(255,77,166,.22), transparent);
+    box-shadow:0 0 8px rgba(111,242,255,.18);
+  }
+  #moveJoystick::after {
+    top:50%; left:11%; right:11%; height:1px; transform:translateY(-50%);
+    background:linear-gradient(90deg, transparent, rgba(111,242,255,.58), rgba(255,77,166,.20), transparent);
+    box-shadow:0 0 8px rgba(111,242,255,.18);
+  }
   #joystickKnob {
     position:absolute;
     left:50%; top:50%;
@@ -1046,50 +1071,87 @@
     height:var(--knob-size);
     border-radius:50%;
     transform:translate(-50%,-50%);
-    border:2px solid rgba(111,242,255,.82);
-    background:radial-gradient(circle at 38% 32%, rgba(255,255,255,.20), rgba(111,242,255,.12) 38%, rgba(5,17,31,.88) 75%);
-    box-shadow:0 0 16px rgba(111,242,255,.30), inset 0 0 12px rgba(111,242,255,.12);
+    border:2px solid rgba(111,242,255,.88);
+    background:
+      radial-gradient(circle at 34% 30%, rgba(255,255,255,.30), rgba(255,255,255,.06) 18%, rgba(111,242,255,.18) 40%, rgba(255,77,166,.08) 58%, rgba(6,16,30,.92) 76%);
+    box-shadow:
+      0 0 18px rgba(111,242,255,.34),
+      0 0 28px rgba(255,77,166,.10),
+      inset 0 0 14px rgba(111,242,255,.14),
+      inset 0 0 18px rgba(255,255,255,.05);
     pointer-events:none;
-    transition:box-shadow .08s ease, border-color .08s ease;
+    transition:box-shadow .08s ease, border-color .08s ease, transform .04s linear;
     will-change:transform;
   }
   #moveJoystick.active {
-    border-color:rgba(111,242,255,.78);
-    box-shadow:inset 0 0 24px rgba(111,242,255,.12),0 0 22px rgba(111,242,255,.18);
+    border-color:rgba(111,242,255,.84);
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.04),
+      inset 0 0 30px rgba(111,242,255,.14),
+      inset 0 0 54px rgba(255,77,166,.08),
+      0 0 24px rgba(111,242,255,.18),
+      0 0 40px rgba(255,77,166,.10);
   }
   #moveJoystick.active #joystickKnob {
-    border-color:#b7fbff;
-    box-shadow:0 0 22px rgba(111,242,255,.48), inset 0 0 14px rgba(111,242,255,.18);
+    border-color:#dcfeff;
+    box-shadow:
+      0 0 26px rgba(111,242,255,.52),
+      0 0 38px rgba(255,77,166,.14),
+      inset 0 0 16px rgba(111,242,255,.20),
+      inset 0 0 18px rgba(255,255,255,.07);
   }
   .ctrlBtn {
     pointer-events: auto;
-    width: 68px;
-    height: 68px;
+    width: 72px;
+    height: 72px;
     border-radius: 50%;
-    border: 2px solid rgba(111,242,255,0.6);
-    background: rgba(111,242,255,0.08);
-    color: #6ff2ff;
-    font-size: 26px;
+    border: 2px solid rgba(111,242,255,.62);
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,.12), rgba(111,242,255,.08) 28%, rgba(8,16,31,.88) 74%),
+      linear-gradient(180deg, rgba(18,16,42,.20), rgba(6,12,24,.58));
+    color: #88f7ff;
+    font-size: 24px;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 6px;
     touch-action:none;
+    box-shadow:
+      inset 0 0 12px rgba(111,242,255,.10),
+      0 0 14px rgba(111,242,255,.12);
+    text-shadow:0 0 9px rgba(111,242,255,.34);
+    transition:transform .05s ease, box-shadow .08s ease, border-color .08s ease;
   }
   .ctrlBtn:active {
-    background: rgba(111,242,255,0.3);
+    transform:scale(.975);
+    box-shadow:
+      inset 0 0 16px rgba(111,242,255,.16),
+      0 0 18px rgba(111,242,255,.18),
+      0 0 28px rgba(255,77,166,.08);
   }
   #fireBtn {
-    width: 94px;
-    height: 94px;
-    font-size: 17px;
-    letter-spacing: 1px;
-    border-color: rgba(255,111,111,0.7);
-    background: rgba(255,111,111,0.08);
-    color: #ff8f8f;
+    width: 102px;
+    height: 102px;
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: 2.4px;
+    border-color: rgba(255,97,170,.74);
+    background:
+      radial-gradient(circle at 35% 30%, rgba(255,255,255,.16), rgba(255,108,170,.10) 26%, rgba(36,10,28,.18) 40%, rgba(9,13,24,.90) 76%),
+      linear-gradient(180deg, rgba(34,14,40,.24), rgba(7,11,22,.70));
+    color: #ffb8da;
+    box-shadow:
+      inset 0 0 14px rgba(255,97,170,.14),
+      0 0 18px rgba(255,97,170,.16),
+      0 0 30px rgba(111,242,255,.06);
+    text-shadow:0 0 10px rgba(255,97,170,.30);
   }
   #fireBtn:active {
-    background: rgba(255,111,111,0.3);
+    transform:scale(.97);
+    box-shadow:
+      inset 0 0 18px rgba(255,97,170,.20),
+      0 0 22px rgba(255,97,170,.22),
+      0 0 34px rgba(111,242,255,.09);
   }
 
   /* ---------- Main menu cleanup: one identity column + one loadout panel ---------- */
@@ -1335,9 +1397,9 @@
     #muteBtn, #pauseBtn { right:7px; transform:scale(.88); transform-origin:top right; }
     #pauseBtn { top:45px; }
     #controls { padding:10px max(8px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(8px,env(safe-area-inset-left)); }
-    #moveJoystick { --joy-size:clamp(108px,31vw,132px); --knob-size:clamp(44px,13vw,52px); }
+    #moveJoystick { --joy-size:clamp(118px,33vw,144px); --knob-size:clamp(48px,14vw,58px); }
     .ctrlBtn { width:clamp(48px,16vw,62px); height:clamp(48px,16vw,62px); margin:3px; font-size:20px; }
-    #fireBtn { width:clamp(72px,22vw,88px); height:clamp(72px,22vw,88px); font-size:13px; }
+    #fireBtn { width:clamp(78px,24vw,96px); height:clamp(78px,24vw,96px); font-size:13px; }
   }
 
   /* Phone landscape: keep two columns, but aggressively compact vertical content. */
@@ -1377,9 +1439,9 @@
     .buildTag { display:none; }
     .htpPanel, .settingsPanel, .upgradePanel { max-height:88vh; }
     #controls { padding:7px max(10px,env(safe-area-inset-right)) max(7px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left)); }
-    #moveJoystick { --joy-size:110px; --knob-size:44px; }
+    #moveJoystick { --joy-size:118px; --knob-size:48px; }
     .ctrlBtn { width:50px; height:50px; margin:2px; font-size:18px; }
-    #fireBtn { width:72px; height:72px; font-size:12px; }
+    #fireBtn { width:78px; height:78px; font-size:12px; }
   }
 
   /* Very small portrait devices if the player dismisses the landscape recommendation. */
@@ -3179,7 +3241,32 @@
     const noHover = window.matchMedia ? window.matchMedia('(hover: none)').matches : false;
     return touchPoints > 0 && (coarse || noHover);
   })();
+
+  // Real touch devices always get the mobile layer. Desktop gets it only while inside
+  // TEST GROUND, so production runs stay clean while the sandbox can exercise every input type.
+  let DESKTOP_TEST_TOUCH_CONTROLS = false;
+  const DESKTOP_GAMEPLAY_MOUSE_ENABLED = !TOUCH_INPUT_MODE;
+
+  function touchControlsEnabledNow() {
+    return TOUCH_INPUT_MODE || DESKTOP_TEST_TOUCH_CONTROLS;
+  }
+
+  function desktopTouchCaptureActive() {
+    // During desktop Test Ground mobile-control testing, an active virtual joystick
+    // should temporarily own gameplay input so PC mouse/keyboard do not hijack steering.
+    return DESKTOP_TEST_TOUCH_CONTROLS && touchJoystickActive;
+  }
+
+  function setDesktopTestTouchControls(enabled) {
+    DESKTOP_TEST_TOUCH_CONTROLS = !TOUCH_INPUT_MODE && !!enabled;
+    document.body.classList.toggle('touch-controls-enabled', touchControlsEnabledNow());
+    document.body.classList.toggle('desktop-test-touch', DESKTOP_TEST_TOUCH_CONTROLS);
+    if (!touchControlsEnabledNow()) resetTouchJoystick();
+  }
+
   document.body.classList.toggle('touch-input-mode', TOUCH_INPUT_MODE);
+  document.body.classList.toggle('touch-controls-enabled', TOUCH_INPUT_MODE);
+  document.body.classList.remove('desktop-test-touch');
 
   // Target-level fallback for browsers/file-preview shells that can bypass or retarget
   // the global contextmenu path. This deliberately does NOT touch down/up/move events.
@@ -5004,18 +5091,20 @@
   const MOUSE_INTENT_DISTANCE = 8;
 
   function pcGameplayInputAllowed() {
-    return !TOUCH_INPUT_MODE && running && !gameOver && !paused && !upgradeChoosing && !evolutionChoosing;
+    return DESKTOP_GAMEPLAY_MOUSE_ENABLED && running && !gameOver && !paused && !upgradeChoosing && !evolutionChoosing;
   }
 
   function pcMouseControlsEnabled() {
-    if (TOUCH_INPUT_MODE) return false;
+    if (!DESKTOP_GAMEPLAY_MOUSE_ENABLED) return false;
+    if (desktopTouchCaptureActive()) return false;
     if (gameSettings.controlMode === 'mouse') return true;
     if (gameSettings.controlMode === 'keyboard') return false;
     return activePcInputMode === 'mouse';
   }
 
   function pcKeyboardControlsEnabled() {
-    if (TOUCH_INPUT_MODE) return false;
+    if (!DESKTOP_GAMEPLAY_MOUSE_ENABLED) return false;
+    if (desktopTouchCaptureActive()) return false;
     if (gameSettings.controlMode === 'keyboard') return true;
     if (gameSettings.controlMode === 'mouse') return false;
     return activePcInputMode === 'keyboard';
@@ -5031,7 +5120,7 @@
   }
 
   function announcePcInputMode(mode) {
-    if (!running || gameOver || paused || !ship || TOUCH_INPUT_MODE) return;
+    if (!running || gameOver || paused || !ship || !DESKTOP_GAMEPLAY_MOUSE_ENABLED) return;
     spawnFloatingText(
       ship.x,
       ship.y - ship.r - 34,
@@ -5100,17 +5189,17 @@
   }
 
   function registerPcKeyboardIntent(code) {
-    if (!pcGameplayInputAllowed() || !isKeyboardGameplayCode(code)) return;
+    if (!pcGameplayInputAllowed() || !isKeyboardGameplayCode(code) || desktopTouchCaptureActive()) return;
     if (gameSettings.controlMode === 'auto') setActivePcInputMode('keyboard');
   }
 
   function registerPcMouseButtonIntent(button) {
-    if (!pcGameplayInputAllowed() || (button !== 0 && button !== 2)) return;
+    if (!pcGameplayInputAllowed() || (button !== 0 && button !== 2) || desktopTouchCaptureActive()) return;
     if (gameSettings.controlMode === 'auto') setActivePcInputMode('mouse');
   }
 
   function registerPcMouseMoveIntent(clientX, clientY) {
-    if (!pcGameplayInputAllowed()) {
+    if (!pcGameplayInputAllowed() || desktopTouchCaptureActive()) {
       lastMouseIntentX = clientX;
       lastMouseIntentY = clientY;
       mouseIntentTravel = 0;
@@ -5223,9 +5312,13 @@
 
     const gameplayKey = isKeyboardGameplayCode(e.code);
     if (gameplayKey) {
-      registerPcKeyboardIntent(e.code);
-      if (pcKeyboardControlsEnabled()) keys[e.key.toLowerCase()] = true;
-      else keys[e.key.toLowerCase()] = false;
+      if (desktopTouchCaptureActive()) {
+        keys[e.key.toLowerCase()] = false;
+      } else {
+        registerPcKeyboardIntent(e.code);
+        if (pcKeyboardControlsEnabled()) keys[e.key.toLowerCase()] = true;
+        else keys[e.key.toLowerCase()] = false;
+      }
     }
 
     // SPACE remains hold-to-fire, but only when keyboard gameplay input is active.
@@ -5331,16 +5424,27 @@
   });
 
   function bindHold(el, onDown, onUp) {
+    if (!el) return;
+
     if (TOUCH_INPUT_MODE) {
-      // Touch-only path: do not also bind compatibility mouse events on mobile.
+      // Real touch device: touch events only, preventing compatibility mouse duplicates.
       el.addEventListener('touchstart', (e) => { e.preventDefault(); onDown(); }, {passive:false});
       el.addEventListener('touchend', (e) => { e.preventDefault(); onUp(); }, {passive:false});
       el.addEventListener('touchcancel', (e) => { e.preventDefault(); onUp(); }, {passive:false});
     } else {
-      // Desktop path only.
-      el.addEventListener('mousedown', (e) => { e.preventDefault(); onDown(); });
-      el.addEventListener('mouseup', (e) => { e.preventDefault(); onUp(); });
-      el.addEventListener('mouseleave', () => { onUp(); });
+      // Desktop Test Ground: mouse emulates the mobile button only while the sandbox flag is on.
+      el.addEventListener('mousedown', (e) => {
+        if (!DESKTOP_TEST_TOUCH_CONTROLS || e.button !== 0) return;
+        e.preventDefault();
+        onDown();
+      });
+      window.addEventListener('mouseup', (e) => {
+        if (!DESKTOP_TEST_TOUCH_CONTROLS || e.button !== 0) return;
+        onUp();
+      });
+      el.addEventListener('mouseleave', () => {
+        if (DESKTOP_TEST_TOUCH_CONTROLS) onUp();
+      });
     }
   }
 
@@ -5354,7 +5458,9 @@
   let touchJoystickId = null;
   let touchJoystickAngle = -Math.PI / 2;
   let touchJoystickMagnitude = 0;
-  const JOYSTICK_DEADZONE = 0.18; // larger center deadzone prevents tiny thumb movements from steering the ship
+  const JOYSTICK_DEADZONE = 0.22; // slightly larger center deadzone improves precision around neutral
+  const JOYSTICK_TURN_EXP = 1.55;
+  const JOYSTICK_THRUST_EXP = 1.85;
 
   function resetTouchJoystick() {
     touchJoystickActive = false;
@@ -5362,6 +5468,7 @@
     touchJoystickMagnitude = 0;
     moveJoystick.classList.remove('active');
     joystickKnob.style.transform = 'translate(-50%, -50%)';
+    mouseThrust = false;
   }
 
   function updateTouchJoystick(clientX, clientY) {
@@ -5370,7 +5477,7 @@
     const cy = rect.top + rect.height / 2;
     let dx = clientX - cx;
     let dy = clientY - cy;
-    const maxRadius = Math.max(1, rect.width * 0.5 - joystickKnob.offsetWidth * 0.5 - 4);
+    const maxRadius = Math.max(1, rect.width * 0.5 - joystickKnob.offsetWidth * 0.5 - 7);
     const rawDist = Math.hypot(dx, dy);
     const clampedDist = Math.min(rawDist, maxRadius);
     if (rawDist > 0.001) {
@@ -5382,51 +5489,89 @@
     joystickKnob.style.transform = `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))`;
   }
 
-  moveJoystick.addEventListener('touchstart', (e) => {
-    if (TOUCH_INPUT_MODE) { mouseActive = false; mouseThrust = false; }
-    if (touchJoystickId !== null) return;
-    const t = e.changedTouches[0];
-    if (!t) return;
-    e.preventDefault();
-    touchJoystickId = t.identifier;
-    touchJoystickActive = true;
-    moveJoystick.classList.add('active');
-    updateTouchJoystick(t.clientX, t.clientY);
-  }, {passive:false});
+  if (moveJoystick) {
+    if (TOUCH_INPUT_MODE) {
+      moveJoystick.addEventListener('touchstart', (e) => {
+        mouseActive = false;
+        mouseThrust = false;
+        clearMouseGameplayState();
+        clearKeyboardGameplayState();
+        if (touchJoystickId !== null) return;
+        const t = e.changedTouches[0];
+        if (!t) return;
+        e.preventDefault();
+        touchJoystickId = t.identifier;
+        touchJoystickActive = true;
+        moveJoystick.classList.add('active');
+        updateTouchJoystick(t.clientX, t.clientY);
+      }, {passive:false});
 
-  moveJoystick.addEventListener('touchmove', (e) => {
-    if (touchJoystickId === null) return;
-    const t = Array.from(e.changedTouches).find(touch => touch.identifier === touchJoystickId) ||
-              Array.from(e.touches).find(touch => touch.identifier === touchJoystickId);
-    if (!t) return;
-    e.preventDefault();
-    updateTouchJoystick(t.clientX, t.clientY);
-  }, {passive:false});
+      moveJoystick.addEventListener('touchmove', (e) => {
+        if (touchJoystickId === null) return;
+        const t = Array.from(e.changedTouches).find(touch => touch.identifier === touchJoystickId) ||
+                  Array.from(e.touches).find(touch => touch.identifier === touchJoystickId);
+        if (!t) return;
+        e.preventDefault();
+        updateTouchJoystick(t.clientX, t.clientY);
+      }, {passive:false});
 
-  function finishJoystickTouch(e) {
-    if (touchJoystickId === null) return;
-    const ended = Array.from(e.changedTouches).some(touch => touch.identifier === touchJoystickId);
-    if (!ended) return;
-    e.preventDefault();
-    resetTouchJoystick();
+      const finishJoystickTouch = (e) => {
+        if (touchJoystickId === null) return;
+        const ended = Array.from(e.changedTouches).some(touch => touch.identifier === touchJoystickId);
+        if (!ended) return;
+        e.preventDefault();
+        resetTouchJoystick();
+      };
+      moveJoystick.addEventListener('touchend', finishJoystickTouch, {passive:false});
+      moveJoystick.addEventListener('touchcancel', finishJoystickTouch, {passive:false});
+    } else {
+      let testJoystickMouseDown = false;
+
+      moveJoystick.addEventListener('mousedown', (e) => {
+        if (!DESKTOP_TEST_TOUCH_CONTROLS || e.button !== 0) return;
+        e.preventDefault();
+        testJoystickMouseDown = true;
+        clearMouseGameplayState();
+        clearKeyboardGameplayState();
+        mouseActive = false;
+        touchJoystickActive = true;
+        touchJoystickId = 'test-mouse';
+        moveJoystick.classList.add('active');
+        updateTouchJoystick(e.clientX, e.clientY);
+      });
+
+      window.addEventListener('mousemove', (e) => {
+        if (!DESKTOP_TEST_TOUCH_CONTROLS || !testJoystickMouseDown) return;
+        e.preventDefault();
+        updateTouchJoystick(e.clientX, e.clientY);
+      });
+
+      window.addEventListener('mouseup', (e) => {
+        if (e.button !== 0 || !testJoystickMouseDown) return;
+        testJoystickMouseDown = false;
+        resetTouchJoystick();
+      });
+    }
   }
-  moveJoystick.addEventListener('touchend', finishJoystickTouch, {passive:false});
-  moveJoystick.addEventListener('touchcancel', finishJoystickTouch, {passive:false});
 
-  bindHold(fireBtn, () => { fireHeld = true; fireBullet(); }, () => { fireHeld = false; });
+  bindHold(fireBtn, () => {
+    if (!touchControlsEnabledNow()) return;
+    fireHeld = true;
+    fireBullet();
+  }, () => { fireHeld = false; });
 
   // ---------- Mouse controls (desktop only) ----------
   // IMPORTANT: this entire gameplay mouse layer is omitted on touch devices. That prevents
   // compatibility mouse events generated by mobile browsers from fighting the joystick/fire state.
   function suppressGameplayDoubleClick(e) {
-    if (!TOUCH_INPUT_MODE && running && !gameOver) {
+    if (DESKTOP_GAMEPLAY_MOUSE_ENABLED && running && !gameOver) {
       e.preventDefault();
       e.stopImmediatePropagation();
       return false;
     }
   }
 
-  if (!TOUCH_INPUT_MODE) {
+  if (DESKTOP_GAMEPLAY_MOUSE_ENABLED) {
     document.addEventListener('dblclick', suppressGameplayDoubleClick, true);
     document.addEventListener('click', (e) => {
       if (running && !gameOver && e.button === 0 && e.detail > 1) {
@@ -5437,6 +5582,12 @@
     canvas.addEventListener('dblclick', suppressGameplayDoubleClick);
 
     canvas.addEventListener('mousemove', (e) => {
+      if (desktopTouchCaptureActive()) {
+        mouseThrust = false;
+        mouseActive = false;
+        return;
+      }
+
       registerPcMouseMoveIntent(e.clientX, e.clientY);
       const rect = canvas.getBoundingClientRect();
 
@@ -5774,8 +5925,8 @@
     }
     if (hitStopFrames > 0) { hitStopFrames--; SFX.setThrust(false); return; }
 
-    const pointerFireHeld = TOUCH_INPUT_MODE ? fireHeld : (pcMouseControlsEnabled() && fireHeld);
-    const keyboardFireHeld = !TOUCH_INPUT_MODE && pcKeyboardControlsEnabled() && keys[' '];
+    const pointerFireHeld = touchControlsEnabledNow() ? fireHeld : (pcMouseControlsEnabled() && fireHeld);
+    const keyboardFireHeld = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled() && keys[' '];
     if (pointerFireHeld || keyboardFireHeld) fireBullet();
     if (reticleKick > 0) reticleKick = Math.max(0, reticleKick - 0.12);
 
@@ -5791,7 +5942,7 @@
     // Ship rotation — desktop mouse, touch joystick, or keyboard.
     // Mouse behavior is intentionally unchanged. The joystick uses the same eased chase feel,
     // but targets a screen-space direction instead of a cursor position.
-    if (!TOUCH_INPUT_MODE && pcMouseControlsEnabled() && mouseActive) {
+    if (DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcMouseControlsEnabled() && mouseActive) {
       const targetAngle = Math.atan2(mousePos.y - ship.y, mousePos.x - ship.x);
       // Shortest angular delta in [-π, π]
       let delta = targetAngle - ship.angle;
@@ -5803,20 +5954,20 @@
       ship.angularVelocity += delta * turnStrength;
       ship.angularVelocity = Math.max(-ship.maxAngular * 3, Math.min(ship.maxAngular * 3, ship.angularVelocity));
       ship.angularVelocity *= 0.75; // dampen so it settles instead of oscillating
-    } else if (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE) {
+    } else if (touchControlsEnabledNow() && touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE) {
       let delta = touchJoystickAngle - ship.angle;
       while (delta > Math.PI) delta -= Math.PI * 2;
       while (delta < -Math.PI) delta += Math.PI * 2;
       // Analog steering curve: small stick deflections produce gentle corrections;
       // full deflection still turns decisively, but no faster than roughly keyboard handling.
       const steerAmount = Math.max(0, Math.min(1, (touchJoystickMagnitude - JOYSTICK_DEADZONE) / (1 - JOYSTICK_DEADZONE)));
-      const steerCurve = 0.20 + 0.80 * Math.pow(steerAmount, 1.35);
-      const touchTurnStrength = 0.055 * steerCurve;
-      const touchTurnCap = ship.maxAngular * (0.78 + 0.42 * steerAmount);
+      const steerCurve = 0.12 + 0.88 * Math.pow(steerAmount, JOYSTICK_TURN_EXP);
+      const touchTurnStrength = 0.05 * steerCurve;
+      const touchTurnCap = ship.maxAngular * (0.70 + 0.36 * steerAmount);
       ship.angularVelocity += delta * touchTurnStrength;
       ship.angularVelocity = Math.max(-touchTurnCap, Math.min(touchTurnCap, ship.angularVelocity));
-      ship.angularVelocity *= 0.86;
-    } else if (!TOUCH_INPUT_MODE && pcKeyboardControlsEnabled()) {
+      ship.angularVelocity *= 0.88;
+    } else if (DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled()) {
       // Keyboard rotation remains available on desktop / keyboard-equipped tablets.
       let turnInput = 0;
       if (keys['arrowleft'] || keys['a'] || ship.turningLeft) turnInput -= 1;
@@ -5837,9 +5988,9 @@
     ship.angle += ship.angularVelocity;
 
     // Thrust — keyboard/right-click are unchanged; touch joystick adds analog thrust.
-    const joystickThrust = touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE;
-    const keyboardThrust = !TOUCH_INPUT_MODE && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
-    const mouseThrustActive = !TOUCH_INPUT_MODE && pcMouseControlsEnabled() && mouseThrust;
+    const joystickThrust = touchControlsEnabledNow() && touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE;
+    const keyboardThrust = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
+    const mouseThrustActive = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcMouseControlsEnabled() && mouseThrust;
     const thrusting = keyboardThrust || mouseThrustActive || joystickThrust;
     if (thrusting) {
       // Analog thrust uses a curved response instead of a minimum 28% shove.
@@ -5847,7 +5998,7 @@
       const joyAmount = joystickThrust
         ? Math.max(0, Math.min(1, (touchJoystickMagnitude - JOYSTICK_DEADZONE) / (1 - JOYSTICK_DEADZONE)))
         : 1;
-      const thrustScale = joystickThrust ? Math.pow(joyAmount, 1.65) : 1;
+      const thrustScale = joystickThrust ? Math.pow(joyAmount, JOYSTICK_THRUST_EXP) : 1;
       ship.vx += Math.cos(ship.angle) * ship.thrustPower * thrustScale;
       ship.vy += Math.sin(ship.angle) * ship.thrustPower * thrustScale;
       spawnThrustTrail();
@@ -6605,9 +6756,9 @@
 
     const skin = ship.skin || SHIP_SKINS[0];
     const hullColor = shipDisplayColor(skin);
-    const keyboardThrustVisual = !TOUCH_INPUT_MODE && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
-    const mouseThrustVisual = !TOUCH_INPUT_MODE && pcMouseControlsEnabled() && mouseThrust;
-    const thrusting = keyboardThrustVisual || mouseThrustVisual || (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
+    const keyboardThrustVisual = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
+    const mouseThrustVisual = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcMouseControlsEnabled() && mouseThrust;
+    const thrusting = keyboardThrustVisual || mouseThrustVisual || (touchControlsEnabledNow() && touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
     const shipSpeed = Math.hypot(ship.vx, ship.vy);
 
     function strokeShipHull(ctxRef, alpha=0.9, shadowBlur=7, lineWidth=1.7, accentAlpha=1) {
@@ -7765,7 +7916,7 @@
   }
 
   function drawMouseReticle() {
-    if (TOUCH_INPUT_MODE || !pcMouseControlsEnabled() || !mouseActive || !running || gameOver || paused || rebirthActive || deathZoomActive) return;
+    if (!DESKTOP_GAMEPLAY_MOUSE_ENABLED || !pcMouseControlsEnabled() || !mouseActive || !running || gameOver || paused || rebirthActive || deathZoomActive) return;
     const x = Math.max(10, Math.min(W - 10, mousePos.x));
     const y = Math.max(10, Math.min(H - 10, mousePos.y));
     const color = currentWeapon ? currentWeapon.color : '#6ff2ff';
@@ -8129,6 +8280,7 @@
     closeTestLabUI();
     if (!customHullActive && !isUnlocked(selectedSkinIndex)) return; // custom hulls are always valid
     testMode = false;
+    setDesktopTestTouchControls(false);
     SFX.init(); // must fire inside a user-gesture handler for browser autoplay rules
     tryLockLandscape(); // best-effort; silently no-ops where unsupported (e.g. iOS Safari)
     overlay.classList.add('hidden');
@@ -8141,6 +8293,7 @@
   function startTestGround() {
     if (running || !document.body.classList.contains('in-menu')) return;
     testMode = true;
+    setDesktopTestTouchControls(true);
     SFX.init();
     tryLockLandscape();
     overlay.classList.add('hidden');
@@ -8942,6 +9095,7 @@
     running = false;
     gameOver = false;
     testMode = false;
+    setDesktopTestTouchControls(false);
     deathZoomActive = false;
     SFX.setThrust(false);
     fireHeld = false; mouseThrust = false;
