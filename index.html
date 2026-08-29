@@ -1262,6 +1262,17 @@
     box-shadow:inset 0 0 14px rgba(111,242,255,.08),0 0 12px rgba(111,242,255,.09);
   }
 
+  .keybindToggle {
+    min-width:106px;
+    color:#b8f6ff;
+  }
+  .keybindToggle.listening {
+    color:#ff9bd0;
+    border-color:rgba(255,77,166,.72);
+    background:rgba(255,77,166,.10);
+    box-shadow:inset 0 0 14px rgba(255,77,166,.06),0 0 12px rgba(255,77,166,.08);
+  }
+
   /* Standard phone / narrow tablet: stack the loadout vertically. */
   @media (max-width:700px) {
     .menuLayout {
@@ -2765,7 +2776,7 @@
       <h2>HOW TO PLAY</h2>
       <div class="htpSection">
         <h3>Controls</h3>
-        <p>Keyboard: Rotate with ◀ ▶ or A/D. Thrust: ▲ or W. Hold SPACE to fire.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire.<br>Touch: Drag the left joystick in the direction you want to fly — push farther from center for more thrust. Hold FIRE on the right to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
+        <p>Keyboard: A/D rotate, W thrust, SPACE fires, and R manually reloads magazine weapons. Arrow keys still work.<br>Mouse (PC): Move your cursor — the ship aims toward it automatically. Hold right-click to thrust, hold left-click to fire. A secondary reload key or mouse side button can be assigned in Settings.<br>Touch: Drag the left joystick in the direction you want to fly — push farther from center for more thrust. Hold FIRE on the right to shoot. Edge wrapping is the default; enable Containment Walls in Settings if you want solid arena borders.</p>
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
@@ -2825,7 +2836,7 @@
     <div class="htpPanel settingsPanel">
       <div class="settingsKicker">SYSTEM CONFIGURATION</div>
       <h2>SETTINGS</h2>
-      <p class="htpIntro">Audio and arena behavior. Changes are saved on this device.</p>
+      <p class="htpIntro">Audio, controls, and arena behavior. Changes are saved on this device.</p>
       <div class="volumeRow">
         <button id="musicMuteBtnSettings" class="musicToggleBtn" type="button" title="Toggle music" aria-label="Toggle music"></button>
         <span class="volLabel">MUSIC</span>
@@ -2842,6 +2853,13 @@
           <span class="settingOptionDesc">Keep the ship inside the arena. OFF uses classic edge wrapping.</span>
         </div>
         <button id="containmentToggle" class="settingToggle" type="button" aria-pressed="false">OFF</button>
+      </div>
+      <div class="settingOptionRow">
+        <div class="settingOptionCopy">
+          <span class="settingOptionLabel">SECONDARY RELOAD</span>
+          <span class="settingOptionDesc">R is always reload. Click to bind another key or mouse side button. ESC cancels; Backspace/Delete clears.</span>
+        </div>
+        <button id="reloadBindBtn" class="settingToggle keybindToggle" type="button">UNBOUND</button>
       </div>
       <button id="settingsBackBtn" class="secondaryBtn">BACK</button>
     </div>
@@ -4427,10 +4445,16 @@
       const raw = localStorage.getItem(SETTINGS_KEY);
       if (raw) {
         const parsed = JSON.parse(raw);
-        return { containmentWalls: !!parsed.containmentWalls };
+        const bind = parsed.reloadBind && typeof parsed.reloadBind === 'object'
+          ? parsed.reloadBind
+          : null;
+        return {
+          containmentWalls: !!parsed.containmentWalls,
+          reloadBind: bind
+        };
       }
     } catch (e) { /* localStorage unavailable */ }
-    return { containmentWalls: false };
+    return { containmentWalls: false, reloadBind: null };
   }
   function persistGameSettings() {
     try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(gameSettings)); } catch (e) { /* ignore */ }
@@ -4922,9 +4946,108 @@
   }
 
   // ---------- Input ----------
+  let reloadBindListening = false;
+
+  function manualReloadAllowed() {
+    return running && !gameOver && !paused && !upgradeChoosing && !evolutionChoosing;
+  }
+
+  function requestManualReload() {
+    if (!manualReloadAllowed()) return;
+    startWeaponReload();
+  }
+
+  function mouseButtonLabel(button) {
+    if (button === 1) return 'MOUSE 3';
+    if (button === 3) return 'MOUSE 4';
+    if (button === 4) return 'MOUSE 5';
+    return `MOUSE ${button + 1}`;
+  }
+
+  function keyCodeLabel(code) {
+    if (!code) return 'UNBOUND';
+    if (code.startsWith('Key')) return code.slice(3);
+    if (code.startsWith('Digit')) return code.slice(5);
+    const labels = {
+      Space:'SPACE', ShiftLeft:'L SHIFT', ShiftRight:'R SHIFT',
+      ControlLeft:'L CTRL', ControlRight:'R CTRL',
+      AltLeft:'L ALT', AltRight:'R ALT',
+      Tab:'TAB', Enter:'ENTER', Backquote:'`',
+      BracketLeft:'[', BracketRight:']',
+      Semicolon:';', Quote:"'", Comma:',', Period:'.', Slash:'/',
+      Backslash:'\\', Minus:'-', Equal:'='
+    };
+    return labels[code] || code.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase();
+  }
+
+  function reloadBindLabel(bind=gameSettings.reloadBind) {
+    if (!bind) return 'UNBOUND';
+    if (bind.type === 'mouse') return mouseButtonLabel(bind.button);
+    if (bind.type === 'key') return keyCodeLabel(bind.code);
+    return 'UNBOUND';
+  }
+
+  function setSecondaryReloadBind(bind) {
+    gameSettings.reloadBind = bind;
+    persistGameSettings();
+    refreshReloadBindUI();
+    updateReloadHistoryGuard();
+  }
+
+  function isBoundReloadMouseButton(button) {
+    const bind = gameSettings.reloadBind;
+    return !!bind && bind.type === 'mouse' && bind.button === button;
+  }
+
+  function refreshReloadBindUI() {
+    const btn = document.getElementById('reloadBindBtn');
+    if (!btn) return;
+    btn.classList.toggle('listening', reloadBindListening);
+    btn.textContent = reloadBindListening ? 'PRESS INPUT' : reloadBindLabel();
+  }
+
   window.addEventListener('keydown', (e) => {
+    if (reloadBindListening) {
+      e.preventDefault();
+      e.stopPropagation();
+
+      if (e.code === 'Escape') {
+        reloadBindListening = false;
+        refreshReloadBindUI();
+        SFX.uiTick();
+        return;
+      }
+      if (e.code === 'Backspace' || e.code === 'Delete') {
+        reloadBindListening = false;
+        setSecondaryReloadBind(null);
+        SFX.uiTick();
+        return;
+      }
+
+      reloadBindListening = false;
+      setSecondaryReloadBind({ type:'key', code:e.code });
+      SFX.uiTick();
+      return;
+    }
+
     keys[e.key.toLowerCase()] = true;
-    if (e.key === ' ') { e.preventDefault(); fireBullet(); }
+
+    // SPACE remains hold-to-fire; R is the fixed primary manual reload.
+    if (e.key === ' ') {
+      e.preventDefault();
+      fireBullet();
+    }
+    if (e.code === 'KeyR' && !e.repeat) {
+      e.preventDefault();
+      requestManualReload();
+    }
+
+    const secondary = gameSettings.reloadBind;
+    if (secondary?.type === 'key' && e.code === secondary.code && !e.repeat) {
+      e.preventDefault();
+      requestManualReload();
+    }
+
     if (upgradeChoosing && ['1','2','3'].includes(e.key)) {
       const btn = upgradeChoicesEl.querySelectorAll('.upgradeChoice')[parseInt(e.key,10)-1];
       if (btn) { e.preventDefault(); btn.click(); }
@@ -4940,8 +5063,75 @@
       spawnFloatingText(ship.x, ship.y-48, 'UFO AMBUSH TEST', '#ff4da6');
     }
   });
+
   window.addEventListener('keyup', (e) => {
     keys[e.key.toLowerCase()] = false;
+  });
+
+  // Extra mouse buttons can be assigned as the secondary reload without touching
+  // the known-good left-click fire / right-click thrust canvas handlers.
+  window.addEventListener('mousedown', (e) => {
+    if (reloadBindListening) {
+      // Left and right mouse are reserved for fire/thrust. Side/middle buttons are bindable.
+      if (e.button === 0 || e.button === 2) return;
+      e.preventDefault();
+      reloadBindListening = false;
+      setSecondaryReloadBind({ type:'mouse', button:e.button });
+      SFX.uiTick();
+      return;
+    }
+
+    if (manualReloadAllowed() && isBoundReloadMouseButton(e.button)) {
+      e.preventDefault();
+      requestManualReload();
+    }
+  });
+
+  // Mouse 4/5 commonly map to browser Back/Forward. When one is explicitly bound to reload,
+  // cancel its browser behavior on every relevant mouse event while gameplay is active.
+  // This intentionally avoids capture-phase handlers so the known-good left/right mouse
+  // aiming, firing, and thrust code remains untouched.
+  const suppressBoundReloadMouseDefault = (e) => {
+    if (manualReloadAllowed() && isBoundReloadMouseButton(e.button)) {
+      e.preventDefault();
+      return false;
+    }
+  };
+
+  window.addEventListener('mouseup', suppressBoundReloadMouseDefault);
+  window.addEventListener('click', suppressBoundReloadMouseDefault);
+  window.addEventListener('auxclick', suppressBoundReloadMouseDefault);
+  window.addEventListener('pointerup', suppressBoundReloadMouseDefault);
+
+  // Some Chromium builds fire the history action from the side-button release before auxclick.
+  // A lightweight history guard is armed only while actively playing AND only when the player
+  // has actually bound Mouse 4/5. It keeps accidental side-button Back/Forward from leaving
+  // the game, without changing normal browser navigation while the game is not active.
+  let reloadHistoryGuardArmed = false;
+
+  function updateReloadHistoryGuard() {
+    const bind = gameSettings.reloadBind;
+    const shouldArm = !!(running && !gameOver && bind?.type === 'mouse' && (bind.button === 3 || bind.button === 4));
+
+    if (shouldArm && !reloadHistoryGuardArmed) {
+      try {
+        history.pushState({ asteroidReloadGuard:true }, '', location.href);
+        reloadHistoryGuardArmed = true;
+      } catch (e) { /* history API unavailable */ }
+    } else if (!shouldArm) {
+      reloadHistoryGuardArmed = false;
+    }
+  }
+
+  window.addEventListener('popstate', () => {
+    const bind = gameSettings.reloadBind;
+    if (running && !gameOver && bind?.type === 'mouse' && (bind.button === 3 || bind.button === 4)) {
+      try {
+        history.pushState({ asteroidReloadGuard:true }, '', location.href);
+        reloadHistoryGuardArmed = true;
+      } catch (e) { /* history API unavailable */ }
+      requestManualReload();
+    }
   });
 
   function bindHold(el, onDown, onUp) {
@@ -5466,6 +5656,7 @@
     updateStarParallax();
     updateGameplayNebulaParallax();
     updateGameplayComets();
+    updateReloadHistoryGuard();
 
     if (invulnTimer > 0) invulnTimer--;
 
@@ -8258,7 +8449,12 @@
     if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
     if (achievementsBtn) achievementsBtn.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
     if (shopBtn) shopBtn.addEventListener('click', () => { SFX.uiTick(); renderShop(); shopOverlay.classList.remove('hidden'); });
-    if (settingsBtn) settingsBtn.addEventListener('click', () => { SFX.uiTick(); settingsOverlay.classList.remove('hidden'); });
+    if (settingsBtn) settingsBtn.addEventListener('click', () => {
+      reloadBindListening = false;
+      refreshReloadBindUI();
+      SFX.uiTick();
+      settingsOverlay.classList.remove('hidden');
+    });
     if (howToPlayBtn) howToPlayBtn.innerHTML = uiIcon('help');
     if (achievementsBtn) achievementsBtn.innerHTML = uiIcon('trophy');
     if (shopBtn) shopBtn.innerHTML = uiIcon('salvage');
@@ -8372,6 +8568,7 @@
   const achBackBtn = document.getElementById('achBackBtn');
   const shopBackBtn = document.getElementById('shopBackBtn');
   const settingsBackBtn = document.getElementById('settingsBackBtn');
+  const reloadBindBtn = document.getElementById('reloadBindBtn');
   let paused = false;
   applyCoreIcons();
   syncSfxMuteButtons(SFX.isMuted());
@@ -8416,7 +8613,21 @@
   howToPlayBtnPause.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
   htpBackBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.add('hidden'); });
   achievementsBtnPause.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
-  settingsBackBtn.addEventListener('click', () => { SFX.uiTick(); settingsOverlay.classList.add('hidden'); });
+  settingsBackBtn.addEventListener('click', () => {
+    reloadBindListening = false;
+    refreshReloadBindUI();
+    SFX.uiTick();
+    settingsOverlay.classList.add('hidden');
+  });
+
+  if (reloadBindBtn) {
+    refreshReloadBindUI();
+    reloadBindBtn.addEventListener('click', () => {
+      reloadBindListening = !reloadBindListening;
+      refreshReloadBindUI();
+      SFX.uiTick();
+    });
+  }
 
   const containmentToggle = document.getElementById('containmentToggle');
   function refreshContainmentToggle() {
