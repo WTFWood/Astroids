@@ -915,6 +915,27 @@
   body.in-menu #hud, body.in-menu #muteBtn, body.in-menu #pauseBtn, body.in-menu #controls, body.in-menu #levelIndicator, body.in-menu #weaponStatus, body.in-menu #bossStatus, body.in-menu #achievementToast {
     display: none !important;
   }
+
+  /* Input safety: the restored main-menu DOM may remain mounted while a run is active.
+     Never allow that hidden layer to become a ghost click target in fullscreen/browser shells. */
+  body:not(.in-menu) #overlay {
+    display:none !important;
+    pointer-events:none !important;
+    visibility:hidden !important;
+  }
+  body.in-menu #overlay {
+    pointer-events:auto;
+    visibility:visible;
+  }
+  #overlay.hidden,
+  #testLoadoutOverlay.hidden,
+  #pauseOverlay.hidden,
+  #howToPlayOverlay.hidden,
+  #achievementsOverlay.hidden,
+  #shopOverlay.hidden,
+  #settingsOverlay.hidden {
+    pointer-events:none !important;
+  }
   #levelIndicator {
     position: absolute;
     top: 12px;
@@ -1339,6 +1360,1301 @@
     .settingToggle { min-width:64px; }
   }
 
+
+  /* ---------- TEST LAB: pre-run build configurator + in-run mob spawner ---------- */
+  #testLoadoutOverlay {
+    position:absolute; inset:0; z-index:55;
+    display:flex; align-items:center; justify-content:center;
+    background:
+      linear-gradient(rgba(65,184,255,.035) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(65,184,255,.035) 1px, transparent 1px),
+      rgba(2,6,16,.88);
+    background-size:28px 28px;
+    color:#8feaff;
+  }
+  .testLoadoutPanel {
+    width:min(980px,94vw); max-height:90vh; overflow:auto;
+    padding:20px;
+    border:1px solid rgba(111,242,255,.55);
+    background:linear-gradient(145deg,rgba(4,20,40,.96),rgba(13,5,34,.96));
+    box-shadow:0 0 36px rgba(60,190,255,.12), inset 0 0 30px rgba(60,190,255,.045);
+    clip-path:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);
+    text-align:left;
+  }
+  .testLoadoutHeader {
+    display:flex; justify-content:space-between; align-items:flex-start; gap:18px;
+    margin-bottom:14px; padding-bottom:12px; border-bottom:1px solid rgba(111,242,255,.16);
+  }
+  .testLoadoutTitle { font-size:22px; letter-spacing:5px; color:#baf7ff; }
+  .testLoadoutSub { margin-top:5px; font-size:9px; letter-spacing:2px; opacity:.58; line-height:1.5; }
+  .testWeaponRow {
+    display:flex; align-items:center; justify-content:center; gap:14px;
+    margin:8px 0 16px; padding:10px;
+    border:1px solid rgba(111,242,255,.14); background:rgba(111,242,255,.035);
+  }
+  .testWeaponRow button, .testRankBtn, .testUtilityBtn {
+    font:inherit; color:#8feaff; background:rgba(111,242,255,.05);
+    border:1px solid rgba(111,242,255,.28); cursor:pointer;
+  }
+  .testWeaponRow button { width:34px; height:34px; border-radius:50%; }
+  #testConfigWeaponName { min-width:190px; text-align:center; font-size:14px; letter-spacing:3px; font-weight:bold; }
+  .testConfigColumns { display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .testConfigSection {
+    border:1px solid rgba(111,242,255,.15);
+    background:rgba(4,10,22,.46);
+    padding:12px;
+  }
+  .testConfigSection.evos { border-color:rgba(255,77,166,.25); }
+  .testConfigSectionTitle { font-size:10px; letter-spacing:3px; margin-bottom:10px; color:#83eaff; }
+  .testConfigSection.evos .testConfigSectionTitle { color:#ff8bcb; }
+  .testConfigList { display:flex; flex-direction:column; gap:7px; }
+  .testConfigItem {
+    display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center;
+    padding:8px 9px; border:1px solid rgba(111,242,255,.11); background:rgba(111,242,255,.025);
+  }
+  .testConfigItem.evolution { border-color:rgba(255,77,166,.16); background:rgba(255,77,166,.025); }
+  .testConfigName { display:block; color:#d9fbff; font-size:10px; letter-spacing:1px; }
+  .testConfigDesc { display:block; margin-top:3px; font-size:8px; line-height:1.35; opacity:.48; }
+  .testRankControl { display:flex; align-items:center; gap:6px; }
+  .testRankBtn { width:28px; height:28px; font-size:15px; }
+  .testRankValue { min-width:48px; text-align:center; font-size:10px; color:#fff; }
+  .testLoadoutFooter {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    margin-top:15px; padding-top:12px; border-top:1px solid rgba(111,242,255,.16);
+  }
+  .testLoadoutFooterLeft { display:flex; gap:8px; }
+  .testUtilityBtn { min-height:38px; padding:7px 14px; letter-spacing:1px; font-size:10px; }
+  #testEnterBtn {
+    min-height:42px; padding:8px 24px; font:inherit; font-weight:bold; letter-spacing:2px;
+    border:1px solid #baff74; color:#d7ff9a; background:rgba(186,255,116,.07); cursor:pointer;
+    box-shadow:0 0 14px rgba(186,255,116,.08);
+  }
+
+  #testSpawnerPanel {
+    position:absolute; top:94px; right:12px; z-index:20;
+    width:244px; max-height:calc(100vh - 112px); overflow:auto;
+    padding:10px;
+    border:1px solid rgba(245,255,77,.38);
+    background:rgba(3,8,17,.90);
+    box-shadow:0 0 22px rgba(245,255,77,.08);
+    color:#eaff79;
+    text-shadow:0 0 7px rgba(245,255,77,.25);
+  }
+  #testSpawnerPanel.hidden { display:none !important; }
+  .testSpawnerHeader {
+    display:flex; justify-content:space-between; align-items:center; gap:8px;
+    margin-bottom:8px; padding-bottom:7px; border-bottom:1px solid rgba(245,255,77,.18);
+  }
+  .testSpawnerTitle { font-size:10px; letter-spacing:2px; }
+  #testSpawnerCollapse {
+    width:26px; height:24px; border:1px solid rgba(245,255,77,.30); background:transparent;
+    color:#eaff79; font:inherit; cursor:pointer;
+  }
+  #testSpawnerPanel.collapsed { width:auto; max-height:none; overflow:visible; }
+  #testSpawnerPanel.collapsed .testSpawnerBody { display:none; }
+  .testSpawnerGroup { margin:8px 0; }
+  .testSpawnerGroupTitle { font-size:8px; letter-spacing:2px; opacity:.55; margin-bottom:5px; }
+  .testSpawnerGrid { display:grid; grid-template-columns:1fr 1fr; gap:5px; }
+  .testSpawnBtn {
+    min-height:32px; padding:5px 6px; font:inherit; font-size:8px; letter-spacing:.5px;
+    border:1px solid rgba(111,242,255,.20); color:#baf7ff;
+    background:rgba(111,242,255,.045); cursor:pointer;
+  }
+  .testSpawnBtn.boss { border-color:rgba(255,111,111,.35); color:#ff9d9d; background:rgba(255,111,111,.045); }
+  .testSpawnBtn.pickup { border-color:rgba(111,255,176,.30); color:#aaffc9; }
+  .testSpawnBtn.danger { border-color:rgba(255,77,166,.38); color:#ff8fcd; }
+  .testSpawnBtn.utility { border-color:rgba(245,255,77,.28); color:#efff8c; }
+  .testSpawnBtn:active { transform:translateY(1px); background:rgba(255,255,255,.12); }
+
+  @media (max-width:700px) {
+    .testConfigColumns { grid-template-columns:1fr; }
+    .testLoadoutPanel { padding:13px; max-height:92vh; }
+    .testLoadoutHeader { margin-bottom:8px; }
+    .testLoadoutTitle { font-size:17px; }
+    .testLoadoutFooter { flex-direction:column; align-items:stretch; }
+    .testLoadoutFooterLeft { display:grid; grid-template-columns:1fr 1fr; }
+    #testEnterBtn { width:100%; }
+  }
+  @media (orientation:landscape) and (max-height:500px) {
+    #testSpawnerPanel { top:70px; right:8px; width:210px; max-height:calc(100vh - 78px); padding:7px; }
+    .testSpawnBtn { min-height:28px; font-size:7px; padding:3px 4px; }
+    .testSpawnerGroup { margin:5px 0; }
+    .testLoadoutPanel { max-height:94vh; padding:10px 12px; }
+    .testLoadoutHeader { margin-bottom:6px; padding-bottom:6px; }
+    .testLoadoutTitle { font-size:15px; }
+    .testWeaponRow { margin:5px 0 8px; padding:5px; }
+    .testConfigItem { padding:5px 7px; }
+    .testConfigDesc { display:none; }
+    .testConfigList { gap:4px; }
+    .testLoadoutFooter { margin-top:7px; padding-top:7px; }
+  }
+
+
+
+
+  /* ---------- CLEAN-SLATE HULL WORKSHOP ---------- */
+  #hullWorkshopOverlay {
+    position:absolute; inset:0; z-index:54;
+    display:flex; align-items:center; justify-content:center;
+    background:rgba(2,7,18,.91);
+    backdrop-filter:blur(4px);
+    color:#9eefff;
+  }
+  #hullWorkshopOverlay.hidden { display:none !important; }
+  .hwPanel {
+    width:min(920px,94vw);
+    max-height:92vh;
+    overflow:auto;
+    padding:18px;
+    border:1px solid rgba(111,242,255,.45);
+    background:
+      linear-gradient(rgba(65,184,255,.025) 1px,transparent 1px),
+      linear-gradient(90deg,rgba(65,184,255,.025) 1px,transparent 1px),
+      linear-gradient(145deg,rgba(4,20,39,.98),rgba(10,6,29,.98));
+    background-size:24px 24px,24px 24px,auto;
+    box-shadow:0 0 38px rgba(73,199,255,.14), inset 0 0 35px rgba(73,199,255,.035);
+    clip-path:polygon(0 14px,14px 0,100% 0,100% calc(100% - 14px),calc(100% - 14px) 100%,0 100%);
+  }
+  .hwHeader {
+    display:flex; justify-content:space-between; align-items:flex-start; gap:14px;
+    padding-bottom:12px; border-bottom:1px solid rgba(111,242,255,.14);
+  }
+  .hwTitle { font-size:20px; letter-spacing:5px; color:#d8fbff; }
+  .hwSub { font-size:8px; letter-spacing:1.8px; opacity:.52; margin-top:5px; }
+  .hwBody { display:grid; grid-template-columns:260px minmax(0,1fr); gap:16px; margin-top:15px; }
+  .hwPreview {
+    border:1px solid rgba(111,242,255,.16);
+    background:rgba(111,242,255,.02);
+    padding:12px;
+  }
+  #hwCanvas { width:232px; height:232px; max-width:100%; display:block; margin:auto; }
+  .hwBuildName { text-align:center; letter-spacing:3px; font-size:12px; color:#dcfbff; margin:5px 0 10px; }
+  .hwStats {
+    padding:9px 10px;
+    border:1px solid rgba(111,242,255,.10);
+    white-space:pre-wrap;
+    font-size:9px; line-height:1.65; opacity:.80;
+  }
+  .hwPower {
+    margin-top:8px; padding:8px 9px;
+    border:1px solid rgba(111,242,255,.12);
+    font-size:8px; letter-spacing:1.2px; line-height:1.45;
+  }
+  .hwControls { display:flex; flex-direction:column; gap:8px; }
+  .hwRow {
+    display:grid; grid-template-columns:115px minmax(0,1fr);
+    gap:9px 12px; align-items:center;
+    padding:9px 10px;
+    border:1px solid rgba(111,242,255,.12);
+    background:rgba(3,11,24,.48);
+  }
+  .hwLabel { font-size:8px; letter-spacing:2px; opacity:.58; }
+  .hwPicker { display:grid; grid-template-columns:31px minmax(0,1fr) 31px; align-items:center; gap:7px; }
+  .hwArrow {
+    width:31px; height:31px; border-radius:50%;
+    border:1px solid rgba(111,242,255,.35);
+    background:rgba(111,242,255,.035); color:#9eefff;
+    font:inherit; cursor:pointer;
+  }
+  .hwValue { text-align:center; font-size:10px; letter-spacing:1.7px; color:#e2fcff; }
+  .hwDesc { grid-column:2; font-size:8px; line-height:1.35; opacity:.45; }
+  .hwColorWrap { display:flex; align-items:center; gap:10px; }
+  .hwHue {
+    flex:1; min-width:90px; height:16px;
+    background:linear-gradient(90deg,
+      hsl(0,90%,62%),hsl(60,90%,62%),hsl(120,90%,62%),
+      hsl(180,90%,62%),hsl(240,90%,62%),hsl(300,90%,62%),hsl(359,90%,62%));
+  }
+  .hwSwatch {
+    width:29px;height:29px;flex:0 0 29px;border-radius:50%;
+    border:1px solid rgba(255,255,255,.48); box-shadow:0 0 12px currentColor;
+  }
+  .hwFooter {
+    margin-top:14px; padding-top:12px; border-top:1px solid rgba(111,242,255,.14);
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+  }
+  .hwLegacy { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .hwLegacyLabel { font-size:7px; letter-spacing:2px; opacity:.42; margin-right:3px; }
+  .hwLegacyBtn,.hwAction {
+    min-height:36px; padding:7px 11px;
+    border:1px solid rgba(111,242,255,.26);
+    background:rgba(111,242,255,.035); color:#b7f4ff;
+    font:inherit; font-size:8px; letter-spacing:1px; cursor:pointer;
+  }
+  .hwLegacyBtn.locked { opacity:.28; cursor:not-allowed; }
+  #hwApply { border-color:rgba(187,255,113,.50); color:#d9ffa7; background:rgba(187,255,113,.055); }
+  #customHullBtn {
+    margin-top:8px; padding:7px 13px;
+    border:1px solid rgba(255,93,190,.38); color:#ff9ed7;
+    background:rgba(255,93,190,.035);
+    font:inherit; font-size:8px; letter-spacing:2px; cursor:pointer;
+  }
+  #customHullBtn.active { box-shadow:0 0 12px rgba(255,93,190,.14); border-color:rgba(255,93,190,.72); }
+  @media(max-width:720px){
+    .hwBody{grid-template-columns:1fr}
+    #hwCanvas{width:170px;height:170px}
+    .hwFooter{flex-direction:column;align-items:stretch}
+    .hwLegacy{justify-content:center}
+    #hwApply{width:100%}
+  }
+  @media(orientation:landscape) and (max-height:520px){
+    .hwPanel{padding:10px 12px;max-height:95vh}
+    .hwBody{grid-template-columns:190px 1fr;gap:10px;margin-top:8px}
+    #hwCanvas{width:145px;height:145px}
+    .hwRow{padding:5px 8px;grid-template-columns:96px 1fr}
+    .hwDesc{display:none}
+    .hwControls{gap:5px}
+    .hwFooter{margin-top:7px;padding-top:7px}
+  }
+
+
+  .hwPresetShelf {
+    margin-top:12px; padding:10px;
+    border:1px solid rgba(111,242,255,.12);
+    background:rgba(3,11,24,.36);
+  }
+  .hwShelfHeader {
+    display:flex; justify-content:space-between; align-items:center; gap:10px;
+    margin-bottom:8px;
+  }
+  .hwSaveBtn { min-height:30px; padding:5px 10px; }
+  .hwSavedPresets {
+    display:grid;
+    grid-template-columns:repeat(3,minmax(0,1fr));
+    gap:6px;
+  }
+  .hwSavedPreset {
+    display:grid; grid-template-columns:minmax(0,1fr) 27px;
+    min-width:0;
+  }
+  .hwPresetLoad,.hwPresetDelete {
+    min-height:34px;
+    border:1px solid rgba(111,242,255,.20);
+    background:rgba(111,242,255,.025);
+    color:#baf5ff; font:inherit; font-size:8px;
+    cursor:pointer;
+  }
+  .hwPresetLoad {
+    overflow:hidden; white-space:nowrap; text-overflow:ellipsis;
+    text-align:left; padding:6px 8px; letter-spacing:1px;
+  }
+  .hwPresetDelete {
+    border-left:0; color:#ff92a9; padding:0;
+  }
+  .hwPresetEmpty {
+    grid-column:1/-1;
+    font-size:8px; opacity:.36; letter-spacing:1.2px; padding:5px 2px;
+  }
+  @media(max-width:720px){
+    .hwSavedPresets{grid-template-columns:repeat(2,minmax(0,1fr))}
+  }
+
+
+  .hwSaveControls {
+    display:flex; align-items:center; gap:6px; min-width:0;
+  }
+  .hwPresetName {
+    width:150px; min-height:30px; box-sizing:border-box;
+    padding:5px 8px;
+    border:1px solid rgba(111,242,255,.20);
+    background:rgba(0,7,18,.72);
+    color:#d7fbff;
+    font:inherit; font-size:8px; letter-spacing:1px;
+    outline:none;
+  }
+  .hwPresetName:focus {
+    border-color:rgba(111,242,255,.55);
+    box-shadow:0 0 10px rgba(111,242,255,.08);
+  }
+  .hwPresetStatus {
+    min-height:15px;
+    margin:-2px 0 6px;
+    font-size:7px; letter-spacing:1.2px;
+    opacity:.75;
+  }
+  @media(max-width:720px){
+    .hwShelfHeader{align-items:flex-start;flex-direction:column}
+    .hwSaveControls{width:100%}
+    .hwPresetName{flex:1;width:auto}
+  }
+
+
+  /* ---------- MAIN MENU REDESIGN // 80s SYNTHWAVE ---------- */
+  #overlay {
+    background:
+      linear-gradient(180deg, rgba(6,5,18,.28) 0%, rgba(5,6,18,.55) 44%, rgba(3,2,10,.84) 100%),
+      radial-gradient(circle at 18% 18%, rgba(255,70,180,.18), transparent 26%),
+      radial-gradient(circle at 82% 12%, rgba(86,222,255,.13), transparent 22%),
+      linear-gradient(180deg, rgba(255,92,180,.045), rgba(0,0,0,0) 22%),
+      rgba(2,2,10,.60);
+    text-shadow: none;
+    overflow: hidden;
+  }
+  #overlay::before {
+    content:'';
+    position:absolute; inset:0;
+    pointer-events:none;
+    background:
+      linear-gradient(rgba(255,255,255,.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.02) 1px, transparent 1px);
+    background-size: 100% 4px, 60px 100%;
+    opacity:.18;
+    mix-blend-mode:screen;
+  }
+  #overlay::after {
+    content:'';
+    position:absolute;
+    left:-8%; right:-8%; bottom:-8%;
+    height:40%;
+    pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,.08) 18%, rgba(0,0,0,.0) 19%, rgba(0,0,0,0) 100%),
+      repeating-linear-gradient(0deg, rgba(255,93,192,.11) 0 2px, transparent 2px 18px),
+      linear-gradient(180deg, rgba(104,240,255,.16), rgba(255,88,191,.02));
+    clip-path: polygon(50% 4%, 100% 100%, 0 100%);
+    opacity:.42;
+    filter: drop-shadow(0 0 18px rgba(91,231,255,.18));
+  }
+
+  .menuLayout {
+    position:relative;
+    grid-template-columns:minmax(320px,.92fr) minmax(460px,1.08fr);
+    gap:clamp(32px, 6vw, 92px);
+    width:min(1220px,94vw);
+    padding:34px 0 42px;
+    z-index:1;
+  }
+
+  .menuTitleBlock {
+    position:relative;
+    min-height:400px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-start;
+    padding:28px 26px 26px;
+    border:1px solid rgba(255,84,190,.18);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.035), rgba(255,255,255,0) 22%),
+      linear-gradient(145deg, rgba(19,8,41,.70), rgba(5,16,44,.46) 58%, rgba(10,7,25,.44));
+    box-shadow:
+      inset 0 0 44px rgba(255,75,184,.05),
+      inset 0 -24px 42px rgba(89,214,255,.04),
+      0 0 26px rgba(255,75,184,.06);
+    clip-path: polygon(0 18px, 18px 0, 100% 0, 100% calc(100% - 18px), calc(100% - 18px) 100%, 0 100%);
+    overflow:hidden;
+  }
+  .menuTitleBlock::before {
+    content:'';
+    position:absolute;
+    right:22px;
+    top:28px;
+    width:min(24vw, 210px);
+    height:min(24vw, 210px);
+    border-radius:50%;
+    background:
+      repeating-linear-gradient(
+        180deg,
+        rgba(255,196,117,.96) 0 10px,
+        rgba(255,104,176,.96) 10px 18px,
+        rgba(255,104,176,.00) 18px 22px
+      );
+    opacity:.76;
+    box-shadow:0 0 34px rgba(255,110,180,.25);
+    filter:saturate(1.12);
+    transform: translateY(4px);
+  }
+  .menuTitleBlock::after {
+    content:'';
+    position:absolute;
+    left:0; right:0; bottom:0;
+    height:42%;
+    pointer-events:none;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,0), rgba(0,0,0,.10)),
+      repeating-linear-gradient(90deg, rgba(96,224,255,.16) 0 1px, transparent 1px 38px),
+      repeating-linear-gradient(0deg, rgba(96,224,255,.13) 0 1px, transparent 1px 24px);
+    transform: perspective(340px) rotateX(72deg) scaleY(1.4);
+    transform-origin: bottom;
+    opacity:.44;
+  }
+
+  .menuEyebrow {
+    position:relative;
+    z-index:2;
+    margin-bottom:12px;
+    padding:4px 10px 4px 12px;
+    border:1px solid rgba(98,228,255,.26);
+    background:linear-gradient(90deg, rgba(90,228,255,.12), rgba(255,79,188,.05), transparent);
+    color:#82ecff;
+    font-size:9px;
+    letter-spacing:4.2px;
+    opacity:.88;
+    text-transform:uppercase;
+    box-shadow:0 0 18px rgba(97,226,255,.05);
+  }
+
+  .menuTitle {
+    position:relative;
+    z-index:2;
+    margin:0;
+    font-size:clamp(56px, 7.2vw, 94px);
+    line-height:.92;
+    letter-spacing:8px;
+    color:transparent;
+    background:linear-gradient(180deg, #fff7cc 0%, #ff8fd4 38%, #7befff 88%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    text-shadow:
+      0 0 10px rgba(255,108,189,.30),
+      0 0 26px rgba(104,240,255,.18);
+    animation:titlePulse 4.2s ease-in-out infinite;
+  }
+  @keyframes titlePulse {
+    0%,100% {
+      filter: drop-shadow(0 0 4px rgba(255,104,176,.18));
+      transform: translateY(0);
+    }
+    50% {
+      filter: drop-shadow(0 0 12px rgba(104,240,255,.26));
+      transform: translateY(-1px);
+    }
+  }
+
+  .menuSubtitle {
+    position:relative;
+    z-index:2;
+    max-width:520px;
+    margin-top:12px;
+    font-size:10px;
+    letter-spacing:4.4px;
+    line-height:1.9;
+    color:#d8f6ff;
+    opacity:.82;
+    text-transform:uppercase;
+  }
+
+  .menuStats {
+    position:relative;
+    z-index:2;
+    display:inline-flex;
+    margin-top:22px;
+    padding:10px 14px;
+    border:1px solid rgba(255,100,185,.24);
+    border-left:3px solid rgba(99,231,255,.78);
+    background:
+      linear-gradient(90deg, rgba(94,232,255,.10), rgba(255,90,186,.08), transparent 85%);
+    box-shadow: inset 0 0 18px rgba(255,255,255,.03);
+    font-size:10px;
+    letter-spacing:1.2px;
+    opacity:.92;
+    color:#eafaff;
+    white-space:normal;
+  }
+
+  .loadoutPanel {
+    position:relative;
+    justify-self:end;
+    max-width:590px;
+    padding:22px 24px 20px;
+    border:1px solid rgba(103,231,255,.34);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.028), rgba(255,255,255,0) 16%),
+      linear-gradient(145deg, rgba(4,19,48,.78), rgba(16,6,44,.74) 58%, rgba(7,11,26,.70));
+    box-shadow:
+      inset 0 0 34px rgba(100,229,255,.05),
+      inset 0 -18px 26px rgba(255,79,188,.04),
+      0 0 26px rgba(105,231,255,.08);
+    clip-path: polygon(0 18px, 18px 0, calc(100% - 18px) 0, 100% 18px, 100% 100%, 0 100%);
+    overflow:hidden;
+  }
+  .loadoutPanel::before {
+    content:'';
+    position:absolute;
+    left:0; top:0; right:0;
+    height:1px;
+    background:linear-gradient(90deg, #7befff, #ff79c5 52%, transparent);
+    box-shadow:0 0 14px rgba(123,239,255,.52);
+  }
+  .loadoutPanel::after {
+    content:'';
+    position:absolute;
+    right:10px; top:10px;
+    width:92px; height:92px;
+    border-radius:50%;
+    border:1px solid rgba(255,112,193,.12);
+    box-shadow:0 0 18px rgba(255,112,193,.08);
+    opacity:.45;
+    pointer-events:none;
+  }
+
+  .loadoutHeader {
+    color:#a7f2ff;
+    font-size:9px;
+    letter-spacing:3.2px;
+    opacity:.92;
+    text-transform:uppercase;
+  }
+  .loadoutHeader span { color:#ff8ad0; opacity:.78; }
+  .loadoutDivider {
+    height:1px;
+    margin:15px 0 14px;
+    background:linear-gradient(90deg, transparent, rgba(100,229,255,.38), rgba(255,95,187,.38), transparent);
+  }
+
+  .shipHoloRing {
+    width:126px;
+    height:126px;
+    border-radius:50%;
+    background:
+      radial-gradient(circle at center, rgba(117,242,255,.12), rgba(117,242,255,.03) 54%, transparent 68%);
+    border:1px solid rgba(117,242,255,.16);
+    box-shadow:
+      inset 0 0 18px rgba(117,242,255,.06),
+      0 0 18px rgba(117,242,255,.06);
+  }
+  .shipHoloRing::before {
+    content:'';
+    position:absolute;
+    inset:-10px;
+    border-radius:50%;
+    border:1px solid rgba(255,99,186,.13);
+    opacity:.65;
+  }
+  .shipHoloRing::after {
+    inset:9px;
+    border:1px dashed rgba(111,242,255,.18);
+    animation:holoRingSpin 14s linear infinite;
+  }
+  #shipPreviewCanvas { width:118px; height:118px; }
+
+  .shipArrowBtn,
+  .weaponArrowBtn,
+  .menuIconBtn,
+  #customHullBtn,
+  #startBtn,
+  .menuActions .secondaryBtn {
+    transition: transform .12s ease, box-shadow .12s ease, border-color .12s ease, background .12s ease;
+  }
+  .shipArrowBtn,
+  .weaponArrowBtn {
+    border-color: rgba(111,242,255,.30);
+    background: linear-gradient(180deg, rgba(111,242,255,.08), rgba(255,83,187,.05));
+    color:#98f0ff;
+    box-shadow: inset 0 0 12px rgba(255,255,255,.02);
+  }
+  .shipArrowBtn:hover, .weaponArrowBtn:hover,
+  .shipArrowBtn:active, .weaponArrowBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(255,110,188,.46);
+    box-shadow:0 0 12px rgba(255,110,188,.10);
+    background:linear-gradient(180deg, rgba(111,242,255,.12), rgba(255,83,187,.09));
+  }
+
+  .shipNameLabel {
+    margin-top:6px;
+    font-size:15px;
+    letter-spacing:3.4px;
+    color:#f5fbff;
+    text-shadow:0 0 10px rgba(127,240,255,.18);
+  }
+  .shipDescLabel {
+    max-width:360px;
+    min-height:28px;
+    font-size:10px;
+    line-height:1.48;
+    color:#cceefe;
+    opacity:.76;
+  }
+  .shipStatsLabel,
+  .weaponStatsLabel {
+    background:linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,.01));
+    border:1px solid rgba(255,255,255,.08);
+    box-shadow: inset 0 0 16px rgba(0,0,0,.18);
+    color:#d9f7ff;
+  }
+
+  .weaponNameLabel {
+    min-width:190px;
+    font-size:14px;
+    letter-spacing:3px;
+    color:#ffe0f3;
+    text-shadow:0 0 12px rgba(255,102,188,.12);
+  }
+  .weaponDescLabel {
+    color:#d6f2ff;
+    opacity:.78;
+  }
+
+  .menuActions {
+    margin-top:18px;
+    grid-template-columns:1.18fr .92fr;
+    gap:10px 10px;
+  }
+  #startBtn {
+    border:1px solid rgba(103,238,255,.62);
+    background:
+      linear-gradient(180deg, rgba(109,238,255,.12), rgba(255,87,191,.07));
+    color:#effdff;
+    box-shadow: 0 0 18px rgba(113,242,255,.08), inset 0 0 14px rgba(255,255,255,.03);
+    text-shadow:0 0 10px rgba(113,242,255,.20);
+  }
+  #startBtn:hover, #startBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(255,124,198,.78);
+    background:
+      linear-gradient(180deg, rgba(109,238,255,.18), rgba(255,87,191,.12));
+    box-shadow: 0 0 18px rgba(255,124,198,.12), inset 0 0 14px rgba(255,255,255,.05);
+  }
+  .menuActions .secondaryBtn {
+    border-color: rgba(255,115,194,.34);
+    background: linear-gradient(180deg, rgba(255,115,194,.06), rgba(103,231,255,.04));
+    color:#ffd6ef;
+  }
+  .menuActions .secondaryBtn:hover,
+  .menuActions .secondaryBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(103,231,255,.46);
+    background: linear-gradient(180deg, rgba(255,115,194,.10), rgba(103,231,255,.08));
+  }
+  #testGroundBtn {
+    border-color: rgba(255,209,98,.42);
+    color:#ffe7aa;
+    text-shadow:0 0 8px rgba(255,209,98,.18);
+    background: linear-gradient(180deg, rgba(255,209,98,.08), rgba(255,132,80,.04));
+  }
+
+  #customHullBtn {
+    margin-top:10px;
+    border-color: rgba(255,98,188,.38);
+    color:#ffcae8;
+    background: linear-gradient(180deg, rgba(255,98,188,.08), rgba(111,242,255,.05));
+    box-shadow: inset 0 0 12px rgba(255,255,255,.02);
+  }
+  #customHullBtn:hover, #customHullBtn:active, #customHullBtn.active {
+    transform:translateY(-1px);
+    border-color: rgba(111,242,255,.46);
+    box-shadow:0 0 12px rgba(111,242,255,.08);
+  }
+
+  .menuIconRow {
+    justify-content:flex-end;
+    gap:9px;
+    padding-top:4px;
+  }
+  .menuIconBtn {
+    width:38px;
+    height:38px;
+    border-color: rgba(111,242,255,.20);
+    background: linear-gradient(180deg, rgba(111,242,255,.06), rgba(255,89,190,.04));
+    box-shadow: inset 0 0 10px rgba(255,255,255,.015);
+  }
+  .menuIconBtn:hover, .menuIconBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(255,121,196,.44);
+    box-shadow:0 0 12px rgba(255,121,196,.09);
+  }
+
+  .buildTag {
+    left:20px;
+    bottom:14px;
+    padding:4px 8px;
+    border:1px solid rgba(111,242,255,.12);
+    background:rgba(5,11,29,.36);
+    color:#9defff;
+    font-size:8px;
+    letter-spacing:2.6px;
+    opacity:.66;
+    text-transform:uppercase;
+  }
+
+  @media (max-width: 980px) {
+    .menuLayout {
+      grid-template-columns:1fr;
+      gap:16px;
+      width:min(720px, 94vw);
+      padding:20px 0 24px;
+    }
+    .menuTitleBlock {
+      min-height:260px;
+      padding:20px 18px 18px;
+    }
+    .menuTitleBlock::before {
+      width:138px; height:138px; right:16px; top:18px;
+    }
+    .menuTitle { font-size:clamp(42px, 12vw, 76px); }
+    .menuSubtitle { max-width:none; font-size:9px; letter-spacing:3px; line-height:1.75; }
+    .menuStats { margin-top:16px; }
+    .loadoutPanel {
+      justify-self:stretch;
+      max-width:none;
+      padding:16px 16px 14px;
+    }
+    .menuActions { grid-template-columns:1fr 1fr; }
+    .menuIconRow { justify-content:center; }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    .menuLayout {
+      grid-template-columns:minmax(250px,.82fr) minmax(430px,1.18fr);
+      gap:22px;
+      padding:10px 0 12px;
+    }
+    .menuTitleBlock {
+      min-height:210px;
+      padding:14px 16px 14px;
+    }
+    .menuTitleBlock::before {
+      width:104px; height:104px; right:10px; top:12px;
+    }
+    .menuTitle { font-size:clamp(30px, 5vw, 54px); letter-spacing:5px; }
+    .menuSubtitle { font-size:8px; letter-spacing:2.4px; margin-top:7px; }
+    .menuStats { margin-top:10px; font-size:8px; padding:6px 9px; }
+    .loadoutPanel { padding:11px 14px 10px; }
+    .shipHoloRing { width:84px; height:84px; }
+    #shipPreviewCanvas { width:78px; height:78px; }
+  }
+
+  @media (max-width: 520px) {
+    #overlay::after { opacity:.28; height:28%; }
+    .menuTitleBlock { min-height:220px; }
+    .menuTitleBlock::before {
+      width:108px; height:108px; right:10px; top:18px;
+    }
+    .menuEyebrow {
+      font-size:7px;
+      letter-spacing:2.4px;
+      padding:3px 7px 3px 8px;
+      margin-bottom:8px;
+    }
+    .menuTitle { letter-spacing:5px; }
+    .menuSubtitle {
+      margin-top:8px;
+      font-size:8px;
+      letter-spacing:2.2px;
+      line-height:1.55;
+    }
+    .menuStats {
+      margin-top:12px;
+      font-size:8px;
+      line-height:1.5;
+    }
+    .shipHoloRing { width:94px; height:94px; }
+    #shipPreviewCanvas { width:88px; height:88px; }
+    .shipNameLabel { font-size:12px; letter-spacing:2px; }
+    .weaponNameLabel { min-width:0; font-size:12px; letter-spacing:2px; }
+    .buildTag { display:none; }
+  }
+
+
+  /* ---------- MAIN MENU REDESIGN V2 // CLEANER SYNTHWAVE ---------- */
+  #overlay {
+    background:
+      radial-gradient(circle at 22% 16%, rgba(255,90,190,.10), transparent 24%),
+      radial-gradient(circle at 82% 12%, rgba(82,225,255,.08), transparent 22%),
+      linear-gradient(180deg, rgba(10,8,24,.34) 0%, rgba(9,10,28,.52) 40%, rgba(4,5,14,.86) 100%);
+    overflow:hidden;
+    color:#aef2ff;
+  }
+  #overlay::before {
+    content:'';
+    position:absolute; inset:0;
+    pointer-events:none;
+    background:
+      linear-gradient(rgba(255,255,255,.018) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,.012) 1px, transparent 1px);
+    background-size:100% 5px, 72px 100%;
+    opacity:.18;
+    mix-blend-mode:screen;
+  }
+  #overlay::after {
+    content:'';
+    position:absolute;
+    left:-2%; right:-2%; bottom:-4%;
+    height:34%;
+    pointer-events:none;
+    background:
+      repeating-linear-gradient(90deg, rgba(95,236,255,.14) 0 1px, transparent 1px 42px),
+      repeating-linear-gradient(0deg, rgba(95,236,255,.14) 0 1px, transparent 1px 26px);
+    transform: perspective(420px) rotateX(76deg) scaleY(1.55);
+    transform-origin: bottom;
+    opacity:.28;
+  }
+
+  .menuLayout {
+    position:relative;
+    z-index:1;
+    display:grid;
+    grid-template-columns:minmax(300px,.88fr) minmax(470px,1.12fr);
+    align-items:center;
+    width:min(1180px,94vw);
+    gap:clamp(30px,5vw,72px);
+    padding:34px 0 38px;
+  }
+
+  /* Left side — no chunky card, cleaner hero block */
+  .menuTitleBlock {
+    position:relative;
+    min-width:0;
+    padding:12px 0 0;
+    background:transparent;
+    border:0;
+    box-shadow:none;
+    clip-path:none;
+    min-height:auto;
+    overflow:visible;
+  }
+  .menuTitleBlock::before {
+    content:'';
+    position:absolute;
+    left:0; top:-18px;
+    width:96px; height:2px;
+    background:linear-gradient(90deg, #6eefff, #ff75c5, transparent);
+    box-shadow:0 0 14px rgba(110,239,255,.30);
+  }
+  .menuTitleBlock::after {
+    content:'';
+    position:absolute;
+    left:0; bottom:-10px;
+    width:min(320px,74%);
+    height:1px;
+    background:linear-gradient(90deg, rgba(255,117,197,.45), rgba(110,239,255,.25), transparent);
+  }
+
+  .menuEyebrow {
+    display:inline-block;
+    margin-bottom:12px;
+    padding:0;
+    border:0;
+    background:transparent;
+    box-shadow:none;
+    color:#8defff;
+    font-size:10px;
+    letter-spacing:4.8px;
+    opacity:.78;
+    text-transform:uppercase;
+  }
+
+  .menuTitle {
+    margin:0;
+    font-size:clamp(56px, 7vw, 92px);
+    line-height:.94;
+    letter-spacing:8px;
+    color:transparent;
+    background:linear-gradient(180deg, #fff8d6 0%, #ff97d9 42%, #79ebff 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    text-shadow:
+      0 0 10px rgba(255,120,196,.20),
+      0 0 20px rgba(121,235,255,.08);
+    animation:none;
+  }
+
+  .menuSubtitle {
+    max-width:520px;
+    margin-top:14px;
+    font-size:10px;
+    letter-spacing:4px;
+    line-height:1.8;
+    color:#d9f7ff;
+    opacity:.82;
+    text-transform:uppercase;
+  }
+
+  .menuStats {
+    margin-top:22px;
+    padding:10px 14px;
+    border:1px solid rgba(110,239,255,.16);
+    border-left:2px solid rgba(255,117,197,.56);
+    background:linear-gradient(90deg, rgba(110,239,255,.08), rgba(255,117,197,.03), transparent);
+    color:#e8fbff;
+    font-size:10px;
+    letter-spacing:1px;
+    opacity:.90;
+    box-shadow:inset 0 0 16px rgba(255,255,255,.02);
+  }
+
+  /* Right side — one clean glass panel */
+  .loadoutPanel {
+    position:relative;
+    justify-self:end;
+    max-width:590px;
+    width:100%;
+    padding:22px 24px 20px;
+    border:1px solid rgba(110,239,255,.24);
+    border-top-color:rgba(255,117,197,.26);
+    background:
+      linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,0) 16%),
+      linear-gradient(145deg, rgba(11,17,40,.74), rgba(10,12,30,.66) 62%, rgba(12,7,28,.58));
+    box-shadow:
+      inset 0 0 28px rgba(110,239,255,.035),
+      0 0 24px rgba(110,239,255,.04);
+    clip-path: polygon(0 16px, 16px 0, 100% 0, 100% calc(100% - 16px), calc(100% - 16px) 100%, 0 100%);
+    overflow:hidden;
+  }
+  .loadoutPanel::before {
+    content:'';
+    position:absolute;
+    left:0; top:0; right:0;
+    height:1px;
+    background:linear-gradient(90deg, rgba(110,239,255,.9), rgba(255,117,197,.65), transparent 80%);
+  }
+  .loadoutPanel::after {
+    content:'';
+    position:absolute;
+    inset:8px;
+    border:1px solid rgba(255,255,255,.035);
+    pointer-events:none;
+    clip-path: inherit;
+  }
+
+  .loadoutHeader {
+    color:#9eebff;
+    font-size:9px;
+    letter-spacing:3px;
+    opacity:.82;
+    text-transform:uppercase;
+  }
+  .loadoutHeader span {
+    color:#ff8fd0;
+    opacity:.90;
+  }
+  .loadoutDivider {
+    height:1px;
+    margin:14px 0 12px;
+    background:linear-gradient(90deg, transparent, rgba(110,239,255,.22), rgba(255,117,197,.18), transparent);
+  }
+
+  /* Floating ship area */
+  .shipPreview {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:6px;
+    width:100%;
+  }
+  .shipPreviewRow {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:18px;
+    width:100%;
+    padding:6px 0 2px;
+  }
+  .shipHoloRing {
+    position:relative;
+    width:138px;
+    height:138px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    overflow:hidden; /* removes square/box feel around the canvas */
+    background:
+      radial-gradient(circle at center, rgba(110,239,255,.09) 0%, rgba(110,239,255,.04) 42%, rgba(0,0,0,0) 70%);
+    border:1px solid rgba(110,239,255,.16);
+    box-shadow:
+      inset 0 0 18px rgba(110,239,255,.04),
+      0 0 16px rgba(110,239,255,.03);
+    isolation:isolate;
+  }
+  .shipHoloRing::before {
+    content:'';
+    position:absolute;
+    inset:7px;
+    border-radius:50%;
+    border:1px solid rgba(255,117,197,.12);
+    pointer-events:none;
+  }
+  .shipHoloRing::after {
+    content:'';
+    position:absolute;
+    inset:14px;
+    border-radius:50%;
+    border:1px dashed rgba(110,239,255,.18);
+    opacity:.9;
+    animation:holoRingSpin 15s linear infinite;
+    pointer-events:none;
+  }
+  #shipPreviewCanvas {
+    width:126px;
+    height:126px;
+    position:relative;
+    z-index:1;
+    display:block;
+    background:transparent !important;
+  }
+
+  .shipArrowBtn,
+  .weaponArrowBtn {
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    border:1px solid rgba(110,239,255,.26);
+    background:linear-gradient(180deg, rgba(110,239,255,.06), rgba(255,117,197,.04));
+    color:#9ff2ff;
+    box-shadow:inset 0 0 10px rgba(255,255,255,.015);
+  }
+  .shipArrowBtn:hover, .weaponArrowBtn:hover,
+  .shipArrowBtn:active, .weaponArrowBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(255,117,197,.34);
+    background:linear-gradient(180deg, rgba(110,239,255,.10), rgba(255,117,197,.08));
+  }
+
+  .shipNameLabel {
+    margin-top:6px;
+    font-size:15px;
+    letter-spacing:3px;
+    color:#f2fcff;
+    text-shadow:0 0 8px rgba(110,239,255,.10);
+  }
+  .shipDescLabel {
+    max-width:370px;
+    min-height:28px;
+    font-size:10px;
+    line-height:1.48;
+    color:#d6f2ff;
+    opacity:.76;
+    text-align:center;
+  }
+  .shipStatsLabel {
+    width:min(390px,100%);
+    margin-top:7px;
+    padding:9px 10px;
+    font-size:9px;
+    line-height:1.55;
+    text-align:center;
+    white-space:pre-wrap;
+    color:#def7ff;
+    background:linear-gradient(180deg, rgba(255,255,255,.022), rgba(255,255,255,.010));
+    border:1px solid rgba(255,255,255,.06);
+  }
+
+  #customHullBtn {
+    margin-top:9px;
+    min-height:34px;
+    padding:7px 13px;
+    border:1px solid rgba(255,117,197,.24);
+    background:linear-gradient(180deg, rgba(255,117,197,.05), rgba(110,239,255,.04));
+    color:#ffd2eb;
+    font:inherit;
+    font-size:8px;
+    letter-spacing:2px;
+    cursor:pointer;
+  }
+  #customHullBtn:hover, #customHullBtn:active, #customHullBtn.active {
+    transform:translateY(-1px);
+    border-color:rgba(110,239,255,.34);
+  }
+
+  .weaponSelect { width:100%; margin:0; padding:0; border:0; text-align:center; }
+  .weaponNameLabel {
+    min-width:190px;
+    font-size:14px;
+    letter-spacing:3px;
+    color:#ffe4f5;
+  }
+  .weaponDescLabel {
+    margin:6px auto 0;
+    max-width:420px;
+    min-height:28px;
+    font-size:10px;
+    line-height:1.48;
+    color:#d6f2ff;
+    opacity:.78;
+  }
+  .weaponStatsLabel {
+    margin:7px auto 0;
+    padding:8px 9px;
+    width:min(420px,100%);
+    font-size:8.5px;
+    white-space:pre-wrap;
+    color:#ddf9ff;
+    border:1px solid rgba(255,255,255,.06);
+    background:linear-gradient(180deg, rgba(255,255,255,.020), rgba(255,255,255,.010));
+  }
+
+  .menuActions {
+    margin-top:16px;
+    display:grid;
+    grid-template-columns:1.18fr .92fr;
+    gap:10px 10px;
+  }
+  #startBtn,
+  .menuActions .secondaryBtn {
+    width:100%;
+    min-width:0;
+    margin:0;
+    min-height:42px;
+    border-radius:0;
+  }
+  #startBtn {
+    font-size:15px;
+    border:1px solid rgba(110,239,255,.50);
+    background:linear-gradient(180deg, rgba(110,239,255,.12), rgba(255,117,197,.06));
+    color:#f1fdff;
+    text-shadow:0 0 8px rgba(110,239,255,.16);
+    box-shadow:inset 0 0 12px rgba(255,255,255,.025);
+  }
+  #startBtn:hover, #startBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(255,117,197,.52);
+  }
+  .menuActions .secondaryBtn {
+    border:1px solid rgba(255,117,197,.22);
+    background:linear-gradient(180deg, rgba(255,117,197,.05), rgba(110,239,255,.03));
+    color:#ffd7ef;
+  }
+  .menuActions .secondaryBtn:hover,
+  .menuActions .secondaryBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(110,239,255,.30);
+  }
+  #testGroundBtn {
+    border-color:rgba(255,208,114,.30);
+    color:#ffe9b7;
+    background:linear-gradient(180deg, rgba(255,208,114,.07), rgba(255,117,197,.03));
+  }
+
+  .menuIconRow {
+    grid-column:1 / -1;
+    justify-content:flex-end;
+    gap:8px;
+    padding-top:2px;
+  }
+  .menuIconBtn {
+    width:36px;
+    height:36px;
+    border:1px solid rgba(110,239,255,.16);
+    background:linear-gradient(180deg, rgba(110,239,255,.05), rgba(255,117,197,.03));
+  }
+  .menuIconBtn:hover,
+  .menuIconBtn:active {
+    transform:translateY(-1px);
+    border-color:rgba(255,117,197,.28);
+  }
+
+  .buildTag {
+    left:18px;
+    bottom:12px;
+    padding:4px 7px;
+    border:1px solid rgba(110,239,255,.10);
+    background:rgba(8,12,30,.26);
+    color:#a9f2ff;
+    font-size:7.5px;
+    letter-spacing:2.2px;
+    opacity:.58;
+    text-transform:uppercase;
+  }
+
+  @media (max-width: 980px) {
+    .menuLayout {
+      grid-template-columns:1fr;
+      width:min(720px,94vw);
+      gap:16px;
+      padding:18px 0 24px;
+    }
+    .menuTitleBlock {
+      padding-top:8px;
+    }
+    .menuTitle {
+      font-size:clamp(44px, 12vw, 78px);
+      letter-spacing:6px;
+    }
+    .menuSubtitle {
+      max-width:none;
+      font-size:9px;
+      letter-spacing:3px;
+    }
+    .loadoutPanel {
+      justify-self:stretch;
+      max-width:none;
+      padding:16px 16px 14px;
+    }
+    .menuIconRow {
+      justify-content:center;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:520px) {
+    .menuLayout {
+      grid-template-columns:minmax(250px,.80fr) minmax(430px,1.20fr);
+      gap:20px;
+      padding:10px 0 12px;
+    }
+    .menuTitle {
+      font-size:clamp(32px, 5.2vw, 56px);
+      letter-spacing:5px;
+    }
+    .menuEyebrow {
+      margin-bottom:7px;
+      font-size:7px;
+      letter-spacing:3px;
+    }
+    .menuSubtitle {
+      margin-top:7px;
+      font-size:8px;
+      letter-spacing:2.2px;
+      line-height:1.6;
+    }
+    .menuStats {
+      margin-top:10px;
+      padding:6px 9px;
+      font-size:8px;
+    }
+    .loadoutPanel {
+      padding:11px 14px 10px;
+    }
+    .shipHoloRing {
+      width:92px;
+      height:92px;
+    }
+    #shipPreviewCanvas {
+      width:82px;
+      height:82px;
+    }
+  }
+
+  @media (max-width: 520px) {
+    #overlay::after { opacity:.22; height:28%; }
+    .menuTitle {
+      letter-spacing:4px;
+    }
+    .menuEyebrow {
+      font-size:7px;
+      letter-spacing:2.4px;
+    }
+    .menuSubtitle {
+      font-size:8px;
+      letter-spacing:2px;
+      line-height:1.55;
+    }
+    .menuStats {
+      font-size:8px;
+      line-height:1.5;
+    }
+    .shipHoloRing {
+      width:102px;
+      height:102px;
+    }
+    #shipPreviewCanvas {
+      width:92px;
+      height:92px;
+    }
+    .shipNameLabel {
+      font-size:12px;
+      letter-spacing:2px;
+    }
+    .weaponNameLabel {
+      min-width:0;
+      font-size:12px;
+      letter-spacing:2px;
+    }
+    .buildTag {
+      display:none;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -1392,9 +2708,9 @@
   <div id="overlay">
     <div class="menuLayout">
       <section class="menuTitleBlock">
-        <div class="menuEyebrow">DEEP SPACE COMBAT // ROGUELITE</div>
+        <div class="menuEyebrow">RETRO VECTOR COMBAT</div>
         <h1 class="menuTitle">ASTEROIDS</h1>
-        <div class="menuSubtitle">CHOOSE A HULL. CHOOSE A BUILD. SURVIVE.</div>
+        <div class="menuSubtitle">CUSTOM HULLS // WEAPON BUILDS // SURVIVE THE ASTEROID BELT</div>
         <div class="menuStats" id="menuStats">BEST SCORE 0   ·   TOP LEVEL 0   ·   SALVAGE 0</div>
       </section>
 
@@ -1410,6 +2726,7 @@
             <div class="shipNameLabel" id="shipNameLabel">INTERCEPTOR</div>
             <div class="shipDescLabel" id="shipDescLabel">Balanced all-rounder. No surprises.</div>
             <div class="shipStatsLabel" id="shipStatsLabel"></div>
+            <button id="customHullBtn" type="button">BUILD CUSTOM HULL</button>
           </div>
         </div>
 
@@ -1440,7 +2757,7 @@
         </div>
       </section>
     </div>
-    <div class="buildTag">WEAPON BUILDS / ROGUELITE — AUG 27</div>
+    <div class="buildTag">SYNTHWAVE FLIGHT DECK // HULL WORKSHOP ACTIVE</div>
   </div>
 
   <div id="howToPlayOverlay" class="hidden">
@@ -1452,7 +2769,7 @@
       </div>
       <div class="htpSection">
         <h3>Ships</h3>
-        <p>Each ship has a different hitbox size and handling — bigger ships are easier to hit but often faster or tougher. Some unlock by reaching a level, others by completing a specific achievement — check the Achievements screen from the main menu.</p>
+        <p>BUILD CUSTOM HULL opens the Hull Workshop and is the default ship system. Nose, frame, wings and engine construct the ship around shared attachment points, while Reactor determines engine power and adds its own internal vector design. One hull-color slider controls the entire custom ship. The original Interceptor, Viper, Titan and Phantom unlock as achievement-gated recipes built from the same new parts, so they can be loaded and modified.</p>
       </div>
       <div class="htpSection">
         <h3>Weapon builds</h3>
@@ -1476,7 +2793,7 @@
       </div>
       <div class="htpSection">
         <h3>Test Ground</h3>
-        <p>Sandbox mode for mechanic testing. Any ship can be used. Press 1–4 to swap instantly between Longbow, Scattergun, Rocket Pod, and Cycler with max upgrade ranks and boss evolutions enabled. Targets and shields restock automatically. Test Ground never awards achievements, unlocks, salvage, or permanent stat progress.</p>
+        <p>Sandbox mode for mechanic testing. Before entering, choose exact ranks for every weapon upgrade and Evolution — competing Evolution paths can be enabled together for stress testing. Inside the Test Lab, use the clickable spawner to create individual asteroid sizes, UFO variants, bosses, Ambushes, shields, and 1UPs on demand. Tap BUILD in the spawner at any time to change upgrade and Evolution ranks live, then APPLY & RETURN to resume the same test. Press 1–4 to swap weapon builds using each weapon's saved Test Lab preset. Test Ground never awards achievements, unlocks, salvage, or permanent stat progress.</p>
       </div>
       <div class="htpSection">
         <h3>Enemies</h3>
@@ -1489,7 +2806,7 @@
   <div id="achievementsOverlay" class="hidden">
     <div class="htpPanel">
       <h2>ACHIEVEMENTS</h2>
-      <p class="htpIntro">Each one unlocks a cosmetic recolor of a ship — same handling, different shine.</p>
+      <p class="htpIntro">Complete challenges to recover the four original factory hull blueprints.</p>
       <div id="achievementsList"></div>
       <button id="achBackBtn" class="secondaryBtn">BACK</button>
     </div>
@@ -1537,6 +2854,200 @@
       <h2>CHOOSE AN UPGRADE</h2>
       <div class="sub" id="upgradeBuildLabel">BUILD EVOLUTION</div>
       <div class="upgradeChoices" id="upgradeChoices"></div>
+    </div>
+  </div>
+
+
+
+  <div id="hullWorkshopOverlay" class="hidden">
+    <div class="hwPanel">
+      <div class="hwHeader">
+        <div>
+          <div class="hwTitle">HULL WORKSHOP</div>
+          <div class="hwSub">BUILD // COLOR // SAVE // RELOAD // OG RECIPES USE THE SAME PARTS</div>
+        </div>
+        <button id="hwCancel" class="secondaryBtn" type="button" style="margin:0">CANCEL</button>
+      </div>
+
+      <div class="hwBody">
+        <section class="hwPreview">
+          <canvas id="hwCanvas" width="260" height="260"></canvas>
+          <div id="hwBuildName" class="hwBuildName">CUSTOM HULL</div>
+          <div id="hwStats" class="hwStats"></div>
+          <div id="hwPower" class="hwPower"></div>
+        </section>
+
+        <section class="hwControls">
+          <div class="hwRow">
+            <div class="hwLabel">NOSE</div>
+            <div class="hwPicker">
+              <button class="hwArrow" data-hw="nose" data-dir="-1">◀</button>
+              <div id="hwNose" class="hwValue">ARROW</div>
+              <button class="hwArrow" data-hw="nose" data-dir="1">▶</button>
+            </div>
+            <div id="hwNoseDesc" class="hwDesc"></div>
+          </div>
+
+          <div class="hwRow">
+            <div class="hwLabel">FRAME</div>
+            <div class="hwPicker">
+              <button class="hwArrow" data-hw="frame" data-dir="-1">◀</button>
+              <div id="hwFrame" class="hwValue">STANDARD</div>
+              <button class="hwArrow" data-hw="frame" data-dir="1">▶</button>
+            </div>
+            <div id="hwFrameDesc" class="hwDesc"></div>
+          </div>
+
+          <div class="hwRow">
+            <div class="hwLabel">WINGS</div>
+            <div class="hwPicker">
+              <button class="hwArrow" data-hw="wings" data-dir="-1">◀</button>
+              <div id="hwWings" class="hwValue">STANDARD</div>
+              <button class="hwArrow" data-hw="wings" data-dir="1">▶</button>
+            </div>
+            <div id="hwWingsDesc" class="hwDesc"></div>
+          </div>
+
+          <div class="hwRow">
+            <div class="hwLabel">ENGINE</div>
+            <div class="hwPicker">
+              <button class="hwArrow" data-hw="engine" data-dir="-1">◀</button>
+              <div id="hwEngine" class="hwValue">TWIN</div>
+              <button class="hwArrow" data-hw="engine" data-dir="1">▶</button>
+            </div>
+            <div id="hwEngineDesc" class="hwDesc"></div>
+          </div>
+
+          <div class="hwRow">
+            <div class="hwLabel">REACTOR</div>
+            <div class="hwPicker">
+              <button class="hwArrow" data-hw="reactor" data-dir="-1">◀</button>
+              <div id="hwReactor" class="hwValue">STANDARD</div>
+              <button class="hwArrow" data-hw="reactor" data-dir="1">▶</button>
+            </div>
+            <div id="hwReactorDesc" class="hwDesc"></div>
+          </div>
+
+          <div class="hwRow">
+            <div class="hwLabel">HULL COLOR</div>
+            <div class="hwColorWrap">
+              <input id="hwColor" class="hwHue" type="range" min="0" max="359" value="188">
+              <div id="hwColorSwatch" class="hwSwatch"></div>
+            </div>
+            <div class="hwDesc">One hue controls the hull, reactor, engines and thrust accents.</div>
+          </div>
+        </section>
+      </div>
+
+      <div class="hwPresetShelf">
+        <div class="hwShelfHeader">
+          <span class="hwLegacyLabel">MY HULL PRESETS</span>
+          <div class="hwSaveControls">
+            <input id="hwPresetName" class="hwPresetName" type="text" maxlength="18" placeholder="PRESET NAME">
+            <button id="hwSavePreset" class="hwAction hwSaveBtn" type="button">+ SAVE CURRENT</button>
+          </div>
+        </div>
+        <div id="hwPresetStatus" class="hwPresetStatus"></div>
+        <div id="hwSavedPresets" class="hwSavedPresets"></div>
+      </div>
+
+      <div class="hwFooter">
+        <div class="hwLegacy">
+          <span class="hwLegacyLabel">OG PART PRESETS // ACHIEVEMENT UNLOCKS</span>
+          <button class="hwLegacyBtn" data-legacy="0">INTERCEPTOR</button>
+          <button class="hwLegacyBtn" data-legacy="1">VIPER</button>
+          <button class="hwLegacyBtn" data-legacy="2">TITAN</button>
+          <button class="hwLegacyBtn" data-legacy="3">PHANTOM</button>
+        </div>
+        <button id="hwApply" class="hwAction" type="button">FABRICATE</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="testLoadoutOverlay" class="hidden">
+    <div class="testLoadoutPanel">
+      <div class="testLoadoutHeader">
+        <div>
+          <div class="testLoadoutTitle">TEST LAB // BUILD CONFIG</div>
+          <div class="testLoadoutSub">Choose exact ranks before entering. Test Ground ignores normal run choice restrictions.</div>
+        </div>
+        <button id="testConfigBackBtn" class="secondaryBtn" type="button" style="margin:0">BACK</button>
+      </div>
+
+      <div class="testWeaponRow">
+        <button id="testWeaponPrevBtn" type="button">◀</button>
+        <div id="testConfigWeaponName">LONGBOW</div>
+        <button id="testWeaponNextBtn" type="button">▶</button>
+      </div>
+
+      <div class="testConfigColumns">
+        <section class="testConfigSection">
+          <div class="testConfigSectionTitle">UPGRADES // EXACT RANKS</div>
+          <div id="testUpgradeConfigList" class="testConfigList"></div>
+        </section>
+        <section class="testConfigSection evos">
+          <div class="testConfigSectionTitle">EVOLUTIONS // MIX ANY PATH</div>
+          <div id="testEvolutionConfigList" class="testConfigList"></div>
+        </section>
+      </div>
+
+      <div class="testLoadoutFooter">
+        <div class="testLoadoutFooterLeft">
+          <button id="testClearBuildBtn" class="testUtilityBtn" type="button">CLEAR BUILD</button>
+          <button id="testMaxBuildBtn" class="testUtilityBtn" type="button">MAX BUILD</button>
+        </div>
+        <button id="testEnterBtn" type="button">ENTER TEST GROUND</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="testSpawnerPanel" class="hidden">
+    <div class="testSpawnerHeader">
+      <div class="testSpawnerTitle">TEST LAB // SPAWNER</div>
+      <div style="display:flex;gap:5px;align-items:center">
+        <button id="testEditBuildBtn" type="button" style="min-width:54px;height:24px;padding:0 7px;border:1px solid rgba(255,77,166,.36);background:rgba(255,77,166,.05);color:#ff9bd0;font:inherit;font-size:7px;letter-spacing:1px;cursor:pointer">BUILD</button>
+        <button id="testSpawnerCollapse" type="button" aria-label="Collapse spawner">−</button>
+      </div>
+    </div>
+    <div class="testSpawnerBody">
+      <div class="testSpawnerGroup">
+        <div class="testSpawnerGroupTitle">ASTEROIDS</div>
+        <div class="testSpawnerGrid">
+          <button class="testSpawnBtn" data-spawn="rock3">LARGE</button>
+          <button class="testSpawnBtn" data-spawn="rock2">MEDIUM</button>
+          <button class="testSpawnBtn" data-spawn="rock1">SMALL</button>
+          <button class="testSpawnBtn utility" data-spawn="rockpack">TARGET PACK</button>
+        </div>
+      </div>
+      <div class="testSpawnerGroup">
+        <div class="testSpawnerGroupTitle">UFO MOBS</div>
+        <div class="testSpawnerGrid">
+          <button class="testSpawnBtn" data-spawn="standard">STANDARD</button>
+          <button class="testSpawnBtn" data-spawn="gunner">GUNNER</button>
+          <button class="testSpawnBtn" data-spawn="hunter">HUNTER</button>
+          <button class="testSpawnBtn" data-spawn="carrier">CARRIER</button>
+          <button class="testSpawnBtn" data-spawn="pod">ESCAPE POD</button>
+          <button class="testSpawnBtn" data-spawn="debris">DEBRIS</button>
+        </div>
+      </div>
+      <div class="testSpawnerGroup">
+        <div class="testSpawnerGroupTitle">BOSSES</div>
+        <div class="testSpawnerGrid">
+          <button class="testSpawnBtn boss" data-spawn="bossDread">DREADNOUGHT</button>
+          <button class="testSpawnBtn boss" data-spawn="bossCarrier">CARRIER PRIME</button>
+          <button class="testSpawnBtn boss" data-spawn="bossHunter">HUNTER ACE</button>
+          <button class="testSpawnBtn danger" data-spawn="ambush">UFO AMBUSH</button>
+        </div>
+      </div>
+      <div class="testSpawnerGroup">
+        <div class="testSpawnerGroupTitle">PICKUPS / FIELD</div>
+        <div class="testSpawnerGrid">
+          <button class="testSpawnBtn pickup" data-spawn="shield">SHIELD</button>
+          <button class="testSpawnBtn pickup" data-spawn="oneup">1UP</button>
+          <button class="testSpawnBtn utility" data-spawn="clearMobs">CLEAR MOBS</button>
+          <button class="testSpawnBtn utility" data-spawn="clearAll">RESET FIELD</button>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -1643,6 +3154,9 @@
   }
   document.addEventListener('fullscreenchange', refreshFullscreenContextGuard);
   document.addEventListener('webkitfullscreenchange', refreshFullscreenContextGuard);
+  // Some Chromium fullscreen shells rebuild the active fullscreen surface after focus changes.
+  // Re-arm ONLY the context-menu guard; mouse down/up/move remain untouched.
+  window.addEventListener('focus', () => { if (document.fullscreenElement || document.webkitFullscreenElement) refreshFullscreenContextGuard(); });
   const ctx = canvas.getContext('2d');
   const overlay = document.getElementById('overlay');
   const mainMenuHTML = overlay.innerHTML; // pristine copy, restored on "quit to menu"
@@ -2163,6 +3677,60 @@
         if (masterGain && ctx && !muted) masterGain.gain.setTargetAtTime(desiredVolume, ctx.currentTime, 0.05);
       },
       setIntensity(v) { intensity = Math.max(0, Math.min(3, v | 0)); },
+      cometAccent(tint='cyan', pan=0, intensity=1) {
+        if (!ctx || muted || !playing) return;
+
+        // Pull the note directly from the currently playing chord so the streak feels
+        // like part of the soundtrack rather than an unrelated sound effect.
+        const bar = Math.floor(currentStep / 16) % 4;
+        const chord = CHORDS[bar];
+        const base = tint === 'pink' ? chord.notes[1] * 2 : chord.notes[2] * 2;
+        const now = ctx.currentTime + 0.012;
+
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        const filter = ctx.createBiquadFilter();
+        const panner = ctx.createStereoPanner ? ctx.createStereoPanner() : null;
+
+        osc.type = 'triangle';
+        osc.frequency.setValueAtTime(base * 0.72, now);
+        osc.frequency.exponentialRampToValueAtTime(base * 1.55, now + 0.42);
+
+        filter.type = 'lowpass';
+        filter.frequency.setValueAtTime(1800, now);
+        filter.frequency.exponentialRampToValueAtTime(4200, now + 0.32);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.linearRampToValueAtTime(0.034 * Math.max(0.72, Math.min(1.18, intensity)), now + 0.035);
+        gain.gain.exponentialRampToValueAtTime(0.001, now + 0.52);
+
+        osc.connect(filter);
+        if (panner) {
+          panner.pan.setValueAtTime(Math.max(-0.75, Math.min(0.75, pan)), now);
+          filter.connect(panner);
+          panner.connect(gain);
+        } else {
+          filter.connect(gain);
+        }
+        gain.connect(masterGain);
+
+        osc.start(now);
+        osc.stop(now + 0.54);
+
+        // Tiny octave shimmer behind the sweep.
+        const shimmer = ctx.createOscillator();
+        const shimmerGain = ctx.createGain();
+        shimmer.type = 'sine';
+        shimmer.frequency.setValueAtTime(base * 2, now + 0.035);
+        shimmer.frequency.exponentialRampToValueAtTime(base * 2.45, now + 0.34);
+        shimmerGain.gain.setValueAtTime(0.0001, now + 0.035);
+        shimmerGain.gain.linearRampToValueAtTime(0.013 * Math.max(0.72, Math.min(1.18, intensity)), now + 0.075);
+        shimmerGain.gain.exponentialRampToValueAtTime(0.001, now + 0.40);
+        shimmer.connect(shimmerGain);
+        shimmerGain.connect(masterGain);
+        shimmer.start(now + 0.035);
+        shimmer.stop(now + 0.42);
+      },
       punchDuck() {
         if (!masterGain || !ctx || muted) return;
         masterGain.gain.cancelScheduledValues(ctx.currentTime);
@@ -2267,8 +3835,28 @@
     { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, punishes packed targets.', stats:'POWER █████   RATE █░░░░   RANGE ████░', cooldown:980, speed:5.1, life:110, recoil:1.35 },
     { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Shorter-range pressure weapon; tiny rounds build heat and can overheat.', stats:'POWER ██░░░   RATE █████   RANGE ██░░░', cooldown:92, speed:8.8, life:36, recoil:0.04 }
   ];
+
   let selectedWeaponIndex = 0;
   let currentWeapon = WEAPON_BUILDS[0];
+
+  // TEST LAB presets are separate from normal-run progression. Every weapon keeps its own
+  // sandbox preset, and competing Evolutions can be enabled together for deliberate stress tests.
+  const testBuildPresets = Object.fromEntries(WEAPON_BUILDS.map(w => [w.id, {}]));
+
+  function testPresetForWeapon(id=currentWeapon.id) {
+    if (!testBuildPresets[id]) testBuildPresets[id] = {};
+    return testBuildPresets[id];
+  }
+  function testPresetRank(id, weaponId=currentWeapon.id) {
+    return testPresetForWeapon(weaponId)[id] || 0;
+  }
+  function setTestPresetRank(id, rank, weaponId=currentWeapon.id) {
+    const defs = [...(BUILD_UPGRADES[weaponId]||[]), ...(BUILD_EVOLUTIONS[weaponId]||[])];
+    const def = defs.find(x => x.id === id);
+    if (!def) return;
+    testPresetForWeapon(weaponId)[id] = Math.max(0, Math.min(def.maxRank || 1, rank|0));
+  }
+
   let runUpgradeState = {};
   let runUpgradeCount = 0;
   let upgradeChoosing = false;
@@ -2388,92 +3976,329 @@
   // unlock.type is 'default' (always available), 'level' (reach a level once), or 'achievement'.
   // The 4 "elite" variants are pure recolors of their base ship — same stats, zero balance risk —
   // unlocked by specific achievements instead of just leveling, so there's more than one axis to chase.
+  // ---------- LEGACY FACTORY HULLS ----------
+  // The custom Hull Workshop is the default ship system.
+  // These four original designs are historical blueprints earned through achievements.
   const SHIP_SKINS = [
     {
-      name: 'INTERCEPTOR', color: '#6ff2ff', trailColors: ['#8ff5ff', '#ffffff'],
-      points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
-      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, maxSpeedMult: 1.0, startShield: 0,
-      desc: 'Balanced all-rounder. No surprises.',
-      unlock: { type: 'default' }
+      name:'INTERCEPTOR',
+      color:'#66F7FF',
+      accentColor:'#FF4FD8',
+      trailColors:['#FF4FD8','#A7FBFF'],
+      points:[[1,0],[-0.8,0.7],[-0.4,0],[-0.8,-0.7]],
+      hitFactor:1.0, thrustMult:1.0, turnMult:1.0, maxSpeedMult:1.0, startShield:0,
+      desc:'LEGACY // Polar cyan hull with hot-magenta reactor accents.',
+      unlock:{type:'achievement',id:'legacyInterceptor'}
     },
     {
-      name: 'VIPER', color: '#ff6f6f', trailColors: ['#ff6f6f', '#ffb347'],
-      points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
-      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, maxSpeedMult: 1.14, startShield: 0,
-      desc: 'Fast and twitchy — but a bigger target.',
-      unlock: { type: 'level', value: 5 }
+      name:'VIPER',
+      color:'#FF315F',
+      accentColor:'#FFB000',
+      trailColors:['#FFB000','#FF4D8D'],
+      points:[[1,0],[-0.6,0.9],[-0.9,0],[-0.6,-0.9]],
+      hitFactor:1.15, thrustMult:1.25, turnMult:1.1, maxSpeedMult:1.14, startShield:0,
+      desc:'LEGACY // Hyper-red hull with molten amber drive lines.',
+      unlock:{type:'achievement',id:'legacyViper'}
     },
     {
-      name: 'TITAN', color: '#6fffb0', trailColors: ['#8fffc0', '#d9ff70'],
-      points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
-      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, maxSpeedMult: 0.86, startShield: 1,
-      desc: 'Slow and bulky. Starts every run with 1 shield charge.',
-      unlock: { type: 'level', value: 10 }
+      name:'TITAN',
+      color:'#D9FF45',
+      accentColor:'#FFD166',
+      trailColors:['#FFD166','#A9FF68'],
+      points:[[1,0],[-0.3,0.9],[-0.9,0.5],[-0.9,-0.5],[-0.3,-0.9]],
+      hitFactor:1.3, thrustMult:0.82, turnMult:0.85, maxSpeedMult:0.86, startShield:1,
+      desc:'LEGACY // Radioactive chartreuse armor with reactor-gold accents.',
+      unlock:{type:'achievement',id:'legacyTitan'}
     },
     {
-      name: 'PHANTOM', color: '#c9a4ff', trailColors: ['#c9a4ff', '#ff9ee8'],
-      points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
-      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, maxSpeedMult: 1.05, startShield: 0,
-      desc: 'Small hitbox, hard to hit — no armor to fall back on.',
-      unlock: { type: 'level', value: 15 }
-    },
-    {
-      name: 'INTERCEPTOR CHROME', color: '#dff4ff', trailColors: ['#ffffff', '#dff4ff'],
-      points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
-      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, maxSpeedMult: 1.0, startShield: 0,
-      desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'destroy500' }
-    },
-    {
-      name: 'VIPER NOIR', color: '#ff5478', trailColors: ['#ff5478', '#ff2f5f'],
-      points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
-      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, maxSpeedMult: 1.14, startShield: 0,
-      desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'level5NoDeath' }
-    },
-    {
-      name: 'TITAN GOLD', color: '#ffdd70', trailColors: ['#ffdd70', '#ffb347'],
-      points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
-      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, maxSpeedMult: 0.86, startShield: 1,
-      desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'allFourActive' }
-    },
-    {
-      name: 'PHANTOM SPECTRAL', color: '#e0b3ff', trailColors: ['#e0b3ff', '#8dfcff'],
-      points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
-      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, maxSpeedMult: 1.05, startShield: 0,
-      desc: 'Cosmetic recolor of Phantom. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'rayChain5' }
-    },
-    {
-      name: 'INTERCEPTOR NOVA', color: '#ffb347', trailColors: ['#ffb347', '#ffdd70'],
-      points: [[1, 0], [-0.8, 0.7], [-0.4, 0], [-0.8, -0.7]],
-      hitFactor: 1.0, thrustMult: 1.0, turnMult: 1.0, maxSpeedMult: 1.0, startShield: 0,
-      desc: 'Cosmetic recolor of Interceptor. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'ufoHunter' }
-    },
-    {
-      name: 'VIPER BLAZE', color: '#ff8f52', trailColors: ['#ff8f52', '#ffb347'],
-      points: [[1, 0], [-0.6, 0.9], [-0.9, 0], [-0.6, -0.9]],
-      hitFactor: 1.15, thrustMult: 1.25, turnMult: 1.1, maxSpeedMult: 1.14, startShield: 0,
-      desc: 'Cosmetic recolor of Viper. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'podBrood' }
-    },
-    {
-      name: 'TITAN PLATINUM', color: '#c8d6e5', trailColors: ['#c8d6e5', '#ffffff'],
-      points: [[1, 0], [-0.3, 0.9], [-0.9, 0.5], [-0.9, -0.5], [-0.3, -0.9]],
-      hitFactor: 1.3, thrustMult: 0.82, turnMult: 0.85, maxSpeedMult: 0.86, startShield: 1,
-      desc: 'Cosmetic recolor of Titan. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'score15k' }
-    },
-    {
-      name: 'PHANTOM PRISM', color: '#b3f0ff', shimmer: true, trailColors: ['#b3f0ff', '#ffb3f0'],
-      points: [[1, 0], [-1, 0.35], [-0.7, 0], [-1, -0.35]],
-      hitFactor: 0.7, thrustMult: 0.95, turnMult: 1.2, maxSpeedMult: 1.05, startShield: 0,
-      desc: 'Cosmetic recolor of Phantom — shimmers through colors. Same handling, different shine.',
-      unlock: { type: 'achievement', id: 'level20' }
+      name:'PHANTOM',
+      color:'#A878FF',
+      accentColor:'#59FFF1',
+      trailColors:['#59FFF1','#E6B8FF'],
+      points:[[1,0],[-1,0.35],[-0.7,0],[-1,-0.35]],
+      hitFactor:0.7, thrustMult:0.95, turnMult:1.2, maxSpeedMult:1.05, startShield:0,
+      desc:'LEGACY // Ultraviolet hull with spectral-cyan energy accents.',
+      unlock:{type:'achievement',id:'legacyPhantom'}
     }
   ];
+
+  // ---------- CLEAN-SLATE CUSTOM HULL SYSTEM ----------
+  // STRUCTURAL PARTS each own one visible region. Shared sockets keep combinations aligned.
+  // `width` is the nose half-width at the shoulder, as a multiple of the frame's
+  // half-width. Below 1.0 the nose is narrower than the body; above 1.0 it flares
+  // wider, which is what actually reads as armour.
+  const CUSTOM_NOSES = [
+    {id:'needle', name:'NEEDLE', len:1.19, width:.42, shoulder:.54, mass:.84, speed:1.09, ram:.76,
+      desc:'Long skinny spear. Light and fast, weak kinetic mass.'},
+    {id:'arrow', name:'ARROW', len:1.04, width:.78, shoulder:.76, mass:1.00, speed:1.00, ram:1.00,
+      desc:'Pointed all-purpose front with a smooth shoulder.'},
+    {id:'wedge', name:'WEDGE', len:.95, width:1.10, shoulder:.98, mass:1.13, speed:.96, ram:1.18,
+      desc:'Broader triangular front. More mass and recoil resistance.'},
+    {id:'prow', name:'ARMORED PROW', len:.86, width:1.45, shoulder:1.20, mass:1.30, speed:.90, ram:1.45,
+      desc:'Short, broad armored nose. Heavy and built to hit things.'}
+  ];
+
+  const CUSTOM_FRAMES = [
+    {id:'slim', name:'SLIM', half:.21, mass:.80, hit:.86, turn:1.08,
+      desc:'Narrow center chassis. Small target and low mass.'},
+    {id:'standard', name:'STANDARD', half:.29, mass:1.00, hit:1.00, turn:1.00,
+      desc:'Balanced center chassis.'},
+    {id:'broad', name:'BROAD', half:.39, mass:1.23, hit:1.15, turn:.91,
+      desc:'Wide center chassis. More mass and stability, larger target.'}
+  ];
+
+  // sweep = tip leading-edge x. rear = tip trailing-edge x.
+  // Two rules: rear must stay FORWARD of the -0.70r engine socket, and
+  // (sweep - rear) must stay above ~0.20r or the tip collapses to a spike.
+  const CUSTOM_WINGS = [
+    {id:'compact', name:'COMPACT', span:.48, sweep:-.28, rear:-.56, mass:.82, turn:1.17, speed:1.06, stability:.82,
+      desc:'Tiny fins. Quick rotation and low drag.'},
+    {id:'swept', name:'SWEPT', span:.88, sweep:-.46, rear:-.68, mass:.94, turn:1.10, speed:1.07, stability:.94,
+      desc:'Long rear-swept fighter wings.'},
+    {id:'standard', name:'STANDARD', span:1.02, sweep:-.40, rear:-.66, mass:1.00, turn:1.00, speed:1.00, stability:1.00,
+      desc:'Classic balanced wing planform.'},
+    {id:'manta', name:'MANTA', span:1.34, sweep:-.24, rear:-.64, mass:1.20, turn:.86, speed:.93, stability:1.26,
+      desc:'Huge lateral span. Slow rotation, excellent weapon stability.'}
+  ];
+
+  const CUSTOM_ENGINES = [
+    {id:'light', name:'LIGHT', nozzles:1, demand:.62, thrust:1.05, speed:1.02, mass:.80, recoil:.94,
+      desc:'Light single drive. Easy to power and keeps the ship light.'},
+    {id:'twin', name:'TWIN', nozzles:2, demand:.86, thrust:1.00, speed:1.00, mass:1.00, recoil:.82,
+      desc:'Balanced twin-engine package.'},
+    {id:'vector', name:'VECTOR', nozzles:2, demand:1.08, thrust:1.16, speed:1.12, mass:.98, recoil:.84,
+      desc:'High-output vectored drive. Fast, but wants more reactor power.'},
+    {id:'heavy', name:'HEAVY', nozzles:3, demand:1.28, thrust:1.08, speed:.98, mass:1.27, recoil:.58,
+      desc:'Massive triple drive. Strong thrust and recoil control; very power hungry.'}
+  ];
+
+  const CUSTOM_REACTORS = [
+    {id:'micro', name:'MICRO', output:.72, mass:.76, turn:1.06, design:'spine',
+      desc:'Tiny lightweight reactor. Great with Light/Twin engines; struggles with large drives.'},
+    {id:'standard', name:'STANDARD', output:1.00, mass:1.00, turn:1.00, design:'rails',
+      desc:'Balanced twin-rail reactor.'},
+    {id:'high', name:'HIGH-OUTPUT', output:1.30, mass:1.25, turn:.94, design:'ring',
+      desc:'Heavy ring reactor. Enough output to feed the largest engines.'}
+  ];
+
+
+  // The four originals re-imagined entirely with the NEW workshop parts.
+  // They are recipes, not separate geometry, so players can load one and then modify it.
+  const OG_PART_PRESETS = [
+    {
+      name:'INTERCEPTOR', shipIndex:0,
+      config:{nose:0,frame:1,wings:2,engine:1,reactor:1,hue:188},
+      desc:'Needle / Standard / Standard Wings / Twin / Standard Reactor'
+    },
+    {
+      name:'VIPER', shipIndex:1,
+      config:{nose:1,frame:0,wings:1,engine:2,reactor:2,hue:350},
+      desc:'Arrow / Slim / Swept Wings / Vector / High-Output Reactor'
+    },
+    {
+      name:'TITAN', shipIndex:2,
+      config:{nose:3,frame:2,wings:3,engine:3,reactor:2,hue:76},
+      desc:'Armored Prow / Broad / Manta Wings / Heavy / High-Output Reactor'
+    },
+    {
+      name:'PHANTOM', shipIndex:3,
+      config:{nose:0,frame:0,wings:0,engine:0,reactor:0,hue:270},
+      desc:'Needle / Slim / Compact Wings / Light / Micro Reactor'
+    }
+  ];
+
+  let customHullActive = true;
+  let customHullConfig = {nose:1, frame:1, wings:2, engine:1, reactor:1, hue:188};
+
+  function customPart(arr, idx){ return arr[(idx+arr.length)%arr.length]; }
+  function customHue(h, s=90, l=70){ return `hsl(${((h%360)+360)%360},${s}%,${l}%)`; }
+
+  // Polygon approximation used for debris/rebirth; rendering itself uses the smoother path below.
+  function makeCustomHullPoints(nose,frame,wings){
+    const fh=frame.half;
+    const noseY=Math.max(.10, fh * nose.width);
+    const rootX=-.18, rootY=fh*.96;
+    const tipX=wings.sweep, tipY=.68*wings.span;
+    const rearX=wings.rear, rearY=.30*wings.span;
+    const tailX=-.70, tailY=fh*.66;
+    const top=[
+      [nose.len,0],
+      [.48*nose.len,noseY*.42],
+      [.08,noseY],
+      [rootX,rootY],
+      [rootX+(tipX-rootX)*.55,rootY+(tipY-rootY)*.42],
+      [tipX,tipY],
+      [rearX,rearY],
+      [tailX,tailY]
+    ];
+    const bottom=top.slice(0,-1).reverse().map(([x,y])=>[x,-y]);
+    return [...top,[tailX,-tailY],...bottom];
+  }
+
+  function buildCustomHull(cfg=customHullConfig){
+    const nose=customPart(CUSTOM_NOSES,cfg.nose);
+    const frame=customPart(CUSTOM_FRAMES,cfg.frame);
+    const wings=customPart(CUSTOM_WINGS,cfg.wings);
+    const engine=customPart(CUSTOM_ENGINES,cfg.engine);
+    const reactor=customPart(CUSTOM_REACTORS,cfg.reactor);
+
+    const powerRatio=Math.min(1, reactor.output/engine.demand);
+    const delivery=.60+.40*powerRatio;
+    const totalMass=nose.mass*frame.mass*wings.mass*engine.mass*reactor.mass;
+    const recoilMult=engine.recoil*(1/Math.max(.62,totalMass*wings.stability));
+
+    return {
+      name:`CUSTOM // ${nose.name}`,
+      desc:`${nose.name} / ${frame.name} FRAME / ${wings.name} WINGS / ${engine.name} DRIVE / ${reactor.name} REACTOR`,
+      // One player-selected hue controls the whole ship. Detail lines use lighter
+      // values of the SAME hue so the reactor/engine geometry stays readable.
+      color:customHue(cfg.hue ?? cfg.primaryHue ?? 188),
+      accentColor:customHue(cfg.hue ?? cfg.primaryHue ?? 188,95,82),
+      trailColors:[
+        customHue(cfg.hue ?? cfg.primaryHue ?? 188,95,76),
+        customHue(cfg.hue ?? cfg.primaryHue ?? 188,95,88)
+      ],
+      points:makeCustomHullPoints(nose,frame,wings),
+      hitFactor:frame.hit*(.98+nose.shoulder*.035),
+      // Collision reach follows the widest point of the outline we actually draw.
+      // Floors at the old 0.60 so narrow hulls behave exactly as before.
+      hitSpan:Math.max(.55,Math.min(.92,Math.max(frame.half*.96,.68*wings.span)*.95)),
+      thrustMult:engine.thrust*delivery*(1/Math.sqrt(Math.max(.72,totalMass)))*1.05,
+      turnMult:frame.turn*wings.turn*reactor.turn,
+      maxSpeedMult:nose.speed*wings.speed*engine.speed*delivery,
+      recoilMult,
+      startShield:0,
+      ramMult:nose.ram,
+      powerRatio,
+      underpowered:powerRatio<.995,
+      visualScale:1.08,
+      custom:true,
+      customParts:{
+        nose:nose.id,frame:frame.id,wings:wings.id,engine:engine.id,reactor:reactor.id,
+        hue:cfg.hue ?? cfg.primaryHue ?? 188
+      }
+    };
+  }
+
+  function currentHullSkin(){
+    return customHullActive ? buildCustomHull() : SHIP_SKINS[selectedSkinIndex];
+  }
+
+  function customPartsFromSkin(skin){
+    const p=skin.customParts||{};
+    return {
+      nose:CUSTOM_NOSES.find(x=>x.id===p.nose)||CUSTOM_NOSES[1],
+      frame:CUSTOM_FRAMES.find(x=>x.id===p.frame)||CUSTOM_FRAMES[1],
+      wings:CUSTOM_WINGS.find(x=>x.id===p.wings)||CUSTOM_WINGS[2],
+      engine:CUSTOM_ENGINES.find(x=>x.id===p.engine)||CUSTOM_ENGINES[1],
+      reactor:CUSTOM_REACTORS.find(x=>x.id===p.reactor)||CUSTOM_REACTORS[1]
+    };
+  }
+
+  // Smooth vector path. Every section starts/ends on shared sockets.
+  function traceCustomHullPath(c,skin,r){
+    const {nose,frame,wings}=customPartsFromSkin(skin);
+    const fh=frame.half*r;
+    const tipX=nose.len*r;
+    const shoulderY=Math.max(.10,frame.half*nose.width)*r;
+    const rootX=-.18*r, rootY=fh*.96;
+    const wingTipX=wings.sweep*r, wingTipY=.68*wings.span*r;
+    const rearX=wings.rear*r, rearY=.30*wings.span*r;
+    const tailX=-.70*r, tailY=fh*.66;
+
+    c.beginPath();
+    c.moveTo(tipX,0);
+
+    // Nose -> frame shoulder.
+    c.quadraticCurveTo(.58*tipX,.12*shoulderY,.08*r,shoulderY);
+    c.quadraticCurveTo(-.02*r,fh*.98,rootX,rootY);
+
+    // Frame -> wing. First control keeps the leading edge from forming a violent kink.
+    c.quadraticCurveTo(
+      rootX+(wingTipX-rootX)*.30,
+      rootY+(wingTipY-rootY)*.16,
+      wingTipX,wingTipY
+    );
+
+    // Wing trailing edge -> rear chassis.
+    c.lineTo(rearX,rearY);
+    c.quadraticCurveTo((rearX+tailX)*.55,rearY*.72,tailX,tailY);
+
+    // Flat rear engine socket.
+    c.lineTo(tailX,-tailY);
+
+    // Mirror lower side.
+    c.quadraticCurveTo((rearX+tailX)*.55,-rearY*.72,rearX,-rearY);
+    c.lineTo(wingTipX,-wingTipY);
+    c.quadraticCurveTo(
+      rootX+(wingTipX-rootX)*.30,
+      -(rootY+(wingTipY-rootY)*.16),
+      rootX,-rootY
+    );
+    c.quadraticCurveTo(-.02*r,-fh*.98,.08*r,-shoulderY);
+    c.quadraticCurveTo(.58*tipX,-.12*shoulderY,tipX,0);
+    c.closePath();
+  }
+
+  function drawCustomDetails(c,skin,r){
+    if(!skin.custom) return;
+    const {frame,engine,reactor}=customPartsFromSkin(skin);
+    const accent=skin.accentColor||skin.color;
+
+    c.save();
+    c.strokeStyle=accent;
+    c.shadowColor=accent;
+    c.shadowBlur=8;
+    c.lineJoin='round'; c.lineCap='round';
+
+    // Reactor: visual and mechanical choice are the same component.
+    c.globalAlpha=.58;
+    c.lineWidth=1.5;
+    if(reactor.design==='spine'){
+      c.beginPath();
+      c.moveTo(.12*r,0); c.lineTo(-.48*r,0);
+      c.moveTo(-.10*r,-.04*r); c.lineTo(-.10*r,.04*r);
+      c.moveTo(-.32*r,-.035*r); c.lineTo(-.32*r,.035*r);
+      c.stroke();
+    } else if(reactor.design==='rails'){
+      c.beginPath();
+      c.moveTo(.10*r,-.07*r); c.lineTo(-.48*r,-.06*r);
+      c.moveTo(.10*r,.07*r); c.lineTo(-.48*r,.06*r);
+      c.moveTo(-.19*r,-.07*r); c.lineTo(-.19*r,.07*r);
+      c.stroke();
+    } else {
+      // Both radii are derived from the frame so the ring can never breach a slim hull.
+      const fh=frame.half*r;
+      const ringIn=Math.min(.14*r, fh*.52);
+      const ringOut=Math.min(.20*r, fh*.74);
+      c.beginPath();
+      c.arc(-.13*r,0,ringIn,0,Math.PI*2);
+      c.moveTo(-.27*r,-.06*r); c.lineTo(-.50*r,-.09*r);
+      c.moveTo(-.27*r,.06*r); c.lineTo(-.50*r,.09*r);
+      c.stroke();
+      c.globalAlpha=.26;
+      c.beginPath(); c.arc(-.13*r,0,ringOut,0,Math.PI*2); c.stroke();
+    }
+
+    // Engines mount flush to the common tail socket.
+    c.globalAlpha=.95;
+    c.lineWidth=1.8;
+    const tailX=-.70*r;
+    const tailHalf=frame.half*.66*r;
+    const gap=Math.min(.15*r,Math.max(.075*r,tailHalf*.58));
+    const len=(engine.id==='heavy'?.29:engine.id==='vector'?.25:.21)*r;
+    const nozzleHalf=.042*r;
+    for(let i=0;i<engine.nozzles;i++){
+      const y=(i-(engine.nozzles-1)/2)*gap;
+      c.beginPath();
+      c.moveTo(tailX,y-nozzleHalf);
+      c.lineTo(tailX-len,y);
+      c.lineTo(tailX,y+nozzleHalf);
+      c.stroke();
+    }
+    c.restore();
+  }
+
   let selectedSkinIndex = 0;
 
   function shipDisplayColor(skin) {
@@ -2481,65 +4306,76 @@
     return skin.color;
   }
 
+  function drawLegacyHullAccent(c,skin,r){
+    if(!skin || skin.custom || !skin.accentColor) return;
+    c.save();
+    c.strokeStyle=skin.accentColor;
+    c.shadowColor=skin.accentColor;
+    c.shadowBlur=7;
+    c.globalAlpha=.70;
+    c.lineWidth=1.45;
+    c.lineJoin='round';
+    c.lineCap='round';
+
+    if(skin.name==='INTERCEPTOR'){
+      c.beginPath();
+      c.moveTo(.24*r,0); c.lineTo(-.45*r,.26*r);
+      c.moveTo(.24*r,0); c.lineTo(-.45*r,-.26*r);
+      c.stroke();
+    } else if(skin.name==='VIPER'){
+      c.beginPath();
+      c.moveTo(.15*r,0); c.lineTo(-.52*r,.48*r);
+      c.moveTo(.15*r,0); c.lineTo(-.52*r,-.48*r);
+      c.stroke();
+    } else if(skin.name==='TITAN'){
+      c.beginPath();
+      c.moveTo(.18*r,0); c.lineTo(-.28*r,.38*r); c.lineTo(-.62*r,.23*r);
+      c.moveTo(.18*r,0); c.lineTo(-.28*r,-.38*r); c.lineTo(-.62*r,-.23*r);
+      c.stroke();
+      c.globalAlpha=.42;
+      c.beginPath(); c.arc(-.18*r,0,.13*r,0,Math.PI*2); c.stroke();
+    } else if(skin.name==='PHANTOM'){
+      c.beginPath();
+      c.moveTo(.20*r,0); c.lineTo(-.48*r,.12*r);
+      c.moveTo(.20*r,0); c.lineTo(-.48*r,-.12*r);
+      c.stroke();
+      c.globalAlpha=.35;
+      c.beginPath(); c.moveTo(-.30*r,0); c.lineTo(-.72*r,0); c.stroke();
+    }
+    c.restore();
+  }
+
   // ---------- Achievements ----------
   // Each maps to unlocking one cosmetic ship variant. check() reads live run state and/or
   // cumulative saveData stats; evaluated live during runs and once more at game over as a safety net.
   const ACHIEVEMENTS = {
-    destroy500: {
-      shipIndex: 4,
-      label: 'Rock Collector',
-      desc: 'Destroy 500 asteroids total, across all runs.',
-      progress: () => `${Math.min(saveData.totalAsteroidsDestroyed, 500)}/500`,
-      check: () => saveData.totalAsteroidsDestroyed >= 500
+    legacyInterceptor:{
+      shipIndex:0,
+      label:'FIRST CONTACT',
+      desc:'Reach level 5 in a single run.',
+      progress:()=>`${Math.min(level,5)}/5`,
+      check:()=>level>=5
     },
-    level5NoDeath: {
-      shipIndex: 5,
-      label: 'Untouchable',
-      desc: 'Reach level 5 in a single run without losing a life.',
-      progress: () => '',
-      check: () => level >= 5 && livesLostThisRun === 0
+    legacyViper:{
+      shipIndex:1,
+      label:'ACE HUNTER',
+      desc:'Destroy 20 UFO-class enemies across all runs.',
+      progress:()=>`${Math.min(saveData.totalUfosDestroyed,20)}/20`,
+      check:()=>saveData.totalUfosDestroyed>=20
     },
-    allFourActive: {
-      shipIndex: 6,
-      label: 'Fully Tuned',
-      desc: 'Collect 3 weapon upgrades in a single run.',
-      progress: () => `${Math.min(runUpgradeCount, 3)}/3`,
-      check: () => runUpgradeCount >= 3
+    legacyTitan:{
+      shipIndex:2,
+      label:'BOSS BREAKER',
+      desc:'Clear the first boss milestone and reach level 11.',
+      progress:()=>`${Math.min(level,11)}/11`,
+      check:()=>level>=11
     },
-    rayChain5: {
-      shipIndex: 7,
-      label: 'Rocket Scientist',
-      desc: 'Destroy 4 or more targets with one rocket detonation.',
-      progress: () => '',
-      check: () => rocketMultiKillFlag
-    },
-    ufoHunter: {
-      shipIndex: 8,
-      label: 'UFO Hunter',
-      desc: 'Destroy 20 UFOs total (motherships, pods, or debris), across all runs.',
-      progress: () => `${Math.min(saveData.totalUfosDestroyed, 20)}/20`,
-      check: () => saveData.totalUfosDestroyed >= 20
-    },
-    podBrood: {
-      shipIndex: 9,
-      label: 'Double Trouble',
-      desc: 'Destroy both escape pods ejected from the same mothership, in one run.',
-      progress: () => '',
-      check: () => podBroodFlag
-    },
-    score15k: {
-      shipIndex: 10,
-      label: 'Score Chaser',
-      desc: 'Score 15,000 points in a single run.',
-      progress: () => '',
-      check: () => score >= 15000
-    },
-    level20: {
-      shipIndex: 11,
-      label: 'Marathon',
-      desc: 'Reach level 20 in a single run.',
-      progress: () => '',
-      check: () => level >= 20
+    legacyPhantom:{
+      shipIndex:3,
+      label:'GHOST RUN',
+      desc:'Reach level 10 in a single run without losing a life.',
+      progress:()=>level<10?`${Math.min(level,10)}/10 // ${livesLostThisRun===0?'CLEAN':'FAILED'}`:'',
+      check:()=>level>=10 && livesLostThisRun===0
     }
   };
 
@@ -2567,6 +4403,22 @@
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(saveData)); } catch (e) { /* ignore */ }
   }
   let saveData = loadSave();
+
+  // Legacy blueprint migration. Previous builds used level unlocks and cosmetic variants,
+  // so their unlockedShips array cannot be trusted for this new achievement-only system.
+  // Preserve all other progress, but derive the four factory hull unlocks from the new achievements.
+  const LEGACY_BLUEPRINT_VERSION=2;
+  if(saveData.legacyBlueprintVersion!==LEGACY_BLUEPRINT_VERSION){
+    saveData.unlockedShips=[];
+    ['legacyInterceptor','legacyViper','legacyTitan','legacyPhantom'].forEach((id)=>{
+      const ach=ACHIEVEMENTS[id];
+      if(saveData.achievements && saveData.achievements[id] && ach){
+        if(!saveData.unlockedShips.includes(ach.shipIndex)) saveData.unlockedShips.push(ach.shipIndex);
+      }
+    });
+    saveData.legacyBlueprintVersion=LEGACY_BLUEPRINT_VERSION;
+    persistSave();
+  }
 
   // ---------- Player settings ----------
   const SETTINGS_KEY = 'asteroidsSettingsV1';
@@ -2600,15 +4452,8 @@
   const SHOP_UPGRADES = {};
 
   function checkLevelUnlocks(levelReached) {
-    if (testMode) return [];
-    const newlyUnlocked = [];
-    SHIP_SKINS.forEach((skin, idx) => {
-      if (skin.unlock && skin.unlock.type === 'level' && !isUnlocked(idx) && levelReached >= skin.unlock.value) {
-        saveData.unlockedShips.push(idx);
-        newlyUnlocked.push(skin.name);
-      }
-    });
-    return newlyUnlocked;
+    // Factory hulls no longer unlock from level thresholds; achievements own all legacy unlocks.
+    return [];
   }
 
   function showAchievementToast(label, shipName) {
@@ -2625,30 +4470,33 @@
 
   function checkAchievementUnlocks(live = false) {
     if (testMode) return [];
-    const newlyUnlocked = [];
-    Object.keys(ACHIEVEMENTS).forEach((id) => {
-      if (saveData.achievements[id]) return;
-      const ach = ACHIEVEMENTS[id];
-      if (ach.check()) {
-        saveData.achievements[id] = true;
-        const shipName = SHIP_SKINS[ach.shipIndex].name;
-        if (saveData.unlockedShips.indexOf(ach.shipIndex) === -1) saveData.unlockedShips.push(ach.shipIndex);
+    const newlyUnlocked=[];
+    Object.keys(ACHIEVEMENTS).forEach((id)=>{
+      const ach=ACHIEVEMENTS[id];
+      const already=!!saveData.achievements[id];
+      if(!already && ach.check()){
+        saveData.achievements[id]=true;
+        if(!saveData.unlockedShips.includes(ach.shipIndex)) saveData.unlockedShips.push(ach.shipIndex);
+        const shipName=SHIP_SKINS[ach.shipIndex].name;
         newlyUnlocked.push(shipName);
-        if (live && running && !gameOver) showAchievementToast(ach.label, shipName);
+        if(live && running && !gameOver) showAchievementToast(ach.label,shipName);
+      } else if(already && !saveData.unlockedShips.includes(ach.shipIndex)){
+        saveData.unlockedShips.push(ach.shipIndex);
       }
     });
-    if (newlyUnlocked.length) persistSave();
+    if(newlyUnlocked.length) persistSave();
     return newlyUnlocked;
   }
 
-  // A ship you're not allowed to fly yet shouldn't be sitting there selected on load
-  if (!isUnlocked(selectedSkinIndex)) selectedSkinIndex = 0;
+  // Custom construction is the default. Legacy factory hull selection is optional and achievement-gated.
+  selectedSkinIndex=Math.max(0,Math.min(3,selectedSkinIndex||0));
 
   function newShip() {
-    const skin = SHIP_SKINS[selectedSkinIndex];
+    const skin = currentHullSkin();
     return {
       x: W / 2, y: H / 2,
       r: 14 * skin.hitFactor,
+      hitSpan: skin.hitSpan || 0.6,   // legacy hulls keep the old flat value
       angle: -Math.PI / 2,
       vx: 0, vy: 0,
       angularVelocity: 0,
@@ -2657,6 +4505,7 @@
       angularDamping: 0.8,
       thrustPower: 0.14 * skin.thrustMult,
       maxSpeed: 6.6 * (skin.maxSpeedMult || 1),
+      recoilMult: skin.recoilMult || 1,
       friction: 0.99,
       thrusting: false,
       turningLeft: false,
@@ -2830,6 +4679,8 @@
 
   // ---------- Test Ground ----------
   function restockTestGroundGoodies() {
+    // Pickups stay available for repeat shield / 1UP testing, but enemies are now entirely
+    // player-spawned from the Test Lab panel so the field never fights the experiment.
     if (!powerups.some(p => p.testGround && p.type === 'shield')) {
       spawnPowerup(PLAY_X+PLAY_W*.44,PLAY_Y+PLAY_H*.72,'shield',{vx:0,vy:0,life:999999,testGround:true});
     }
@@ -2837,26 +4688,115 @@
       spawnPowerup(PLAY_X+PLAY_W*.56,PLAY_Y+PLAY_H*.72,'oneup',{vx:0,vy:0,life:999999,testGround:true});
     }
   }
+
+  function spawnTestAsteroid(size) {
+    let x,y;
+    do { x=rand(PLAY_X+35,PLAY_X+PLAY_W-35); y=rand(PLAY_Y+35,PLAY_Y+PLAY_H-35); }
+    while (dist(x,y,ship.x,ship.y)<150);
+    const a=spawnAsteroid(x,y,size);
+    a.vx*=.42; a.vy*=.42; a.testGround=true;
+    asteroids.push(a);
+    return a;
+  }
+
   function spawnTestTargetPack() {
-    if (asteroids.length >= 7) return;
     const positions=[[.15,.20,3,.28],[.82,.22,3,.30],[.25,.52,2,.42],[.72,.58,2,.45],[.47,.27,1,.18],[.55,.46,1,.20],[.39,.49,1,.20],[.63,.34,1,.20]];
-    for (const [px,py,size,scale] of positions) { const a=spawnAsteroid(PLAY_X+PLAY_W*px,PLAY_Y+PLAY_H*py,size); a.vx*=scale; a.vy*=scale; a.testGround=true; asteroids.push(a); }
+    for (const [px,py,size,scale] of positions) {
+      const a=spawnAsteroid(PLAY_X+PLAY_W*px,PLAY_Y+PLAY_H*py,size);
+      a.vx*=scale; a.vy*=scale; a.testGround=true; asteroids.push(a);
+    }
   }
-  function spawnTestUFO() {
-    if (ufos.some(u=>u.testGround)) return;
-    ufos.push({x:PLAY_X+PLAY_W*.5,y:PLAY_Y+PLAY_H*.16,vx:.5,vy:.08,r:26,tier:2,angle:0,fireCooldown:120,driftTimer:0,ejectTimer:0,broodId:null,testGround:true});
+
+  function spawnTestUFO(variant='standard') {
+    const edges=['left','right','top','bottom'];
+    const before=ufos.length;
+    spawnUFOAtEdge(edges[Math.floor(Math.random()*edges.length)], null, variant, true);
+    const u=ufos[ufos.length-1];
+    if (u && ufos.length>before) u.testGround=true;
+    return u;
   }
-  function maintainTestGround() { restockTestGroundGoodies(); spawnTestTargetPack(); spawnTestUFO(); }
+
+  function spawnTestEscapePod(tier=1) {
+    const angle=rand(0,Math.PI*2);
+    const x=PLAY_X+PLAY_W*.5, y=PLAY_Y+PLAY_H*.22;
+    if (tier===1) {
+      spawnEscapePod(x,y,angle,null,false);
+      const u=ufos[ufos.length-1]; if(u) u.testGround=true;
+    } else {
+      // Debris uses the same tier-0 enemy representation the normal UFO chain creates.
+      ufos.push({
+        x,y,vx:Math.cos(angle)*2.0,vy:Math.sin(angle)*2.0,r:10,tier:0,angle:0,
+        fireCooldown:999999,driftTimer:rand(15,30),ejectTimer:0,broodId:null,testGround:true
+      });
+    }
+  }
+
+  function spawnTestBoss(bossType) {
+    const hpMap={ 'DREADNOUGHT':44, 'CARRIER PRIME':57, 'HUNTER ACE':70 };
+    const rMap={ 'DREADNOUGHT':58, 'CARRIER PRIME':54, 'HUNTER ACE':46 };
+    const fromLeft=Math.random()<.5;
+    const hp=hpMap[bossType] || 44;
+    ufos.push({
+      x:fromLeft?PLAY_X-70:PLAY_X+PLAY_W+70, y:PLAY_Y+PLAY_H*.30,
+      vx:(fromLeft?1:-1)*(bossType==='HUNTER ACE'?1.15:.58), vy:.16,
+      r:rMap[bossType] || 50,
+      tier:3, boss:true, bossType, bossName:bossType, hp, maxHp:hp, angle:0,
+      fireCooldown:bossType==='HUNTER ACE'?42:68, carrierCooldown:210, driftTimer:0, ejectTimer:0, broodId:null,
+      phase:0, bossMovePhase:rand(0,Math.PI*2), bossVisualPhase:rand(0,Math.PI*2), testGround:true
+    });
+    SFX.bossAlert(); updateHUD();
+  }
+
+  function clearTestMobs(includeRocks=true) {
+    ufos=[]; ufoBullets=[]; ambushSpawnQueue=[];
+    if (includeRocks) asteroids=[];
+    updateHUD();
+  }
+
+  function maintainTestGround() { restockTestGroundGoodies(); }
+
+  function applyTestBuildPreset() {
+    currentWeapon = WEAPON_BUILDS[selectedWeaponIndex];
+    runUpgradeState = {...testPresetForWeapon(currentWeapon.id)};
+    runUpgradeCount = Object.values(runUpgradeState).reduce((sum,v)=>sum+(v||0),0);
+    weaponHeat=0; weaponOverheated=false; rapidSpinShots=0;
+    resetMagazine();
+  }
+
   function configureTestGround() {
     level=10; lives=99; score=0; resetShieldLayers(SHIELD_MAX_CHARGES);
     rangeLevel=spreadLevel=rayGunLevel=0; weaponMode='normal'; weaponModeTimer=0;
     waveTransitionTimer=0; achievementPollTimer=0; testGroundMaintenanceTimer=0;
     asteroids=[]; ufos=[]; ufoBullets=[]; powerups=[]; bullets=[]; ufoSpawnTimer=Infinity; invulnTimer=180;
-    setWeaponBuild(selectedWeaponIndex, true);
+    applyTestBuildPreset();
     MUSIC.setIntensity(3); maintainTestGround(); clearTimeout(levelBannerTimeout);
-    levelBanner.textContent='TEST GROUND // 1-4 BUILDS // 5 UFO AMBUSH // MAX UPGRADES + EVOLUTIONS';
+    levelBanner.textContent='TEST LAB // SPAWN MOBS // BUILD = LIVE LOADOUT EDIT';
     levelBanner.classList.remove('hard','clear'); levelBanner.classList.add('show');
-    levelBannerTimeout=setTimeout(()=>levelBanner.classList.remove('show'),2600); updateHUD();
+    levelBannerTimeout=setTimeout(()=>levelBanner.classList.remove('show'),2600);
+    const panel=document.getElementById('testSpawnerPanel');
+    if(panel){ panel.classList.remove('hidden'); panel.classList.remove('collapsed'); }
+    updateHUD();
+  }
+
+  function handleTestSpawnAction(action) {
+    if (!testMode || !running || gameOver) return;
+    if (action==='rock3') spawnTestAsteroid(3);
+    else if (action==='rock2') spawnTestAsteroid(2);
+    else if (action==='rock1') spawnTestAsteroid(1);
+    else if (action==='rockpack') spawnTestTargetPack();
+    else if (['standard','gunner','hunter','carrier'].includes(action)) spawnTestUFO(action);
+    else if (action==='pod') spawnTestEscapePod(1);
+    else if (action==='debris') spawnTestEscapePod(0);
+    else if (action==='bossDread') spawnTestBoss('DREADNOUGHT');
+    else if (action==='bossCarrier') spawnTestBoss('CARRIER PRIME');
+    else if (action==='bossHunter') spawnTestBoss('HUNTER ACE');
+    else if (action==='ambush') { currentWaveKind='UFO AMBUSH'; ambushSpawnQueue=[]; startUfoAmbush(); }
+    else if (action==='shield') spawnPowerup(PLAY_X+PLAY_W*.40,PLAY_Y+PLAY_H*.65,'shield',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='oneup') spawnPowerup(PLAY_X+PLAY_W*.60,PLAY_Y+PLAY_H*.65,'oneup',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='clearMobs') clearTestMobs(false);
+    else if (action==='clearAll') { clearTestMobs(true); bullets=[]; powerups=[]; resetShieldLayers(SHIELD_MAX_CHARGES); maintainTestGround(); }
+    SFX.uiTick();
+    updateHUD();
   }
 
   // Per-run achievement tracking — reset each game, checked at game-over time
@@ -2867,6 +4807,8 @@
   let podBroodFlag = false;
 
   function initGame() {
+    gameplayComets = [];
+    resetGameplayCometTimer();
     ship = newShip();
     bullets = [];
     particles = [];
@@ -2987,8 +4929,10 @@
       const btn = upgradeChoicesEl.querySelectorAll('.upgradeChoice')[parseInt(e.key,10)-1];
       if (btn) { e.preventDefault(); btn.click(); }
     } else if (testMode && ['1','2','3','4'].includes(e.key)) {
-      e.preventDefault(); setWeaponBuild(parseInt(e.key,10)-1, true);
-      spawnFloatingText(ship.x, ship.y-42, currentWeapon.name, currentWeapon.color); SFX.uiTick();
+      e.preventDefault();
+      selectedWeaponIndex=parseInt(e.key,10)-1;
+      applyTestBuildPreset();
+      spawnFloatingText(ship.x, ship.y-42, `${currentWeapon.name} // PRESET`, currentWeapon.color); SFX.uiTick();
     } else if (testMode && e.key === '5') {
       e.preventDefault();
       ufos = []; ufoBullets = []; ambushSpawnQueue = []; currentWaveKind = 'UFO AMBUSH';
@@ -3097,8 +5041,6 @@
   }
 
   if (!TOUCH_INPUT_MODE) {
-    // Browsers emit a dedicated dblclick event after two rapid primary clicks. In some
-    // fullscreen/file-preview environments that default action can toggle/escape the view.
     document.addEventListener('dblclick', suppressGameplayDoubleClick, true);
     document.addEventListener('click', (e) => {
       if (running && !gameOver && e.button === 0 && e.detail > 1) {
@@ -3113,7 +5055,6 @@
       mousePos.x = e.clientX - rect.left;
       mousePos.y = e.clientY - rect.top;
       mouseActive = true;
-      // e.buttons is a live bitmask (2 = secondary/right button).
       if (running && !gameOver && !paused) mouseThrust = (e.buttons & 2) !== 0;
     });
 
@@ -3128,6 +5069,7 @@
       if (e.button === 0) fireHeld = false;
       if (e.button === 2) mouseThrust = false;
     });
+
     window.addEventListener('mouseup', (e) => {
       if (e.button === 0) fireHeld = false;
       if (e.button === 2) mouseThrust = false;
@@ -3170,7 +5112,7 @@
       // Longbow's first asteroid impact is the precision kill. Penetrated follow-up hits
       // keep traveling but fragment larger rocks normally, creating extra field pressure.
       pushProjectile(ship.angle,speed,life,2.5+hc*.45,{pierce:1+upgradeLevel('railPierce')+rail,vaporize:true,firstImpactVaporize:true,impactCount:0,heavyCore:hc>0,scoreMult:1+upgradeLevel('deadeye')*.10+marks*.08,bossDamage:6+hc*1.2+rail*2});
-      const recoil=w.recoil*(1+hc*.12)*(1-marks*.08); ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil;
+      const recoil=w.recoil*(1+hc*.12)*(1-marks*.08)*(ship.recoilMult||1); ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil;
       spawnMuzzleBurst(7,w.color,.12); triggerShake(2.5,4);
     } else if (w.id==='shotgun') {
       const pellets=7+upgradeLevel('extraPellets')*2; const choke=upgradeLevel('tightChoke'); let fan=.48*Math.max(.60,1-choke*.10); let life=Math.round(w.life*(1+choke*.05)); let recoil=w.recoil;
@@ -3181,13 +5123,13 @@
         const t=pellets===1?0:(i/(pellets-1)-.5);
         pushProjectile(ship.angle+t*fan,w.speed*rand(.94,1.06),Math.round(life*(1-Math.abs(t)*.42)),1.8,{pellet:true,volleyId,originX:ship.x,originY:ship.y,pierce:evoRange+((Math.abs(t)<.18)?upgradeLevel('flechette'):0),bossDamage:.72+upgradeLevel('breacher')*.28});
       }
-      ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil; spawnMuzzleBurst(12,w.color,.42); triggerShake(4,6);
+      recoil*=ship.recoilMult||1; ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil; spawnMuzzleBurst(12,w.color,.42); triggerShake(4,6);
     } else if (w.id==='rocket') {
       const speed=w.speed*(1+upgradeLevel('booster')*.12)*(upgradeLevel('siegeWarhead')?.84:1); const radius=86*(1+upgradeLevel('bigWarhead')*.18)*(1+upgradeLevel('siegeWarhead')*.20);
       const swarm=upgradeLevel('swarmPod');
       const rocketAngles=swarm?[ship.angle-.12,ship.angle,ship.angle+.12]:[ship.angle];
       rocketAngles.forEach(a=>pushProjectile(a,speed*(swarm?.96:1),w.life,swarm?4.2:5,{rocket:true,blastRadius:radius*(swarm?.72:1),cluster:!!upgradeLevel('cluster'),proximity:!!upgradeLevel('proximity'),bossDamage:(9+upgradeLevel('siegeWarhead')*3)*(swarm?.48:1)}));
-      ship.vx-=Math.cos(ship.angle)*w.recoil*(swarm?1.12:1); ship.vy-=Math.sin(ship.angle)*w.recoil*(swarm?1.12:1); spawnMuzzleBurst(10+(swarm?5:0),w.color,.20); triggerShake(5,7);
+      ship.vx-=Math.cos(ship.angle)*w.recoil*(swarm?1.12:1)*(ship.recoilMult||1); ship.vy-=Math.sin(ship.angle)*w.recoil*(swarm?1.12:1)*(ship.recoilMult||1); spawnMuzzleBurst(10+(swarm?5:0),w.color,.20); triggerShake(5,7);
     } else {
       const twin=!!upgradeLevel('twin'); const heatCap=100*(1+upgradeLevel('deepMag')*.15); let heatPer=(upgradeLevel('hotLoad')?9.6:8);
       if (upgradeLevel('gatlingCore') && rapidSpinShots>12) heatPer*=1+upgradeLevel('gatlingCore')*.10;
@@ -3522,6 +5464,8 @@
     ship.y += ship.vy;
     applyPlayerBoundary(ship);
     updateStarParallax();
+    updateGameplayNebulaParallax();
+    updateGameplayComets();
 
     if (invulnTimer > 0) invulnTimer--;
 
@@ -3766,7 +5710,7 @@
     if (invulnTimer <= 0) {
       for (let i = asteroids.length - 1; i >= 0; i--) {
         const a = asteroids[i];
-        if (dist(a.x, a.y, ship.x, ship.y) < a.r + ship.r * 0.6) {
+        if (dist(a.x, a.y, ship.x, ship.y) < a.r + ship.r * ship.hitSpan) {
           if (shieldCharges > 0) {
             absorbShieldHit();
           } else {
@@ -3781,7 +5725,7 @@
     if (invulnTimer <= 0) {
       for (let i = ufos.length - 1; i >= 0; i--) {
         const u = ufos[i];
-        if (dist(u.x, u.y, ship.x, ship.y) < u.r + ship.r * 0.6) {
+        if (dist(u.x, u.y, ship.x, ship.y) < u.r + ship.r * ship.hitSpan) {
           if (shieldCharges > 0) {
             absorbShieldHit();
           } else {
@@ -3796,7 +5740,7 @@
     if (invulnTimer <= 0) {
       for (let i = ufoBullets.length - 1; i >= 0; i--) {
         const b = ufoBullets[i];
-        if (dist(b.x, b.y, ship.x, ship.y) < b.r + ship.r * 0.6) {
+        if (dist(b.x, b.y, ship.x, ship.y) < b.r + ship.r * ship.hitSpan) {
           ufoBullets.splice(i, 1);
           if (shieldCharges > 0) {
             absorbShieldHit();
@@ -3953,7 +5897,7 @@
       r:bossType==='DREADNOUGHT'?58:bossType==='CARRIER PRIME'?54:46,
       tier:3, boss:true, bossType, bossName:bossType, hp, maxHp:hp, angle:0,
       fireCooldown:bossType==='HUNTER ACE'?42:68, carrierCooldown:210, driftTimer:0, ejectTimer:0, broodId:null,
-      phase:0
+      phase:0, bossMovePhase:rand(0,Math.PI*2), bossVisualPhase:rand(0,Math.PI*2)
     });
     bossSequence++;
     updateHUD();
@@ -3961,19 +5905,49 @@
 
   function updateBossMovement(u) {
     u.fireCooldown--;
+
+    // Boss motion is simulation-driven and damped. The previous spring-only vertical tracking
+    // could accumulate velocity and eventually oscillate violently up/down on some runs.
+    u.bossMovePhase = (u.bossMovePhase || 0) + (u.bossType==='HUNTER ACE' ? .018 : .010);
+
     if (u.bossType==='HUNTER ACE') {
-      const a=Math.atan2(ship.y-u.y,ship.x-u.x), target=1.45+Math.min(.5,level*.01);
-      u.vx+=(Math.cos(a)*target-u.vx)*.022; u.vy+=(Math.sin(a)*target-u.vy)*.022;
+      const a=Math.atan2(ship.y-u.y,ship.x-u.x);
+      const target=1.45+Math.min(.5,level*.01);
+      const desiredVx=Math.cos(a)*target;
+      const desiredVy=Math.sin(a)*target;
+
+      // Agile pursuit, but critically damped enough that it arcs instead of vibrating around the target.
+      u.vx += (desiredVx-u.vx)*.020;
+      u.vy += (desiredVy-u.vy)*.020;
+      u.vx *= .995;
+      u.vy *= .995;
     } else {
-      const centerY=PLAY_Y+PLAY_H*(.30+.16*Math.sin(Date.now()/1100));
-      u.vy+=(centerY-u.y)*.0009;
+      const baseY = u.bossType==='DREADNOUGHT' ? .34 : .29;
+      const amp = u.bossType==='DREADNOUGHT' ? .075 : .10;
+      const centerY=PLAY_Y+PLAY_H*(baseY + amp*Math.sin(u.bossMovePhase));
+
+      // Damped vertical steering: approach the patrol lane without storing runaway spring energy.
+      const desiredVy=Math.max(-.72,Math.min(.72,(centerY-u.y)*.018));
+      u.vy += (desiredVy-u.vy)*.085;
+      u.vy *= .96;
+
+      // Keep the big ships gliding horizontally instead of stalling after entering.
+      const cruise = u.bossType==='DREADNOUGHT' ? .48 : .56;
+      if (Math.abs(u.vx) < cruise*.65) u.vx += (u.vx < 0 ? -1 : 1) * .012;
+      u.vx=Math.max(-cruise,Math.min(cruise,u.vx));
     }
+
     if (u.bossType==='CARRIER PRIME') {
       u.carrierCooldown--;
       if(u.carrierCooldown<=0 && ufos.filter(x=>x.tier===1).length<6){
-        const brood=nextBroodId++; const a=rand(0,Math.PI*2); spawnEscapePod(u.x,u.y,a,brood,false); spawnEscapePod(u.x,u.y,a+Math.PI,brood,false); u.carrierCooldown=190; SFX.escapePodEject();
+        const brood=nextBroodId++; const a=rand(0,Math.PI*2);
+        spawnEscapePod(u.x,u.y,a,brood,false);
+        spawnEscapePod(u.x,u.y,a+Math.PI,brood,false);
+        u.carrierCooldown=190;
+        SFX.escapePodEject();
       }
     }
+
     if (u.fireCooldown<=0) {
       fireBossVolley(u);
       u.fireCooldown=u.bossType==='HUNTER ACE'?rand(34,52):u.bossType==='DREADNOUGHT'?rand(54,76):rand(62,88);
@@ -4225,33 +6199,98 @@
   function drawShip() {
     if (deathZoomActive || rebirthActive) return; // ship is destroyed / not yet reassembled
     if (invulnTimer > 0 && Math.floor(invulnTimer / 6) % 2 === 0) return; // blink
+
     const skin = ship.skin || SHIP_SKINS[0];
     const hullColor = shipDisplayColor(skin);
+    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || (!TOUCH_INPUT_MODE && mouseThrust) || (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
+    const shipSpeed = Math.hypot(ship.vx, ship.vy);
+
+    function strokeShipHull(ctxRef, alpha=0.9, shadowBlur=7, lineWidth=1.7, accentAlpha=1) {
+      ctxRef.strokeStyle = hullColor;
+      ctxRef.lineWidth = lineWidth;
+      ctxRef.globalAlpha = alpha;
+      ctxRef.shadowColor = hullColor;
+      ctxRef.shadowBlur = shadowBlur;
+
+      if (skin.custom) {
+        const s = skin.visualScale || 1;
+        ctxRef.save();
+        ctxRef.scale(s, s);
+        traceCustomHullPath(ctxRef, skin, ship.r);
+        ctxRef.stroke();
+        ctxRef.globalAlpha = alpha * accentAlpha;
+        drawCustomDetails(ctxRef, skin, ship.r);
+        ctxRef.restore();
+      } else {
+        ctxRef.beginPath();
+        skin.points.forEach(([mx, my], i) => {
+          const x = mx * ship.r, y = my * ship.r;
+          if (i === 0) ctxRef.moveTo(x, y); else ctxRef.lineTo(x, y);
+        });
+        ctxRef.closePath();
+        ctxRef.stroke();
+        ctxRef.globalAlpha = alpha * accentAlpha;
+        drawLegacyHullAccent(ctxRef, skin, ship.r);
+      }
+      ctxRef.globalAlpha = 1;
+    }
+
     ctx.save();
     ctx.translate(ship.x, ship.y);
     ctx.rotate(ship.angle);
-    ctx.strokeStyle = hullColor;
-    ctx.lineWidth = 1.7;
-    ctx.globalAlpha = 0.9;
-    ctx.shadowColor = hullColor;
-    ctx.shadowBlur = 7;
-    ctx.beginPath();
-    skin.points.forEach(([mx, my], i) => {
-      const x = mx * ship.r, y = my * ship.r;
-      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-    });
-    ctx.closePath();
-    ctx.stroke();
-    ctx.globalAlpha = 1;
 
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || (!TOUCH_INPUT_MODE && mouseThrust) || (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
+    // Very light thrust blur: faint hull echoes behind the ship while accelerating.
+    // Keep it subtle so the vector silhouette stays sharp.
+    if (thrusting && shipSpeed > 0.08) {
+      const blurStrength = Math.min(1, shipSpeed / 4.2);
+      const blurOffset = 1.2 + blurStrength * 2.4;
+
+      ctx.save();
+      ctx.translate(-blurOffset * 1.55, 0);
+      strokeShipHull(ctx, 0.08 + blurStrength * 0.06, 4, 1.45, 0.65);
+      ctx.restore();
+
+      ctx.save();
+      ctx.translate(-blurOffset * 0.75, 0);
+      strokeShipHull(ctx, 0.12 + blurStrength * 0.08, 5, 1.55, 0.78);
+      ctx.restore();
+    }
+
+    // Main crisp ship pass.
+    strokeShipHull(ctx, 0.9, 7, 1.7, 1);
+
     if (thrusting) {
-      ctx.strokeStyle = '#ffb347';
-      ctx.shadowColor = '#ffb347';
-      ctx.beginPath();
-      ctx.moveTo(-ship.r * 0.4, 0);
-      ctx.lineTo(-ship.r * 1.3, 0);
-      ctx.stroke();
+      const thrustColor = skin.custom ? (skin.accentColor || skin.color) : '#ffb347';
+      ctx.strokeStyle = thrustColor;
+      ctx.shadowColor = thrustColor;
+      ctx.shadowBlur = 10;
+      ctx.lineWidth = 2;
+      if (skin.custom) {
+        // Same numbers drawCustomDetails uses, so each flame starts exactly at
+        // its own nozzle tip, inside the same scaled space as the hull.
+        const s = skin.visualScale || 1;
+        const {frame,engine} = customPartsFromSkin(skin);
+        const tailX = -.70 * ship.r;
+        const tailHalf = frame.half * .66 * ship.r;
+        const gap = Math.min(.15 * ship.r, Math.max(.075 * ship.r, tailHalf * .58));
+        const len = (engine.id === 'heavy' ? .29 : engine.id === 'vector' ? .25 : .21) * ship.r;
+        ctx.save();
+        ctx.scale(s, s);
+        ctx.beginPath();
+        for (let i = 0; i < engine.nozzles; i++) {
+          const y = (i - (engine.nozzles - 1) / 2) * gap;
+          const flame = len * (1.6 + Math.random() * .9);
+          ctx.moveTo(tailX - len, y);
+          ctx.lineTo(tailX - len - flame, y);
+        }
+        ctx.stroke();
+        ctx.restore();
+      } else {
+        ctx.beginPath();
+        ctx.moveTo(-ship.r * 0.4, 0);
+        ctx.lineTo(-ship.r * 1.3, 0);
+        ctx.stroke();
+      }
     }
     ctx.restore();
 
@@ -4458,43 +6497,269 @@
     }
   }
 
+
+  // ---------- Unique vector boss silhouettes ----------
+  // Pure Canvas paths: no bitmap/sprite assets. Each boss has an immediately readable outline.
+  function bossPulse(u, speed=.07) {
+    u.bossVisualPhase = (u.bossVisualPhase || 0) + speed;
+    return .5 + .5*Math.sin(u.bossVisualPhase);
+  }
+
+  function drawBossCore(r, color, pulse, scale=.22) {
+    ctx.save();
+    ctx.strokeStyle=color;
+    ctx.fillStyle=color;
+    ctx.shadowColor=color;
+    ctx.shadowBlur=12 + pulse*9;
+    ctx.globalAlpha=.95;
+    ctx.lineWidth=2;
+    ctx.beginPath();
+    ctx.arc(0,0,r*scale,0,Math.PI*2);
+    ctx.stroke();
+    ctx.globalAlpha=.12 + pulse*.10;
+    ctx.beginPath();
+    ctx.arc(0,0,r*scale*.72,0,Math.PI*2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawDreadnoughtVector(u, color) {
+    const r=u.r, p=bossPulse(u,.045);
+    ctx.save();
+    ctx.rotate(u.angle*.12);
+
+    // Huge armored wedge / manta silhouette.
+    ctx.beginPath();
+    ctx.moveTo(r*1.10,0);
+    ctx.lineTo(r*.50,-r*.34);
+    ctx.lineTo(r*.16,-r*.72);
+    ctx.lineTo(-r*.18,-r*.58);
+    ctx.lineTo(-r*.82,-r*.42);
+    ctx.lineTo(-r*1.04,-r*.10);
+    ctx.lineTo(-r*.72,0);
+    ctx.lineTo(-r*1.04,r*.10);
+    ctx.lineTo(-r*.82,r*.42);
+    ctx.lineTo(-r*.18,r*.58);
+    ctx.lineTo(r*.16,r*.72);
+    ctx.lineTo(r*.50,r*.34);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Armored center spine.
+    ctx.beginPath();
+    ctx.moveTo(r*.92,0);
+    ctx.lineTo(r*.28,-r*.17);
+    ctx.lineTo(-r*.40,-r*.19);
+    ctx.lineTo(-r*.68,0);
+    ctx.lineTo(-r*.40,r*.19);
+    ctx.lineTo(r*.28,r*.17);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Twin broadside cannon pods.
+    for (const s of [-1,1]) {
+      ctx.beginPath();
+      ctx.moveTo(-r*.08,s*r*.40);
+      ctx.lineTo(-r*.54,s*r*.52);
+      ctx.lineTo(-r*.78,s*r*.42);
+      ctx.lineTo(-r*.44,s*r*.28);
+      ctx.closePath();
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-r*.72,s*r*.42);
+      ctx.lineTo(-r*1.12,s*r*.46);
+      ctx.moveTo(-r*.70,s*r*.35);
+      ctx.lineTo(-r*1.05,s*r*.32);
+      ctx.stroke();
+    }
+
+    // Rear engine slits.
+    for (const sy of [-.20,0,.20]) {
+      ctx.beginPath();
+      ctx.moveTo(-r*.75,r*sy);
+      ctx.lineTo(-r*(.98+p*.08),r*sy);
+      ctx.stroke();
+    }
+
+    drawBossCore(r,color,p,.20);
+    ctx.restore();
+  }
+
+  function drawCarrierPrimeVector(u, color) {
+    const r=u.r, p=bossPulse(u,.038);
+    ctx.save();
+    ctx.rotate(-u.angle*.06);
+
+    // Open crescent carrier body.
+    const outer=r*1.03, inner=r*.56;
+    ctx.beginPath();
+    ctx.arc(0,0,outer,-Math.PI*.78,Math.PI*.78);
+    ctx.lineTo(Math.cos(Math.PI*.78)*inner,Math.sin(Math.PI*.78)*inner);
+    ctx.arc(0,0,inner,Math.PI*.78,-Math.PI*.78,true);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Mirrored hangar bays.
+    for (const s of [-1,1]) {
+      for (let i=0;i<3;i++) {
+        const a=s*(.28+i*.23);
+        const cx=Math.cos(a)*r*.77;
+        const cy=Math.sin(a)*r*.77;
+        ctx.save();
+        ctx.translate(cx,cy);
+        ctx.rotate(a);
+        ctx.strokeRect(-r*.13,-r*.065,r*.26,r*.13);
+        // Tiny fighter glyph
+        ctx.beginPath();
+        ctx.moveTo(r*.055,0);
+        ctx.lineTo(-r*.045,-r*.035);
+        ctx.lineTo(-r*.025,0);
+        ctx.lineTo(-r*.045,r*.035);
+        ctx.closePath();
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    // Command bridge sits inside the opening.
+    ctx.beginPath();
+    ctx.moveTo(r*.53,0);
+    ctx.lineTo(r*.22,-r*.22);
+    ctx.lineTo(-r*.08,-r*.18);
+    ctx.lineTo(-r*.20,0);
+    ctx.lineTo(-r*.08,r*.18);
+    ctx.lineTo(r*.22,r*.22);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Rear engine bank.
+    for (const sy of [-.18,-.06,.06,.18]) {
+      ctx.beginPath();
+      ctx.moveTo(-r*.94,r*sy);
+      ctx.lineTo(-r*(1.12+p*.06),r*sy);
+      ctx.stroke();
+    }
+
+    drawBossCore(r,color,p,.15);
+    ctx.restore();
+  }
+
+  function drawHunterAceVector(u, color) {
+    const r=u.r, p=bossPulse(u,.10);
+    // Point the silhouette along actual velocity so the boss looks like it is hunting.
+    const speed=Math.hypot(u.vx,u.vy);
+    const facing=speed>.05?Math.atan2(u.vy,u.vx):0;
+
+    ctx.save();
+    ctx.rotate(facing);
+
+    // Needle interceptor silhouette.
+    ctx.beginPath();
+    ctx.moveTo(r*1.36,0);
+    ctx.lineTo(r*.24,-r*.18);
+    ctx.lineTo(-r*.18,-r*.66);
+    ctx.lineTo(-r*.40,-r*.28);
+    ctx.lineTo(-r*1.02,-r*.58);
+    ctx.lineTo(-r*.68,-r*.12);
+    ctx.lineTo(-r*.92,0);
+    ctx.lineTo(-r*.68,r*.12);
+    ctx.lineTo(-r*1.02,r*.58);
+    ctx.lineTo(-r*.40,r*.28);
+    ctx.lineTo(-r*.18,r*.66);
+    ctx.lineTo(r*.24,r*.18);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Inner spear / cockpit.
+    ctx.beginPath();
+    ctx.moveTo(r*.86,0);
+    ctx.lineTo(r*.10,-r*.11);
+    ctx.lineTo(-r*.36,0);
+    ctx.lineTo(r*.10,r*.11);
+    ctx.closePath();
+    ctx.stroke();
+
+    // Triple hot exhaust.
+    for (const sy of [-.13,0,.13]) {
+      ctx.beginPath();
+      ctx.moveTo(-r*.70,r*sy);
+      ctx.lineTo(-r*(1.04+p*.18),r*sy);
+      ctx.stroke();
+    }
+
+    drawBossCore(r,color,p,.16);
+    ctx.restore();
+  }
+
   function drawUFOs() {
     for (const u of ufos) {
       ctx.save();
       ctx.translate(u.x, u.y);
-      const scale = u.ejectTimer > 0 ? Math.max(0.15, 1 - u.ejectTimer / 18) : 1; // pop-in when a pod is freshly ejected
+      const scale = u.ejectTimer > 0 ? Math.max(0.15, 1 - u.ejectTimer / 18) : 1;
       ctx.scale(scale, scale);
-      const color = u.boss ? '#ff6f6f' : u.variant==='gunner' ? '#ff7b72' : u.variant==='hunter' ? '#ffb347' : u.variant==='carrier' ? '#c98cff' : u.tier === 2 ? '#ff6fe8' : u.tier === 1 ? '#ff8fe8' : '#ffb3f0';
+
+      const color = u.boss
+        ? (u.bossType==='DREADNOUGHT' ? '#ff5e66' : u.bossType==='CARRIER PRIME' ? '#ff4db8' : '#ff8b5e')
+        : u.variant==='gunner' ? '#ff7b72'
+        : u.variant==='hunter' ? '#ffb347'
+        : u.variant==='carrier' ? '#c98cff'
+        : u.tier === 2 ? '#ff6fe8'
+        : u.tier === 1 ? '#ff8fe8'
+        : '#ffb3f0';
+
       ctx.strokeStyle = color;
       ctx.shadowColor = color;
-      ctx.shadowBlur = 7;
-      ctx.lineWidth = 1.7;
-      ctx.globalAlpha = 0.9;
+      ctx.shadowBlur = u.boss ? 10 : 7;
+      ctx.lineWidth = u.boss ? 1.9 : 1.7;
+      ctx.globalAlpha = 0.92;
       const r = u.r;
-      // saucer hull
-      ctx.beginPath();
-      ctx.ellipse(0, 0, r, r * 0.4, 0, 0, Math.PI * 2);
-      ctx.stroke();
-      // dome
-      ctx.beginPath();
-      ctx.ellipse(0, -r * 0.25, r * 0.45, r * 0.35, 0, Math.PI, 0, true);
-      ctx.stroke();
+
       if (u.boss) {
-        ctx.beginPath(); ctx.arc(0,0,r*.72,0,Math.PI*2); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(-r*.8,0); ctx.lineTo(r*.8,0); ctx.moveTo(0,-r*.55); ctx.lineTo(0,r*.55); ctx.stroke();
-      } else if (u.variant==='gunner') {
-        ctx.beginPath(); ctx.moveTo(-r*.72,-r*.05); ctx.lineTo(-r*1.05,-r*.05); ctx.moveTo(r*.72,-r*.05); ctx.lineTo(r*1.05,-r*.05); ctx.stroke();
-      } else if (u.variant==='hunter') {
-        ctx.beginPath(); ctx.moveTo(-r*.8,r*.25); ctx.lineTo(0,r*.5); ctx.lineTo(r*.8,r*.25); ctx.stroke();
-      } else if (u.variant==='carrier') {
-        ctx.beginPath(); ctx.rect(-r*.22,-r*.1,r*.44,r*.35); ctx.stroke();
+        if (u.bossType==='DREADNOUGHT') drawDreadnoughtVector(u,color);
+        else if (u.bossType==='CARRIER PRIME') drawCarrierPrimeVector(u,color);
+        else drawHunterAceVector(u,color);
+
+        // Subtle boss hitbox/energy halo: visually separates the boss from normal UFOs
+        // without hiding the actual collision footprint.
+        ctx.globalAlpha=.16;
+        ctx.setLineDash([4,7]);
+        ctx.beginPath();
+        ctx.arc(0,0,r*.92,0,Math.PI*2);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      } else {
+        // Existing UFO family keeps the classic saucer vocabulary.
+        ctx.beginPath();
+        ctx.ellipse(0, 0, r, r * 0.4, 0, 0, Math.PI * 2);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.ellipse(0, -r * 0.25, r * 0.45, r * 0.35, 0, Math.PI, 0, true);
+        ctx.stroke();
+
+        if (u.variant==='gunner') {
+          ctx.beginPath();
+          ctx.moveTo(-r*.72,-r*.05); ctx.lineTo(-r*1.05,-r*.05);
+          ctx.moveTo(r*.72,-r*.05); ctx.lineTo(r*1.05,-r*.05);
+          ctx.stroke();
+        } else if (u.variant==='hunter') {
+          ctx.beginPath();
+          ctx.moveTo(-r*.8,r*.25); ctx.lineTo(0,r*.5); ctx.lineTo(r*.8,r*.25);
+          ctx.stroke();
+        } else if (u.variant==='carrier') {
+          ctx.beginPath();
+          ctx.rect(-r*.22,-r*.1,r*.44,r*.35);
+          ctx.stroke();
+        }
+
+        ctx.beginPath();
+        ctx.moveTo(-r * 0.5, r * 0.05); ctx.lineTo(-r * 0.5, r * 0.25);
+        ctx.moveTo(0, r * 0.15); ctx.lineTo(0, r * 0.35);
+        ctx.moveTo(r * 0.5, r * 0.05); ctx.lineTo(r * 0.5, r * 0.25);
+        ctx.stroke();
       }
-      // under-lights
-      ctx.beginPath();
-      ctx.moveTo(-r * 0.5, r * 0.05); ctx.lineTo(-r * 0.5, r * 0.25);
-      ctx.moveTo(0, r * 0.15); ctx.lineTo(0, r * 0.35);
-      ctx.moveTo(r * 0.5, r * 0.05); ctx.lineTo(r * 0.5, r * 0.25);
-      ctx.stroke();
+
       ctx.globalAlpha = 1;
       ctx.restore();
     }
@@ -4646,30 +6911,447 @@
     ctx.globalAlpha = 1;
   }
 
+  function drawGameplayStars() {
+    const t = Date.now() / 1000;
+    for (let i = 0; i < starField.length; i++) {
+      const s = starField[i];
+      const p = s.profile || {
+        glow: 'rgba(170,225,255,0.12)',
+        core: 'rgba(255,255,255,0.92)',
+        sparkle: 'rgba(255,255,255,0.95)'
+      };
+
+      const twinkle = Math.sin(t * s.twinkleSpeed + s.phase) * 0.22;
+      const alpha = Math.max(0.18, Math.min(1, s.a + twinkle + 0.12));
+      const twinklePeak = (Math.sin(t * (s.twinkleSpeed * 1.1) + s.phase) + 1) * 0.5;
+
+      // Soft colored glow hints at different stellar temperatures.
+      if (s.size >= 0.95) {
+        ctx.fillStyle = p.glow;
+        ctx.globalAlpha = alpha * (s.size >= 1.4 ? 0.72 : 0.50);
+        const glowSize = s.size + (s.size >= 1.4 ? 2.2 : 1.5);
+        ctx.fillRect(s.x - glowSize * 0.35, s.y - glowSize * 0.35, glowSize, glowSize);
+      }
+
+      // White twinkle core stays the dominant read.
+      ctx.fillStyle = p.core;
+      ctx.globalAlpha = alpha;
+      ctx.fillRect(s.x, s.y, s.size + 0.14, s.size + 0.14);
+
+      // Brightest stars get a tiny white sparkle pulse near the top of the twinkle cycle.
+      if (s.size >= 1.28 && twinklePeak > s.sparkleBias) {
+        const sparkleAlpha = ((twinklePeak - s.sparkleBias) / Math.max(0.02, 1 - s.sparkleBias)) * 0.75;
+        const len = s.size >= 1.6 ? 2.6 : 2.0;
+        ctx.strokeStyle = p.sparkle;
+        ctx.lineWidth = 1;
+        ctx.globalAlpha = Math.min(1, sparkleAlpha);
+        ctx.beginPath();
+        ctx.moveTo(s.x - len, s.y + s.size * 0.5);
+        ctx.lineTo(s.x + s.size + len, s.y + s.size * 0.5);
+        ctx.moveTo(s.x + s.size * 0.5, s.y - len);
+        ctx.lineTo(s.x + s.size * 0.5, s.y + s.size + len);
+        ctx.stroke();
+      }
+    }
+    ctx.globalAlpha = 1;
+  }
+
+  // ---------- Gameplay-only nebula backdrop ----------
+  // This affects only the in-game battlefield, not the main menu.
+  // Clouds drift gently with the same general parallax logic as the stars,
+  // but slower, so they feel like huge distant gas formations.
+  let gameplayNebulae = [];
+
+  function initGameplayNebulae() {
+    const minDim = Math.min(W, H);
+    gameplayNebulae = [
+      {
+        x: W * 0.22, y: H * 0.26,
+        rx: Math.max(110, minDim * 0.18), ry: Math.max(60, minDim * 0.10),
+        colorA: 'rgba(92,232,255,0.062)',
+        colorB: 'rgba(142,116,255,0.029)',
+        parallax: 0.10, wobble: 0.00018, phase: 0.7
+      },
+      {
+        x: W * 0.72, y: H * 0.22,
+        rx: Math.max(130, minDim * 0.22), ry: Math.max(72, minDim * 0.12),
+        colorA: 'rgba(255,98,188,0.062)',
+        colorB: 'rgba(96,224,255,0.024)',
+        parallax: 0.12, wobble: 0.00015, phase: 2.1
+      },
+      {
+        x: W * 0.58, y: H * 0.68,
+        rx: Math.max(150, minDim * 0.24), ry: Math.max(86, minDim * 0.14),
+        colorA: 'rgba(110,228,255,0.034)',
+        colorB: 'rgba(255,96,188,0.034)',
+        parallax: 0.08, wobble: 0.00012, phase: 4.4
+      }
+    ];
+  }
+
+  function updateGameplayNebulaParallax() {
+    for (const n of gameplayNebulae) {
+      n.x -= ship.vx * n.parallax;
+      n.y -= ship.vy * n.parallax;
+
+      // soft drift so the clouds feel alive rather than completely static
+      const t = Date.now();
+      n.x += Math.cos(t * n.wobble + n.phase) * 0.02;
+      n.y += Math.sin(t * n.wobble * 0.86 + n.phase) * 0.02;
+
+      const marginX = n.rx * 1.75;
+      const marginY = n.ry * 1.75;
+      if (n.x < -marginX) n.x = W + marginX;
+      else if (n.x > W + marginX) n.x = -marginX;
+      if (n.y < -marginY) n.y = H + marginY;
+      else if (n.y > H + marginY) n.y = -marginY;
+    }
+  }
+
+  function drawSoftNebulaBlob(cx, cy, rx, ry, innerColor, midColor) {
+    // Draw as a scaled circle with extra feather radius so it fades past the visible body,
+    // instead of clipping a gradient inside an ellipse boundary.
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.scale(1, ry / rx);
+
+    const feather = rx * 1.55;
+    const g = ctx.createRadialGradient(0, 0, 0, 0, 0, feather);
+    g.addColorStop(0.00, innerColor);
+    g.addColorStop(0.22, midColor);
+    g.addColorStop(0.56, 'rgba(0,0,0,0.018)');
+    g.addColorStop(1.00, 'rgba(0,0,0,0)');
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(0, 0, feather, 0, Math.PI * 2);
+    ctx.fill();
+
+    ctx.restore();
+  }
+
+  function drawGameplayNebulae() {
+    ctx.save();
+    ctx.globalCompositeOperation = 'screen';
+
+    for (const n of gameplayNebulae) {
+      // Build the cloud from several offset puffs so the edges dissolve organically.
+      drawSoftNebulaBlob(
+        n.x, n.y, n.rx, n.ry,
+        n.colorA,
+        n.colorB
+      );
+
+      drawSoftNebulaBlob(
+        n.x - n.rx * 0.24, n.y + n.ry * 0.05,
+        n.rx * 0.86, n.ry * 0.82,
+        n.colorB,
+        'rgba(0,0,0,0)'
+      );
+
+      drawSoftNebulaBlob(
+        n.x + n.rx * 0.20, n.y - n.ry * 0.10,
+        n.rx * 0.68, n.ry * 0.60,
+        n.colorA.replace(/0\.0?(\d+)/, '0.032'),
+        'rgba(0,0,0,0)'
+      );
+
+      drawSoftNebulaBlob(
+        n.x + n.rx * 0.05, n.y + n.ry * 0.16,
+        n.rx * 0.54, n.ry * 0.48,
+        'rgba(255,255,255,0.016)',
+        'rgba(0,0,0,0)'
+      );
+    }
+
+    ctx.restore();
+  }
+
+  // ---------- Gameplay-only shooting stars ----------
+  // Pure atmosphere. The comet artwork is cached into tiny canvases once so each frame
+  // only has to translate/rotate/drawImage — much cheaper than rebuilding gradients + shadows.
+  // Depth layers add more immersion: far streaks are faint/smaller, near streaks are brighter/faster.
+  let gameplayComets = [];
+  let gameplayCometTimer = 180;
+  const gameplayCometSprites = {};
+
+  const COMET_DEPTHS = [
+    {
+      id: 'far',
+      weight: 0.46,
+      speedMul: 0.84,
+      parallax: [0.04, 0.08],
+      lengthMul: 0.82,
+      widthMul: 0.82,
+      alphaMul: 0.60,
+      soundMul: 0.75
+    },
+    {
+      id: 'mid',
+      weight: 0.36,
+      speedMul: 1.00,
+      parallax: [0.10, 0.16],
+      lengthMul: 1.00,
+      widthMul: 1.00,
+      alphaMul: 0.86,
+      soundMul: 1.00
+    },
+    {
+      id: 'near',
+      weight: 0.18,
+      speedMul: 1.22,
+      parallax: [0.18, 0.28],
+      lengthMul: 1.18,
+      widthMul: 1.18,
+      alphaMul: 1.00,
+      soundMul: 1.12
+    }
+  ];
+
+  function pickGameplayCometDepth() {
+    const roll = Math.random();
+    let sum = 0;
+    for (const d of COMET_DEPTHS) {
+      sum += d.weight;
+      if (roll <= sum) return d;
+    }
+    return COMET_DEPTHS[1];
+  }
+
+  function makeGameplayCometSprite(tint) {
+    const canvas = document.createElement('canvas');
+    canvas.width = 160;
+    canvas.height = 28;
+    const cctx = canvas.getContext('2d');
+    const cy = canvas.height / 2;
+
+    const isPink = tint === 'pink';
+    const head = isPink ? 'rgba(255,230,246,0.96)' : 'rgba(230,250,255,0.98)';
+    const glow = isPink ? 'rgba(255,104,190,0.34)' : 'rgba(104,230,255,0.36)';
+    const tail = isPink ? 'rgba(255,104,190,0.00)' : 'rgba(104,230,255,0.00)';
+
+    // Wide, very soft tail.
+    const outer = cctx.createLinearGradient(154, cy, 10, cy);
+    outer.addColorStop(0, glow);
+    outer.addColorStop(0.18, isPink ? 'rgba(255,104,190,0.16)' : 'rgba(104,230,255,0.17)');
+    outer.addColorStop(1, tail);
+    cctx.strokeStyle = outer;
+    cctx.lineWidth = 7;
+    cctx.globalAlpha = 0.34;
+    cctx.lineCap = 'round';
+    cctx.beginPath();
+    cctx.moveTo(154, cy);
+    cctx.lineTo(10, cy);
+    cctx.stroke();
+
+    // Crisp inner streak.
+    const inner = cctx.createLinearGradient(154, cy, 16, cy);
+    inner.addColorStop(0, head);
+    inner.addColorStop(0.12, glow);
+    inner.addColorStop(1, tail);
+    cctx.globalAlpha = 0.95;
+    cctx.strokeStyle = inner;
+    cctx.lineWidth = 1.55;
+    cctx.beginPath();
+    cctx.moveTo(154, cy);
+    cctx.lineTo(16, cy);
+    cctx.stroke();
+
+    // Small luminous head without runtime shadowBlur.
+    const hg = cctx.createRadialGradient(151, cy, 0, 151, cy, 8);
+    hg.addColorStop(0, head);
+    hg.addColorStop(0.35, glow);
+    hg.addColorStop(1, 'rgba(0,0,0,0)');
+    cctx.globalAlpha = 1;
+    cctx.fillStyle = hg;
+    cctx.beginPath();
+    cctx.arc(151, cy, 8, 0, Math.PI * 2);
+    cctx.fill();
+
+    return canvas;
+  }
+
+  function initGameplayCometSprites() {
+    if (!gameplayCometSprites.cyan) gameplayCometSprites.cyan = makeGameplayCometSprite('cyan');
+    if (!gameplayCometSprites.pink) gameplayCometSprites.pink = makeGameplayCometSprite('pink');
+  }
+
+  function resetGameplayCometTimer() {
+    // Roughly every 3–7 seconds at 60fps, still capped to two visible streaks.
+    gameplayCometTimer = Math.floor(rand(190, 430));
+  }
+
+  function spawnGameplayComet() {
+    if (gameplayComets.length >= 3) return;
+
+    initGameplayCometSprites();
+
+    const depth = pickGameplayCometDepth();
+    const fromLeft = Math.random() < 0.5;
+    const x = fromLeft ? rand(-80, W * 0.25) : rand(W * 0.68, W + 80);
+    const y = rand(-40, H * 0.50);
+    const dirX = fromLeft ? rand(1.3, 2.0) : rand(-2.0, -1.3);
+    const dirY = rand(0.65, 1.12);
+    const speed = rand(1.15, 1.75) * depth.speedMul;
+    const mag = Math.hypot(dirX, dirY) || 1;
+    const tint = Math.random() < 0.22 ? 'pink' : 'cyan';
+    const life = Math.floor(rand(86, 132) / depth.speedMul);
+
+    gameplayComets.push({
+      x, y,
+      vx: (dirX / mag) * speed,
+      vy: (dirY / mag) * speed,
+      life,
+      maxLife: life,
+      length: rand(58, 98) * depth.lengthMul,
+      width: rand(0.88, 1.18) * depth.widthMul,
+      parallax: rand(depth.parallax[0], depth.parallax[1]),
+      tint,
+      depth,
+      depthOrder: depth.id === 'far' ? 0 : depth.id === 'mid' ? 1 : 2
+    });
+
+    // The accent shares the music engine and current chord.
+    MUSIC.cometAccent(tint, (x / Math.max(1, W)) * 2 - 1, depth.soundMul);
+  }
+
+  function updateGameplayComets() {
+    gameplayCometTimer--;
+    if (gameplayCometTimer <= 0) {
+      spawnGameplayComet();
+      resetGameplayCometTimer();
+    }
+
+    for (let i = gameplayComets.length - 1; i >= 0; i--) {
+      const c = gameplayComets[i];
+      c.x += c.vx - ship.vx * c.parallax;
+      c.y += c.vy - ship.vy * c.parallax;
+      c.life--;
+
+      if (c.life <= 0 || c.x < -180 || c.x > W + 180 || c.y > H + 180) {
+        gameplayComets.splice(i, 1);
+      }
+    }
+  }
+
+  function drawGameplayComets() {
+    initGameplayCometSprites();
+
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+
+    // Draw far -> near so the brighter close streaks sit on top.
+    const sorted = gameplayComets.slice().sort((a, b) => a.depthOrder - b.depthOrder);
+
+    for (const c of sorted) {
+      const sprite = gameplayCometSprites[c.tint] || gameplayCometSprites.cyan;
+      const angle = Math.atan2(c.vy, c.vx);
+      const age = c.maxLife - c.life;
+      const fadeIn = Math.min(1, age / 12);
+      const fadeOut = Math.min(1, c.life / 22);
+      const alpha = Math.min(fadeIn, fadeOut) * (c.depth?.alphaMul ?? 0.86);
+
+      ctx.save();
+      ctx.translate(c.x, c.y);
+      ctx.rotate(angle);
+
+      // Sprite points right with its head near x=154. Anchor the head at the comet position.
+      const spriteScaleX = c.length / 138;
+      const spriteScaleY = c.width;
+      ctx.globalAlpha = alpha * 0.92;
+      ctx.scale(spriteScaleX, spriteScaleY);
+      ctx.drawImage(sprite, -154, -sprite.height / 2);
+
+      ctx.restore();
+    }
+
+    ctx.globalAlpha = 1;
+    ctx.restore();
+  }
+
   let starField = [];
+
+  function pickStarProfile(size) {
+    const roll = Math.random();
+
+    // Most stars stay neutral. A smaller subset carries subtle stellar color hints.
+    if (roll < 0.70) {
+      return {
+        tint: 'white',
+        glow: 'rgba(205,235,255,0.12)',
+        core: 'rgba(255,255,255,0.96)',
+        sparkle: 'rgba(255,255,255,0.90)'
+      };
+    }
+    if (roll < 0.82) {
+      return {
+        tint: 'cyan',
+        glow: 'rgba(108,232,255,0.16)',
+        core: 'rgba(248,253,255,0.96)',
+        sparkle: 'rgba(255,255,255,0.95)'
+      };
+    }
+    if (roll < 0.91) {
+      return {
+        tint: 'gold',
+        glow: 'rgba(255,214,124,0.15)',
+        core: 'rgba(255,250,238,0.96)',
+        sparkle: 'rgba(255,255,255,0.95)'
+      };
+    }
+    if (roll < 0.97) {
+      return {
+        tint: 'rose',
+        glow: 'rgba(255,146,205,0.14)',
+        core: 'rgba(255,246,252,0.96)',
+        sparkle: 'rgba(255,255,255,0.95)'
+      };
+    }
+    return {
+      tint: 'blue',
+      glow: 'rgba(138,166,255,0.16)',
+      core: 'rgba(244,248,255,0.96)',
+      sparkle: 'rgba(255,255,255,0.95)'
+    };
+  }
+
   function initStars() {
     starField = [];
-    for (let i = 0; i < 120; i++) {
-      const size = rand(0.5, 1.8);
+    const starCount = Math.floor(Math.max(120, Math.min(190, (W * H) / 9000)));
+    for (let i = 0; i < starCount; i++) {
+      const size = rand(0.5, 1.95);
+      const profile = pickStarProfile(size);
       starField.push({
         x: rand(0, W), y: rand(0, H),
         size,
-        a: rand(0.2, 0.9),
+        a: rand(0.24, 0.92),
         phase: rand(0, Math.PI * 2),
-        twinkleSpeed: rand(0.3, 0.8), // slow — a full cycle takes several seconds
-        parallax: (size / 1.8) * 0.5 // bigger/brighter stars sit "closer" and drift more — cheap depth illusion
+        twinkleSpeed: rand(0.34, 0.92),
+        parallax: (size / 1.95) * 0.72,
+        driftX: rand(-0.02, 0.02) * (size / 1.95),
+        driftY: rand(-0.018, 0.018) * (size / 1.95),
+        profile,
+        sparkleBias: rand(0.72, 0.98)
       });
     }
   }
   initStars();
+  initGameplayNebulae();
+  initGameplayCometSprites();
   window.addEventListener('resize', initStars);
+  window.addEventListener('resize', initGameplayNebulae);
 
   // Streams the starfield past the ship based on its velocity — the classic "flying through
   // space" cue. Stars nearer to the ship (larger, per their parallax factor) drift faster.
   function updateStarParallax() {
+    const t = Date.now() * 0.001;
     for (const s of starField) {
       s.x -= ship.vx * s.parallax;
       s.y -= ship.vy * s.parallax;
+
+      // Tiny self-drift makes the field feel a little more alive without becoming busy.
+      s.x += s.driftX + Math.cos(t * 0.22 + s.phase) * 0.008 * s.parallax;
+      s.y += s.driftY + Math.sin(t * 0.18 + s.phase) * 0.008 * s.parallax;
+
       if (s.x < 0) s.x += W;
       else if (s.x > W) s.x -= W;
       if (s.y < 0) s.y += H;
@@ -4742,9 +7424,11 @@
       ctx.scale(scale, scale);
       ctx.translate(-W / 2, -H / 2);
     }
+    drawGameplayNebulae();
     drawVignette();
     drawPlayBoundary();
-    drawStars();
+    drawGameplayComets();
+    drawGameplayStars();
     drawParticles();
     drawPowerups();
     drawBullets();
@@ -4840,8 +7524,8 @@
     if (!shipPreviewCanvasEl) return;
     const pctx = shipPreviewCanvasEl.getContext('2d');
     const w = shipPreviewCanvasEl.width, h = shipPreviewCanvasEl.height;
-    const skin = SHIP_SKINS[selectedSkinIndex];
-    const unlocked = isUnlocked(selectedSkinIndex);
+    const skin = currentHullSkin();
+    const unlocked = customHullActive || isUnlocked(selectedSkinIndex);
     const color = unlocked ? shipDisplayColor(skin) : LOCKED_COLOR;
     const r = Math.min(w, h) * 0.32;
     pctx.clearRect(0, 0, w, h);
@@ -4852,13 +7536,20 @@
     pctx.shadowColor = color;
     pctx.shadowBlur = unlocked ? 8 : 4;
     pctx.lineWidth = 2.5;
-    pctx.beginPath();
-    skin.points.forEach(([mx, my], i) => {
-      const x = mx * r, y = my * r;
-      if (i === 0) pctx.moveTo(x, y); else pctx.lineTo(x, y);
-    });
-    pctx.closePath();
-    pctx.stroke();
+    if(skin.custom){
+      traceCustomHullPath(pctx,skin,r);
+      pctx.stroke();
+      drawCustomDetails(pctx,skin,r);
+    } else {
+      pctx.beginPath();
+      skin.points.forEach(([mx, my], i) => {
+        const x = mx * r, y = my * r;
+        if (i === 0) pctx.moveTo(x, y); else pctx.lineTo(x, y);
+      });
+      pctx.closePath();
+      pctx.stroke();
+      drawLegacyHullAccent(pctx,skin,r);
+    }
     pctx.restore();
     if (!unlocked) {
       pctx.save();
@@ -4893,8 +7584,8 @@
   }
 
   function refreshShipPreviewUI() {
-    const skin = SHIP_SKINS[selectedSkinIndex];
-    const unlocked = isUnlocked(selectedSkinIndex);
+    const skin = currentHullSkin();
+    const unlocked = customHullActive || isUnlocked(selectedSkinIndex);
     if (shipNameLabelEl) shipNameLabelEl.textContent = unlocked ? skin.name : 'LOCKED';
     if (shipDescLabelEl) {
       shipDescLabelEl.textContent = unlocked ? skin.desc : lockedShipDescription(skin);
@@ -4902,8 +7593,15 @@
     const statsEl2 = overlay.querySelector('#shipStatsLabel');
     if (statsEl2) {
       statsEl2.textContent = unlocked
-        ? `SPEED ${statBar(skin.maxSpeedMult || 1, 1.14)}\nTURN  ${statBar(skin.turnMult, 1.2)}\nSIZE  ${statBar(skin.hitFactor, 1.3, true)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`
+        ? (skin.custom
+          ? `SPEED ${statBar(skin.maxSpeedMult||1,1.28)}\nTURN  ${statBar(skin.turnMult||1,1.30)}\nSIZE  ${statBar(skin.hitFactor||1,1.25,true)}\nSTAB  ${statBar(1/(skin.recoilMult||1),3.0)}${skin.underpowered?'\nPOWER ENGINE UNDERFED':'\nPOWER NOMINAL'}`
+          : `SPEED ${statBar(skin.maxSpeedMult || 1, 1.14)}\nTURN  ${statBar(skin.turnMult, 1.2)}\nSIZE  ${statBar(skin.hitFactor, 1.3, true)}\nARMOR ${skin.startShield ? '▰▰▰▱▱' : '▰▱▱▱▱'}`)
         : 'SPEED ?????\nTURN  ?????\nSIZE  ?????\nARMOR ?????';
+    }
+    const customBtn=overlay.querySelector('#customHullBtn');
+    if(customBtn){
+      customBtn.classList.toggle('active',customHullActive);
+      customBtn.textContent=customHullActive?'EDIT CUSTOM HULL':'BUILD CUSTOM HULL';
     }
     const startBtn = overlay.querySelector('#startBtn');
     if (startBtn) {
@@ -4914,7 +7612,16 @@
   }
 
   function cycleShip(delta) {
-    selectedSkinIndex = (selectedSkinIndex + delta + SHIP_SKINS.length) % SHIP_SKINS.length;
+    // Cycle only across hulls you can actually fly: the custom build plus any
+    // legacy blueprint already earned. Never lands on a locked ship.
+    const options=[{custom:true}];
+    for(let i=0;i<4;i++) if(isUnlocked(i)) options.push({custom:false,idx:i});
+    if(options.length<2){ customHullActive=true; refreshShipPreviewUI(); SFX.uiTick(); return; }
+    let cur=customHullActive?0:options.findIndex(o=>!o.custom&&o.idx===selectedSkinIndex);
+    if(cur<0) cur=0;
+    const next=options[(cur+delta+options.length)%options.length];
+    customHullActive=!!next.custom;
+    if(!next.custom) selectedSkinIndex=next.idx;
     refreshShipPreviewUI();
     SFX.uiTick();
   }
@@ -4969,6 +7676,7 @@
 
 
   function showGameOver() {
+    closeTestLabUI();
     // Deliberately NOT setting running=false or deathZoomActive=false here — the explosion
     // and debris keep animating in slow motion behind the game-over card instead of the
     // screen hard-cutting to the idle menu background the instant this card appears.
@@ -5010,23 +7718,28 @@
   }
 
   function startGame() {
-    if (!isUnlocked(selectedSkinIndex)) return; // belt-and-suspenders; button is also disabled
+    // A run can only begin from the real main menu. This blocks stale/ghost menu clicks
+    // from reinitializing gameplay or requesting fullscreen in the middle of a live run.
+    if (!mainMenuIsActuallyInteractive()) return;
+    closeTestLabUI();
+    if (!customHullActive && !isUnlocked(selectedSkinIndex)) return; // custom hulls are always valid
     testMode = false;
     SFX.init(); // must fire inside a user-gesture handler for browser autoplay rules
     tryLockLandscape(); // best-effort; silently no-ops where unsupported (e.g. iOS Safari)
-    setInMenu(false);
     overlay.classList.add('hidden');
+    setInMenu(false);
     setWeaponBuild(selectedWeaponIndex, false);
     initGame();
     running = true;
   }
 
   function startTestGround() {
+    if (running || !document.body.classList.contains('in-menu')) return;
     testMode = true;
     SFX.init();
     tryLockLandscape();
-    setInMenu(false);
     overlay.classList.add('hidden');
+    setInMenu(false);
     initGame();
     configureTestGround();
     running = true;
@@ -5038,8 +7751,8 @@
   function playAgainWithRebirth() {
     SFX.init();
     tryLockLandscape();
-    setInMenu(false);
     overlay.classList.add('hidden');
+    setInMenu(false);
 
     particles = [];
     shipDebris = [];
@@ -5062,7 +7775,7 @@
     deathZoomActive = false;
 
     // Scatter the hull pieces around the spawn point, then animate them converging back in
-    const skin = SHIP_SKINS[selectedSkinIndex];
+    const skin = currentHullSkin();
     const r = 14 * skin.hitFactor;
     const targetX = W / 2, targetY = H / 2, targetAngle = -Math.PI / 2;
     const pts = skin.points;
@@ -5139,6 +7852,394 @@
   }
   document.querySelectorAll('.musicVolumeSlider').forEach(bindMusicVolumeSlider);
 
+
+  // ---------- Test Lab loadout configurator ----------
+  let testConfigOpenedFromGround = false;
+  const testLoadoutOverlay=document.getElementById('testLoadoutOverlay');
+  const testUpgradeConfigList=document.getElementById('testUpgradeConfigList');
+  const testEvolutionConfigList=document.getElementById('testEvolutionConfigList');
+  const testConfigWeaponName=document.getElementById('testConfigWeaponName');
+
+  function renderTestBuildConfigurator() {
+    const w=WEAPON_BUILDS[selectedWeaponIndex];
+    const preset=testPresetForWeapon(w.id);
+    if(testConfigWeaponName){ testConfigWeaponName.textContent=w.name; testConfigWeaponName.style.color=w.color; }
+
+    const row=(u,isEvolution=false)=>{
+      const rank=preset[u.id]||0;
+      return `<div class="testConfigItem${isEvolution?' evolution':''}">
+        <div>
+          <span class="testConfigName" style="color:${isEvolution?'#ff9bd0':w.color}">${u.name}</span>
+          <span class="testConfigDesc">${u.desc}</span>
+        </div>
+        <div class="testRankControl">
+          <button class="testRankBtn" type="button" data-rank-id="${u.id}" data-delta="-1">−</button>
+          <span class="testRankValue">${rank}/${u.maxRank||1}</span>
+          <button class="testRankBtn" type="button" data-rank-id="${u.id}" data-delta="1">+</button>
+        </div>
+      </div>`;
+    };
+
+    if(testUpgradeConfigList) testUpgradeConfigList.innerHTML=(BUILD_UPGRADES[w.id]||[]).map(u=>row(u,false)).join('');
+    if(testEvolutionConfigList) testEvolutionConfigList.innerHTML=(BUILD_EVOLUTIONS[w.id]||[]).map(u=>row(u,true)).join('');
+
+    testLoadoutOverlay.querySelectorAll('[data-rank-id]').forEach(btn=>{
+      btn.addEventListener('click',()=>{
+        const id=btn.dataset.rankId, delta=parseInt(btn.dataset.delta,10)||0;
+        setTestPresetRank(id,testPresetRank(id,w.id)+delta,w.id);
+        SFX.uiTick(); renderTestBuildConfigurator();
+      });
+    });
+  }
+
+  function openTestBuildConfigurator(fromGround=false) {
+    SFX.init();
+    testConfigOpenedFromGround = !!(fromGround && testMode && running);
+    if (testConfigOpenedFromGround) {
+      setPaused(true);
+      if (testSpawnerPanel) testSpawnerPanel.classList.add('hidden');
+    }
+    renderTestBuildConfigurator();
+    const enterBtn=document.getElementById('testEnterBtn');
+    const backBtn=document.getElementById('testConfigBackBtn');
+    if (enterBtn) enterBtn.textContent=testConfigOpenedFromGround?'APPLY & RETURN':'ENTER TEST GROUND';
+    if (backBtn) backBtn.textContent=testConfigOpenedFromGround?'CANCEL':'BACK';
+    testLoadoutOverlay.classList.remove('hidden');
+  }
+  function closeTestBuildConfigurator(applyLive=false) {
+    testLoadoutOverlay.classList.add('hidden');
+    if (testConfigOpenedFromGround) {
+      if (applyLive) {
+        applyTestBuildPreset();
+        spawnFloatingText(ship.x,ship.y-42,`${currentWeapon.name} // BUILD APPLIED`,currentWeapon.color);
+      }
+      if (testSpawnerPanel) testSpawnerPanel.classList.remove('hidden');
+      setPaused(false);
+      updateHUD();
+      testConfigOpenedFromGround=false;
+      return;
+    }
+    // Keep the main-menu weapon card synced if the player changed weapons inside Test Lab config.
+    const w=WEAPON_BUILDS[selectedWeaponIndex];
+    const n=overlay.querySelector('#weaponNameLabel'), d=overlay.querySelector('#weaponDescLabel'), st=overlay.querySelector('#weaponStatsLabel');
+    if(n){n.textContent=w.name;n.style.color=w.color;} if(d)d.textContent=w.desc; if(st)st.textContent=w.stats;
+  }
+
+  document.getElementById('testConfigBackBtn')?.addEventListener('click',()=>{SFX.uiTick();closeTestBuildConfigurator(false);});
+  document.getElementById('testWeaponPrevBtn')?.addEventListener('click',()=>{
+    selectedWeaponIndex=(selectedWeaponIndex-1+WEAPON_BUILDS.length)%WEAPON_BUILDS.length;
+    SFX.uiTick(); renderTestBuildConfigurator();
+  });
+  document.getElementById('testWeaponNextBtn')?.addEventListener('click',()=>{
+    selectedWeaponIndex=(selectedWeaponIndex+1)%WEAPON_BUILDS.length;
+    SFX.uiTick(); renderTestBuildConfigurator();
+  });
+  document.getElementById('testClearBuildBtn')?.addEventListener('click',()=>{
+    testBuildPresets[WEAPON_BUILDS[selectedWeaponIndex].id]={};
+    SFX.uiTick(); renderTestBuildConfigurator();
+  });
+  document.getElementById('testMaxBuildBtn')?.addEventListener('click',()=>{
+    const w=WEAPON_BUILDS[selectedWeaponIndex], p={};
+    [...(BUILD_UPGRADES[w.id]||[]),...(BUILD_EVOLUTIONS[w.id]||[])].forEach(u=>p[u.id]=u.maxRank||1);
+    testBuildPresets[w.id]=p;
+    SFX.uiTick(); renderTestBuildConfigurator();
+  });
+  document.getElementById('testEnterBtn')?.addEventListener('click',()=>{
+    SFX.uiTick();
+    if (testConfigOpenedFromGround) closeTestBuildConfigurator(true);
+    else { closeTestBuildConfigurator(false); startTestGround(); }
+  });
+
+  const testSpawnerPanel=document.getElementById('testSpawnerPanel');
+  document.getElementById('testEditBuildBtn')?.addEventListener('click',()=>{
+    if (!testMode || !running) return;
+    SFX.uiTick(); openTestBuildConfigurator(true);
+  });
+  document.getElementById('testSpawnerCollapse')?.addEventListener('click',()=>{
+    testSpawnerPanel.classList.toggle('collapsed');
+    document.getElementById('testSpawnerCollapse').textContent=testSpawnerPanel.classList.contains('collapsed')?'+':'−';
+    SFX.uiTick();
+  });
+  testSpawnerPanel?.querySelectorAll('[data-spawn]').forEach(btn=>{
+    btn.addEventListener('click',()=>handleTestSpawnAction(btn.dataset.spawn));
+  });
+
+
+  // ---------- SAVED CUSTOM HULL PRESETS ----------
+  const HULL_PRESET_KEY='asteroidsHullPresetsV1';
+  const MAX_HULL_PRESETS=6;
+
+  function normalizeHullConfig(cfg={}){
+    return {
+      nose:Number.isFinite(+cfg.nose)?+cfg.nose:1,
+      frame:Number.isFinite(+cfg.frame)?+cfg.frame:1,
+      wings:Number.isFinite(+cfg.wings)?+cfg.wings:2,
+      engine:Number.isFinite(+cfg.engine)?+cfg.engine:1,
+      reactor:Number.isFinite(+cfg.reactor)?+cfg.reactor:1,
+      hue:Number.isFinite(+cfg.hue)?+cfg.hue:(Number.isFinite(+cfg.primaryHue)?+cfg.primaryHue:188)
+    };
+  }
+
+  function loadHullPresets(){
+    try{
+      const raw=localStorage.getItem(HULL_PRESET_KEY);
+      const parsed=raw?JSON.parse(raw):[];
+      if(!Array.isArray(parsed)) return [];
+      return parsed.slice(0,MAX_HULL_PRESETS).map((p,i)=>({
+        name:String(p?.name||`HULL ${i+1}`).slice(0,18),
+        config:normalizeHullConfig(p?.config||{})
+      }));
+    }catch(e){ return []; }
+  }
+
+  function persistHullPresets(){
+    try{
+      localStorage.setItem(HULL_PRESET_KEY,JSON.stringify(savedHullPresets));
+      return true;
+    }catch(e){
+      console.warn('Hull preset persistence unavailable:',e);
+      return false;
+    }
+  }
+
+  let savedHullPresets=loadHullPresets();
+
+  // ---------- HULL WORKSHOP UI ----------
+  const hullWorkshopOverlay=document.getElementById('hullWorkshopOverlay');
+  const hwCanvas=document.getElementById('hwCanvas');
+  let hwDraft={...customHullConfig};
+  let hwAngle=-Math.PI/2;
+
+  function hwSkin(){ return buildCustomHull(hwDraft); }
+
+  function drawHullWorkshop(){
+    if(!hwCanvas || hullWorkshopOverlay.classList.contains('hidden')) return;
+    const c=hwCanvas, p=c.getContext('2d'), w=c.width,h=c.height;
+    const skin=hwSkin(), r=Math.min(w,h)*.29;
+    hwAngle+=.009;
+    p.clearRect(0,0,w,h);
+    p.save();
+    try{
+      p.translate(w/2,h/2);
+      p.rotate(hwAngle);
+      p.lineJoin='round'; p.lineCap='round';
+      p.strokeStyle=skin.color; p.shadowColor=skin.color; p.shadowBlur=12; p.lineWidth=2.4;
+      traceCustomHullPath(p,skin,r); p.stroke();
+      drawCustomDetails(p,skin,r);
+    } finally { p.restore(); }
+  }
+
+  function refreshHullWorkshop(){
+    const nose=customPart(CUSTOM_NOSES,hwDraft.nose);
+    const frame=customPart(CUSTOM_FRAMES,hwDraft.frame);
+    const wings=customPart(CUSTOM_WINGS,hwDraft.wings);
+    const engine=customPart(CUSTOM_ENGINES,hwDraft.engine);
+    const reactor=customPart(CUSTOM_REACTORS,hwDraft.reactor);
+    const skin=hwSkin();
+    const set=(id,v)=>{const e=document.getElementById(id);if(e)e.textContent=v;};
+
+    set('hwNose',nose.name); set('hwNoseDesc',nose.desc);
+    set('hwFrame',frame.name); set('hwFrameDesc',frame.desc);
+    set('hwWings',wings.name); set('hwWingsDesc',wings.desc);
+    set('hwEngine',engine.name); set('hwEngineDesc',engine.desc);
+    set('hwReactor',reactor.name); set('hwReactorDesc',reactor.desc);
+    set('hwBuildName',`${nose.name} // ${wings.name}`);
+
+    const power=Math.round(skin.powerRatio*100);
+    const powerEl=document.getElementById('hwPower');
+    if(powerEl){
+      powerEl.textContent=skin.underpowered
+        ? `REACTOR DELIVERY ${power}% // ${engine.name} ENGINE UNDERPOWERED`
+        : `REACTOR DELIVERY 100% // ${engine.name} ENGINE NOMINAL`;
+      powerEl.style.color=skin.underpowered?'#ff9b78':'#aaffbd';
+      powerEl.style.borderColor=skin.underpowered?'rgba(255,155,120,.30)':'rgba(170,255,189,.22)';
+    }
+
+    set('hwStats',
+      `SPEED     ${statBar(skin.maxSpeedMult||1,1.30)}\n`+
+      `TURN      ${statBar(skin.turnMult||1,1.30)}\n`+
+      `SIZE      ${statBar(skin.hitFactor||1,1.25,true)}\n`+
+      `THRUST    ${statBar(skin.thrustMult||1,1.35)}\n`+
+      `STABILITY ${statBar(1/(skin.recoilMult||1),3.0)}\n`+
+      `RAM       ${statBar(skin.ramMult||1,1.50)}`
+    );
+
+    const colorSlider=document.getElementById('hwColor');
+    const colorSwatch=document.getElementById('hwColorSwatch');
+    const hue=hwDraft.hue ?? hwDraft.primaryHue ?? 188;
+    if(colorSlider) colorSlider.value=hue;
+    if(colorSwatch){colorSwatch.style.background=skin.color;colorSwatch.style.color=skin.color;}
+
+    hullWorkshopOverlay.querySelectorAll('[data-legacy]').forEach(btn=>{
+      const idx=+btn.dataset.legacy;
+      const preset=OG_PART_PRESETS[idx];
+      btn.classList.toggle('locked',!isUnlocked(idx));
+      btn.title=isUnlocked(idx)
+        ? `${preset.name} // ${preset.desc} // click to load recipe`
+        : lockedShipDescription(SHIP_SKINS[idx]);
+    });
+
+    renderSavedHullPresets();
+    drawHullWorkshop();
+  }
+
+  let hwPresetStatusTimer=null;
+  function setHullPresetStatus(message, ok=true){
+    const el=document.getElementById('hwPresetStatus');
+    if(!el) return;
+    el.textContent=message||'';
+    el.style.color=ok?'#aaffbd':'#ff9b78';
+    clearTimeout(hwPresetStatusTimer);
+    if(message){
+      hwPresetStatusTimer=setTimeout(()=>{
+        if(el.textContent===message) el.textContent='';
+      },2400);
+    }
+  }
+
+  function renderSavedHullPresets(){
+    const host=document.getElementById('hwSavedPresets');
+    if(!host) return;
+    host.innerHTML='';
+    if(!savedHullPresets.length){
+      const empty=document.createElement('div');
+      empty.className='hwPresetEmpty';
+      empty.textContent='NO SAVED HULLS YET // BUILD SOMETHING QUESTIONABLE';
+      host.appendChild(empty);
+      return;
+    }
+    savedHullPresets.forEach((preset,index)=>{
+      const wrap=document.createElement('div');
+      wrap.className='hwSavedPreset';
+
+      const load=document.createElement('button');
+      load.type='button';
+      load.className='hwPresetLoad';
+      load.textContent=preset.name;
+      load.title=`LOAD // ${preset.name}`;
+      load.addEventListener('click',()=>{
+        hwDraft=normalizeHullConfig(preset.config);
+        const input=document.getElementById('hwPresetName');
+        if(input) input.value=preset.name;
+        SFX.uiTick();
+        refreshHullWorkshop();
+        setHullPresetStatus(`LOADED // ${preset.name}`,true);
+      });
+
+      const del=document.createElement('button');
+      del.type='button';
+      del.className='hwPresetDelete';
+      del.textContent='×';
+      del.title=`DELETE // ${preset.name}`;
+      del.addEventListener('click',(e)=>{
+        e.stopPropagation();
+        const removed=savedHullPresets[index]?.name||'HULL';
+        savedHullPresets.splice(index,1);
+        persistHullPresets();
+        renderSavedHullPresets();
+        setHullPresetStatus(`DELETED // ${removed}`,false);
+        SFX.uiTick();
+      });
+
+      wrap.append(load,del);
+      host.appendChild(wrap);
+    });
+  }
+
+  function saveCurrentHullPreset(){
+    const input=document.getElementById('hwPresetName');
+    const suggested=`HULL ${savedHullPresets.length+1}`;
+    const typed=(input?.value||'').trim();
+    const name=(typed||suggested).slice(0,18).toUpperCase();
+    const config=normalizeHullConfig(hwDraft);
+
+    // Saving the same name updates that slot instead of creating duplicates.
+    const existing=savedHullPresets.findIndex(p=>p.name.toUpperCase()===name);
+    if(existing>=0){
+      savedHullPresets[existing]={name,config};
+      const persisted=persistHullPresets();
+      renderSavedHullPresets();
+      if(input) input.value='';
+      setHullPresetStatus(persisted?`UPDATED // ${name}`:`UPDATED // ${name} // SESSION ONLY`,true);
+      SFX.purchase();
+      return;
+    }
+
+    let replacedName='';
+    if(savedHullPresets.length>=MAX_HULL_PRESETS){
+      replacedName=savedHullPresets[0]?.name||'OLDEST HULL';
+      savedHullPresets.shift();
+    }
+
+    savedHullPresets.push({name,config});
+    const persisted=persistHullPresets();
+    renderSavedHullPresets();
+    if(input) input.value='';
+    const baseMessage=replacedName ? `SAVED // ${name} // REPLACED ${replacedName}` : `SAVED // ${name}`;
+    setHullPresetStatus(persisted?baseMessage:`${baseMessage} // SESSION ONLY`,true);
+    SFX.purchase();
+  }
+
+  function openHullWorkshop(){
+    hwDraft=normalizeHullConfig(customHullConfig);
+    const presetNameInput=document.getElementById('hwPresetName');
+    if(presetNameInput) presetNameInput.value='';
+    setHullPresetStatus('');
+    hullWorkshopOverlay.classList.remove('hidden');
+    refreshHullWorkshop();
+    SFX.uiTick();
+  }
+  function closeHullWorkshop(){ hullWorkshopOverlay.classList.add('hidden'); }
+
+  hullWorkshopOverlay.querySelectorAll('[data-hw]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const k=btn.dataset.hw,d=parseInt(btn.dataset.dir,10)||1;
+      const arr=k==='nose'?CUSTOM_NOSES:k==='frame'?CUSTOM_FRAMES:k==='wings'?CUSTOM_WINGS:k==='engine'?CUSTOM_ENGINES:CUSTOM_REACTORS;
+      hwDraft[k]=(hwDraft[k]+d+arr.length)%arr.length;
+      SFX.uiTick(); refreshHullWorkshop();
+    });
+  });
+  document.getElementById('hwColor')?.addEventListener('input',e=>{
+    hwDraft.hue=+e.target.value;
+    delete hwDraft.primaryHue;
+    delete hwDraft.accentHue;
+    refreshHullWorkshop();
+  });
+  document.getElementById('hwSavePreset')?.addEventListener('click',(e)=>{
+    e.preventDefault();
+    e.stopPropagation();
+    saveCurrentHullPreset();
+  });
+  document.getElementById('hwPresetName')?.addEventListener('keydown',(e)=>{
+    if(e.key==='Enter'){
+      e.preventDefault();
+      e.stopPropagation();
+      saveCurrentHullPreset();
+    }
+  });
+
+  // OG blueprints are now presets assembled from the NEW parts. Load one into the
+  // Workshop and every component remains editable.
+  hullWorkshopOverlay.querySelectorAll('[data-legacy]').forEach(btn=>{
+    btn.addEventListener('click',()=>{
+      const idx=+btn.dataset.legacy;
+      if(!isUnlocked(idx)){SFX.uiTick();return;}
+      const preset=OG_PART_PRESETS[idx];
+      hwDraft=normalizeHullConfig(preset.config);
+      SFX.purchase();
+      refreshHullWorkshop();
+    });
+  });
+
+  document.getElementById('hwCancel')?.addEventListener('click',()=>{closeHullWorkshop();SFX.uiTick();});
+  document.getElementById('hwApply')?.addEventListener('click',()=>{
+    customHullConfig=normalizeHullConfig(hwDraft);
+    customHullActive=true;
+    closeHullWorkshop();
+    refreshShipPreviewUI();
+    SFX.purchase();
+  });
+
   // ---------- Main menu (re)binding — needed because "quit to menu" restores fresh markup ----------
   function bindMainMenuUI() {
     const startBtn = overlay.querySelector('#startBtn');
@@ -5149,10 +8250,10 @@
     const settingsBtn = overlay.querySelector('#settingsBtn');
     const volSlider = overlay.querySelector('.volumeSlider');
     const musicVolSlider = overlay.querySelector('.musicVolumeSlider');
-    if (startBtn) startBtn.addEventListener('click', () => { SFX.uiTick(); startGame(); });
+    if (startBtn) startBtn.addEventListener('click', (e) => { if (!mainMenuIsActuallyInteractive()) { e.preventDefault(); e.stopPropagation(); return; } SFX.uiTick(); startGame(); });
     if (testGroundBtn) {
       testGroundBtn.innerHTML = `${uiIcon('lab')} TEST GROUND`;
-      testGroundBtn.addEventListener('click', () => { SFX.uiTick(); startTestGround(); });
+      testGroundBtn.addEventListener('click', (e) => { if (!mainMenuIsActuallyInteractive()) { e.preventDefault(); e.stopPropagation(); return; } SFX.uiTick(); openTestBuildConfigurator(false); });
     }
     if (howToPlayBtn) howToPlayBtn.addEventListener('click', () => { SFX.uiTick(); howToPlayOverlay.classList.remove('hidden'); });
     if (achievementsBtn) achievementsBtn.addEventListener('click', () => { SFX.uiTick(); renderAchievements(); achievementsOverlay.classList.remove('hidden'); });
@@ -5188,6 +8289,12 @@
     if(weaponPrevBtn)weaponPrevBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+WEAPON_BUILDS.length-1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
     if(weaponNextBtn)weaponNextBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
     refreshWeaponUI();
+    const customHullBtn=overlay.querySelector('#customHullBtn');
+    if(customHullBtn){
+      customHullBtn.classList.toggle('active',customHullActive);
+      customHullBtn.textContent=customHullActive?'EDIT CUSTOM HULL':'BUILD CUSTOM HULL';
+      customHullBtn.addEventListener('click',openHullWorkshop);
+    }
     const shipPrevBtn = overlay.querySelector('#shipPrevBtn');
     const shipNextBtn = overlay.querySelector('#shipNextBtn');
     if (shipPrevBtn) shipPrevBtn.addEventListener('click', () => cycleShip(-1));
@@ -5274,7 +8381,7 @@
     const weaponEl=document.getElementById('pauseWeaponName');
     const metaEl=document.getElementById('pauseRunMeta');
     const listEl=document.getElementById('pauseUpgradeList');
-    if (hullEl) hullEl.textContent=(ship && ship.skin ? ship.skin.name : SHIP_SKINS[selectedSkinIndex].name);
+    if (hullEl) hullEl.textContent=(ship && ship.skin ? ship.skin.name : currentHullSkin().name);
     if (weaponEl) { weaponEl.textContent=currentWeapon.name; weaponEl.style.color=currentWeapon.color; }
     if (metaEl) {
       let resource = '';
@@ -5377,7 +8484,24 @@
     document.body.classList.toggle('in-menu', flag);
   }
 
+  function mainMenuIsActuallyInteractive() {
+    return document.body.classList.contains('in-menu') && !running && !testMode && overlay && !overlay.classList.contains('hidden');
+  }
+
+  function closeTestLabUI() {
+    testConfigOpenedFromGround=false;
+    if(hullWorkshopOverlay) hullWorkshopOverlay.classList.add('hidden');
+    if (testLoadoutOverlay) testLoadoutOverlay.classList.add('hidden');
+    if (testSpawnerPanel) {
+      testSpawnerPanel.classList.add('hidden');
+      testSpawnerPanel.classList.remove('collapsed');
+      const collapse=document.getElementById('testSpawnerCollapse');
+      if(collapse) collapse.textContent='−';
+    }
+  }
+
   function returnToMainMenu() {
+    closeTestLabUI();
     setPaused(false);
     running = false;
     gameOver = false;
@@ -5385,11 +8509,12 @@
     deathZoomActive = false;
     SFX.setThrust(false);
     fireHeld = false; mouseThrust = false;
-    setInMenu(true);
     overlay.innerHTML = mainMenuHTML;
     overlay.classList.remove('hidden');
+    setInMenu(true);
     bindMainMenuUI();
   }
+
 
   // ---------- Main Loop ----------
   // Fixed-timestep accumulator: requestAnimationFrame fires at the DISPLAY's refresh rate,
@@ -5433,6 +8558,7 @@
     } else {
       drawMenuBackground();
       drawShipPreview();
+    drawHullWorkshop();
     }
     requestAnimationFrame(loop);
   }
