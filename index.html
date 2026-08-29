@@ -1273,6 +1273,30 @@
     box-shadow:inset 0 0 14px rgba(255,77,166,.06),0 0 12px rgba(255,77,166,.08);
   }
 
+  .controlModeRow { align-items:center; }
+  .controlModeGroup {
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    gap:5px;
+    flex-wrap:wrap;
+  }
+  .controlModeBtn {
+    min-width:72px;
+    padding-left:8px;
+    padding-right:8px;
+  }
+  .controlModeBtn.active {
+    color:#dffbff;
+    border-color:rgba(111,242,255,.78);
+    background:linear-gradient(180deg,rgba(111,242,255,.14),rgba(255,77,166,.065));
+    box-shadow:inset 0 0 14px rgba(111,242,255,.07),0 0 10px rgba(111,242,255,.07);
+  }
+  @media (max-width:560px) {
+    .controlModeGroup { width:100%; justify-content:flex-start; margin-top:7px; }
+    .controlModeBtn { min-width:0; flex:1; }
+  }
+
   /* Standard phone / narrow tablet: stack the loadout vertically. */
   @media (max-width:700px) {
     .menuLayout {
@@ -2853,6 +2877,17 @@
           <span class="settingOptionDesc">Keep the ship inside the arena. OFF uses classic edge wrapping.</span>
         </div>
         <button id="containmentToggle" class="settingToggle" type="button" aria-pressed="false">OFF</button>
+      </div>
+      <div class="settingOptionRow controlModeRow">
+        <div class="settingOptionCopy">
+          <span class="settingOptionLabel">CONTROL MODE</span>
+          <span class="settingOptionDesc">AUTO switches between mouse and keyboard on intentional gameplay input. Lock a mode if you prefer.</span>
+        </div>
+        <div class="controlModeGroup" role="group" aria-label="PC control mode">
+          <button class="settingToggle controlModeBtn" type="button" data-control-mode="auto">AUTO</button>
+          <button class="settingToggle controlModeBtn" type="button" data-control-mode="mouse">MOUSE</button>
+          <button class="settingToggle controlModeBtn" type="button" data-control-mode="keyboard">KEYBOARD</button>
+        </div>
       </div>
       <div class="settingOptionRow">
         <div class="settingOptionCopy">
@@ -4448,13 +4483,17 @@
         const bind = parsed.reloadBind && typeof parsed.reloadBind === 'object'
           ? parsed.reloadBind
           : null;
+        const controlMode = ['auto','mouse','keyboard'].includes(parsed.controlMode)
+          ? parsed.controlMode
+          : 'auto';
         return {
           containmentWalls: !!parsed.containmentWalls,
-          reloadBind: bind
+          reloadBind: bind,
+          controlMode
         };
       }
     } catch (e) { /* localStorage unavailable */ }
-    return { containmentWalls: false, reloadBind: null };
+    return { containmentWalls: false, reloadBind: null, controlMode: 'auto' };
   }
   function persistGameSettings() {
     try { localStorage.setItem(SETTINGS_KEY, JSON.stringify(gameSettings)); } catch (e) { /* ignore */ }
@@ -4892,6 +4931,13 @@
     podBroodFlag = false;
     mouseActive = false;
     mouseThrust = false;
+    clearKeyboardGameplayState();
+    activePcInputMode = gameSettings.controlMode === 'keyboard' ? 'keyboard' : 'mouse';
+    lastPcModeSwitchAt = 0;
+    lastMouseIntentX = null;
+    lastMouseIntentY = null;
+    mouseIntentTravel = 0;
+    refreshControlModeUI();
     resetTouchJoystick();
     spawnWave();
     updateHUD();
@@ -4947,6 +4993,151 @@
 
   // ---------- Input ----------
   let reloadBindListening = false;
+
+  // PC control arbitration. Touch devices continue using their dedicated controls.
+  let activePcInputMode = gameSettings.controlMode === 'keyboard' ? 'keyboard' : 'mouse';
+  let lastPcModeSwitchAt = 0;
+  let lastMouseIntentX = null;
+  let lastMouseIntentY = null;
+  let mouseIntentTravel = 0;
+  const PC_MODE_SWITCH_DEBOUNCE_MS = 190;
+  const MOUSE_INTENT_DISTANCE = 8;
+
+  function pcGameplayInputAllowed() {
+    return !TOUCH_INPUT_MODE && running && !gameOver && !paused && !upgradeChoosing && !evolutionChoosing;
+  }
+
+  function pcMouseControlsEnabled() {
+    if (TOUCH_INPUT_MODE) return false;
+    if (gameSettings.controlMode === 'mouse') return true;
+    if (gameSettings.controlMode === 'keyboard') return false;
+    return activePcInputMode === 'mouse';
+  }
+
+  function pcKeyboardControlsEnabled() {
+    if (TOUCH_INPUT_MODE) return false;
+    if (gameSettings.controlMode === 'keyboard') return true;
+    if (gameSettings.controlMode === 'mouse') return false;
+    return activePcInputMode === 'keyboard';
+  }
+
+  function clearKeyboardGameplayState() {
+    ['w','a','d','arrowup','arrowleft','arrowright',' '].forEach(k => { keys[k] = false; });
+  }
+
+  function clearMouseGameplayState() {
+    mouseThrust = false;
+    fireHeld = false;
+  }
+
+  function announcePcInputMode(mode) {
+    if (!running || gameOver || paused || !ship || TOUCH_INPUT_MODE) return;
+    spawnFloatingText(
+      ship.x,
+      ship.y - ship.r - 34,
+      `INPUT // ${mode.toUpperCase()}`,
+      mode === 'mouse' ? '#6ff2ff' : '#ff9bd0'
+    );
+  }
+
+  function setActivePcInputMode(mode, announce=true) {
+    if (mode !== 'mouse' && mode !== 'keyboard') return false;
+    if (gameSettings.controlMode !== 'auto') return false;
+    if (activePcInputMode === mode) return true;
+
+    const now = performance.now();
+    if (now - lastPcModeSwitchAt < PC_MODE_SWITCH_DEBOUNCE_MS) return false;
+
+    activePcInputMode = mode;
+    lastPcModeSwitchAt = now;
+    mouseIntentTravel = 0;
+
+    if (mode === 'keyboard') {
+      clearMouseGameplayState();
+      mouseActive = false;
+    } else {
+      clearKeyboardGameplayState();
+    }
+
+    if (announce) announcePcInputMode(mode);
+    refreshControlModeUI();
+    return true;
+  }
+
+  function setConfiguredPcControlMode(mode) {
+    if (!['auto','mouse','keyboard'].includes(mode)) return;
+    gameSettings.controlMode = mode;
+
+    if (mode === 'mouse') {
+      activePcInputMode = 'mouse';
+      clearKeyboardGameplayState();
+    } else if (mode === 'keyboard') {
+      activePcInputMode = 'keyboard';
+      clearMouseGameplayState();
+      mouseActive = false;
+    }
+
+    lastPcModeSwitchAt = 0;
+    mouseIntentTravel = 0;
+    persistGameSettings();
+    refreshControlModeUI();
+  }
+
+  function refreshControlModeUI() {
+    document.querySelectorAll('.controlModeBtn').forEach(btn => {
+      const selected = btn.dataset.controlMode === gameSettings.controlMode;
+      btn.classList.toggle('active', selected);
+      btn.setAttribute('aria-pressed', selected ? 'true' : 'false');
+
+      if (btn.dataset.controlMode === 'auto') {
+        btn.title = `AUTO // ACTIVE: ${activePcInputMode.toUpperCase()}`;
+      }
+    });
+  }
+
+  function isKeyboardGameplayCode(code) {
+    return ['KeyW','KeyA','KeyD','ArrowUp','ArrowLeft','ArrowRight','Space'].includes(code);
+  }
+
+  function registerPcKeyboardIntent(code) {
+    if (!pcGameplayInputAllowed() || !isKeyboardGameplayCode(code)) return;
+    if (gameSettings.controlMode === 'auto') setActivePcInputMode('keyboard');
+  }
+
+  function registerPcMouseButtonIntent(button) {
+    if (!pcGameplayInputAllowed() || (button !== 0 && button !== 2)) return;
+    if (gameSettings.controlMode === 'auto') setActivePcInputMode('mouse');
+  }
+
+  function registerPcMouseMoveIntent(clientX, clientY) {
+    if (!pcGameplayInputAllowed()) {
+      lastMouseIntentX = clientX;
+      lastMouseIntentY = clientY;
+      mouseIntentTravel = 0;
+      return;
+    }
+
+    if (lastMouseIntentX == null || lastMouseIntentY == null) {
+      lastMouseIntentX = clientX;
+      lastMouseIntentY = clientY;
+      return;
+    }
+
+    const dx = clientX - lastMouseIntentX;
+    const dy = clientY - lastMouseIntentY;
+    lastMouseIntentX = clientX;
+    lastMouseIntentY = clientY;
+
+    if (gameSettings.controlMode !== 'auto' || activePcInputMode === 'mouse') {
+      mouseIntentTravel = 0;
+      return;
+    }
+
+    mouseIntentTravel += Math.hypot(dx, dy);
+    if (mouseIntentTravel >= MOUSE_INTENT_DISTANCE) {
+      if (setActivePcInputMode('mouse')) mouseIntentTravel = 0;
+    }
+  }
 
   function manualReloadAllowed() {
     return running && !gameOver && !paused && !upgradeChoosing && !evolutionChoosing;
@@ -5030,12 +5221,17 @@
       return;
     }
 
-    keys[e.key.toLowerCase()] = true;
+    const gameplayKey = isKeyboardGameplayCode(e.code);
+    if (gameplayKey) {
+      registerPcKeyboardIntent(e.code);
+      if (pcKeyboardControlsEnabled()) keys[e.key.toLowerCase()] = true;
+      else keys[e.key.toLowerCase()] = false;
+    }
 
-    // SPACE remains hold-to-fire; R is the fixed primary manual reload.
+    // SPACE remains hold-to-fire, but only when keyboard gameplay input is active.
     if (e.key === ' ') {
       e.preventDefault();
-      fireBullet();
+      if (pcKeyboardControlsEnabled()) fireBullet();
     }
     if (e.code === 'KeyR' && !e.repeat) {
       e.preventDefault();
@@ -5241,16 +5437,24 @@
     canvas.addEventListener('dblclick', suppressGameplayDoubleClick);
 
     canvas.addEventListener('mousemove', (e) => {
+      registerPcMouseMoveIntent(e.clientX, e.clientY);
       const rect = canvas.getBoundingClientRect();
-      mousePos.x = e.clientX - rect.left;
-      mousePos.y = e.clientY - rect.top;
-      mouseActive = true;
-      if (running && !gameOver && !paused) mouseThrust = (e.buttons & 2) !== 0;
+
+      if (pcMouseControlsEnabled()) {
+        mousePos.x = e.clientX - rect.left;
+        mousePos.y = e.clientY - rect.top;
+        mouseActive = true;
+        if (running && !gameOver && !paused) mouseThrust = (e.buttons & 2) !== 0;
+      } else {
+        mouseThrust = false;
+      }
     });
 
     canvas.addEventListener('mousedown', (e) => {
       if (!running || gameOver || paused) return;
+      registerPcMouseButtonIntent(e.button);
       e.preventDefault();
+      if (!pcMouseControlsEnabled()) return;
       if (e.button === 0) { fireHeld = true; fireBullet(); }
       if (e.button === 2) mouseThrust = true;
     });
@@ -5570,7 +5774,9 @@
     }
     if (hitStopFrames > 0) { hitStopFrames--; SFX.setThrust(false); return; }
 
-    if (fireHeld || keys[' ']) fireBullet();
+    const pointerFireHeld = TOUCH_INPUT_MODE ? fireHeld : (pcMouseControlsEnabled() && fireHeld);
+    const keyboardFireHeld = !TOUCH_INPUT_MODE && pcKeyboardControlsEnabled() && keys[' '];
+    if (pointerFireHeld || keyboardFireHeld) fireBullet();
     if (reticleKick > 0) reticleKick = Math.max(0, reticleKick - 0.12);
 
     if (waveTransitionTimer > 0) {
@@ -5585,7 +5791,7 @@
     // Ship rotation — desktop mouse, touch joystick, or keyboard.
     // Mouse behavior is intentionally unchanged. The joystick uses the same eased chase feel,
     // but targets a screen-space direction instead of a cursor position.
-    if (!TOUCH_INPUT_MODE && mouseActive) {
+    if (!TOUCH_INPUT_MODE && pcMouseControlsEnabled() && mouseActive) {
       const targetAngle = Math.atan2(mousePos.y - ship.y, mousePos.x - ship.x);
       // Shortest angular delta in [-π, π]
       let delta = targetAngle - ship.angle;
@@ -5610,7 +5816,7 @@
       ship.angularVelocity += delta * touchTurnStrength;
       ship.angularVelocity = Math.max(-touchTurnCap, Math.min(touchTurnCap, ship.angularVelocity));
       ship.angularVelocity *= 0.86;
-    } else {
+    } else if (!TOUCH_INPUT_MODE && pcKeyboardControlsEnabled()) {
       // Keyboard rotation remains available on desktop / keyboard-equipped tablets.
       let turnInput = 0;
       if (keys['arrowleft'] || keys['a'] || ship.turningLeft) turnInput -= 1;
@@ -5623,12 +5829,18 @@
         ship.angularVelocity *= ship.angularDamping;
         if (Math.abs(ship.angularVelocity) < 0.001) ship.angularVelocity = 0;
       }
+    } else {
+      // No active steering source: simply let existing rotation settle.
+      ship.angularVelocity *= ship.angularDamping;
+      if (Math.abs(ship.angularVelocity) < 0.001) ship.angularVelocity = 0;
     }
     ship.angle += ship.angularVelocity;
 
     // Thrust — keyboard/right-click are unchanged; touch joystick adds analog thrust.
     const joystickThrust = touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE;
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || (!TOUCH_INPUT_MODE && mouseThrust) || joystickThrust;
+    const keyboardThrust = !TOUCH_INPUT_MODE && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
+    const mouseThrustActive = !TOUCH_INPUT_MODE && pcMouseControlsEnabled() && mouseThrust;
+    const thrusting = keyboardThrust || mouseThrustActive || joystickThrust;
     if (thrusting) {
       // Analog thrust uses a curved response instead of a minimum 28% shove.
       // This gives the inner half of the joystick much finer low-speed control.
@@ -5670,7 +5882,7 @@
     // Build-specific continuous systems.
     if (currentWeapon.id === 'rapid') {
       const cool = 0.70 * (1 + upgradeLevel('cooling')*.30);
-      if (!fireHeld && !keys[' ']) rapidSpinShots = Math.max(0, rapidSpinShots - 1);
+      if (!pointerFireHeld && !keyboardFireHeld) rapidSpinShots = Math.max(0, rapidSpinShots - 1);
       weaponHeat = Math.max(0, weaponHeat - cool);
       const cap = 100 * (1 + upgradeLevel('deepMag')*.15);
       if (weaponOverheated && weaponHeat <= cap * .34) { weaponOverheated=false; SFX.ready(); spawnFloatingText(ship.x,ship.y-30,'WEAPON READY',currentWeapon.color); }
@@ -6393,7 +6605,9 @@
 
     const skin = ship.skin || SHIP_SKINS[0];
     const hullColor = shipDisplayColor(skin);
-    const thrusting = keys['arrowup'] || keys['w'] || ship.thrusting || (!TOUCH_INPUT_MODE && mouseThrust) || (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
+    const keyboardThrustVisual = !TOUCH_INPUT_MODE && pcKeyboardControlsEnabled() && (keys['arrowup'] || keys['w'] || ship.thrusting);
+    const mouseThrustVisual = !TOUCH_INPUT_MODE && pcMouseControlsEnabled() && mouseThrust;
+    const thrusting = keyboardThrustVisual || mouseThrustVisual || (touchJoystickActive && touchJoystickMagnitude > JOYSTICK_DEADZONE);
     const shipSpeed = Math.hypot(ship.vx, ship.vy);
 
     function strokeShipHull(ctxRef, alpha=0.9, shadowBlur=7, lineWidth=1.7, accentAlpha=1) {
@@ -7551,7 +7765,7 @@
   }
 
   function drawMouseReticle() {
-    if (TOUCH_INPUT_MODE || !mouseActive || !running || gameOver || paused || rebirthActive || deathZoomActive) return;
+    if (TOUCH_INPUT_MODE || !pcMouseControlsEnabled() || !mouseActive || !running || gameOver || paused || rebirthActive || deathZoomActive) return;
     const x = Math.max(10, Math.min(W - 10, mousePos.x));
     const y = Math.max(10, Math.min(H - 10, mousePos.y));
     const color = currentWeapon ? currentWeapon.color : '#6ff2ff';
@@ -8452,6 +8666,7 @@
     if (settingsBtn) settingsBtn.addEventListener('click', () => {
       reloadBindListening = false;
       refreshReloadBindUI();
+      refreshControlModeUI();
       SFX.uiTick();
       settingsOverlay.classList.remove('hidden');
     });
@@ -8569,6 +8784,7 @@
   const shopBackBtn = document.getElementById('shopBackBtn');
   const settingsBackBtn = document.getElementById('settingsBackBtn');
   const reloadBindBtn = document.getElementById('reloadBindBtn');
+  const controlModeBtns = Array.from(document.querySelectorAll('.controlModeBtn'));
   let paused = false;
   applyCoreIcons();
   syncSfxMuteButtons(SFX.isMuted());
@@ -8616,6 +8832,7 @@
   settingsBackBtn.addEventListener('click', () => {
     reloadBindListening = false;
     refreshReloadBindUI();
+    refreshControlModeUI();
     SFX.uiTick();
     settingsOverlay.classList.add('hidden');
   });
@@ -8628,6 +8845,14 @@
       SFX.uiTick();
     });
   }
+
+  refreshControlModeUI();
+  controlModeBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      setConfiguredPcControlMode(btn.dataset.controlMode);
+      SFX.uiTick();
+    });
+  });
 
   const containmentToggle = document.getElementById('containmentToggle');
   function refreshContainmentToggle() {
