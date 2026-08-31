@@ -1589,8 +1589,12 @@
   }
   .testSpawnBtn.boss { border-color:rgba(255,111,111,.35); color:#ff9d9d; background:rgba(255,111,111,.045); }
   .testSpawnBtn.pickup { border-color:rgba(111,255,176,.30); color:#aaffc9; }
+  .testSpawnBtn.tempPower { border-color:rgba(111,242,255,.32); color:#bffaff; background:rgba(111,242,255,.035); }
+  .testSpawnBtn.phasePower { border-color:rgba(204,137,255,.34); color:#e2c4ff; background:rgba(183,92,255,.035); }
   .testSpawnBtn.danger { border-color:rgba(255,77,166,.38); color:#ff8fcd; }
   .testSpawnBtn.utility { border-color:rgba(245,255,77,.28); color:#efff8c; }
+  .testSpawnBtn.asteroidDense { border-color:rgba(126,210,255,.34); color:#bfe9ff; background:rgba(84,154,205,.045); }
+  .testSpawnBtn.asteroidBrittle { border-color:rgba(255,180,225,.34); color:#ffd1ef; background:rgba(255,92,180,.04); }
   .testSpawnBtn:active { transform:translateY(1px); background:rgba(255,255,255,.12); }
 
   @media (max-width:700px) {
@@ -4325,163 +4329,6 @@
   }
 
 
-  /* ---------- WEAPON SCHEMATIC + ACTION BAR REBALANCE ---------- */
-  body.in-menu .weaponSelect {
-    padding-top:0 !important;
-  }
-
-  body.in-menu .weaponSchematicFrame {
-    --weapon-color:#74e8ff;
-    position:relative;
-    width:min(260px, 92%);
-    height:122px;
-    margin:0 auto 8px;
-    display:grid;
-    place-items:center;
-    border:1px solid color-mix(in srgb, var(--weapon-color) 24%, transparent);
-    background:
-      radial-gradient(circle at center, color-mix(in srgb, var(--weapon-color) 7%, transparent) 0%, transparent 58%),
-      linear-gradient(180deg,rgba(4,10,22,.44),rgba(2,7,17,.18));
-    box-shadow:
-      inset 0 0 24px rgba(0,0,0,.18),
-      0 0 18px color-mix(in srgb, var(--weapon-color) 6%, transparent);
-    overflow:hidden;
-  }
-  body.in-menu .weaponSchematicFrame::before,
-  body.in-menu .weaponSchematicFrame::after {
-    content:"";
-    position:absolute;
-    pointer-events:none;
-  }
-  body.in-menu .weaponSchematicFrame::before {
-    width:78px;
-    height:78px;
-    border:1px solid color-mix(in srgb, var(--weapon-color) 18%, transparent);
-    border-radius:50%;
-    box-shadow:
-      0 0 0 9px color-mix(in srgb, var(--weapon-color) 3%, transparent),
-      0 0 20px color-mix(in srgb, var(--weapon-color) 6%, transparent);
-  }
-  body.in-menu .weaponSchematicFrame::after {
-    inset:8px;
-    background:
-      linear-gradient(90deg, transparent 49.8%, color-mix(in srgb, var(--weapon-color) 10%, transparent) 50%, transparent 50.2%),
-      linear-gradient(transparent 49.8%, color-mix(in srgb, var(--weapon-color) 8%, transparent) 50%, transparent 50.2%);
-    opacity:.55;
-  }
-  body.in-menu .weaponSchematicIcon {
-    position:relative;
-    z-index:1;
-    width:88%;
-    height:88%;
-    display:grid;
-    place-items:center;
-    filter:drop-shadow(0 0 7px color-mix(in srgb, var(--weapon-color) 34%, transparent));
-  }
-  body.in-menu .weaponSchematicIcon svg {
-    width:100%;
-    height:100%;
-    overflow:visible;
-  }
-
-  body.in-menu .menuActions {
-    display:grid !important;
-    grid-template-columns:auto minmax(180px,1fr) !important;
-    align-items:center !important;
-    gap:10px !important;
-  }
-
-  body.in-menu .menuUtilityCluster {
-    display:flex;
-    align-items:center;
-    justify-content:flex-start;
-    gap:6px;
-    min-width:0;
-  }
-
-  body.in-menu .menuIconRow {
-    display:flex !important;
-    align-items:center !important;
-    justify-content:flex-start !important;
-    gap:6px !important;
-    padding:0 !important;
-  }
-
-  body.in-menu #startBtn {
-    grid-column:2 !important;
-    justify-self:stretch !important;
-    width:100% !important;
-    min-width:180px !important;
-  }
-
-  @media (max-width:760px) {
-    body.in-menu .weaponSchematicFrame {
-      width:min(190px,94%);
-      height:84px;
-      margin-bottom:5px;
-    }
-    body.in-menu .weaponSchematicFrame::before {
-      width:54px;
-      height:54px;
-    }
-    body.in-menu .weaponSchematicIcon {
-      width:92%;
-      height:92%;
-    }
-
-    body.in-menu .menuActions {
-      grid-template-columns:auto minmax(92px,1fr) !important;
-      gap:5px !important;
-    }
-    body.in-menu .menuUtilityCluster {
-      gap:4px;
-    }
-    body.in-menu .menuIconRow {
-      gap:4px !important;
-    }
-    body.in-menu #startBtn {
-      min-width:92px !important;
-    }
-  }
-
-  @media (max-width:430px) {
-    body.in-menu .weaponSchematicFrame {
-      height:74px;
-    }
-    body.in-menu .menuActions {
-      grid-template-columns:auto minmax(86px,1fr) !important;
-    }
-    body.in-menu #testGroundBtn.testGroundIconBtn,
-    body.in-menu .menuIconBtn {
-      width:32px !important;
-      height:32px !important;
-      min-width:32px !important;
-      min-height:32px !important;
-    }
-    body.in-menu #testGroundBtn.testGroundIconBtn .uiIcon,
-    body.in-menu .menuIconBtn .uiIcon {
-      width:14px !important;
-      height:14px !important;
-    }
-    body.in-menu #startBtn {
-      min-height:32px !important;
-      min-width:86px !important;
-    }
-  }
-
-  @media (orientation:landscape) and (max-height:520px) {
-    body.in-menu .weaponSchematicFrame {
-      width:min(210px,88%);
-      height:66px;
-      margin-bottom:3px;
-    }
-    body.in-menu .weaponSchematicFrame::before {
-      width:46px;
-      height:46px;
-    }
-  }
-
-
   /* ---------- THREE-PANEL MAIN MENU REWORK ---------- */
   body.in-menu .menuLayout {
     width:min(1140px, 97vw) !important;
@@ -4589,11 +4436,6 @@
     gap:6px !important;
     flex-wrap:wrap;
     min-width:0;
-  }
-
-  /* Remove previous weapon schematic spacing if present in inherited CSS */
-  body.in-menu .weaponSchematicFrame {
-    display:none !important;
   }
 
   @media (max-width:980px) {
@@ -5706,6 +5548,480 @@
     }
   }
 
+
+  /* ---------- TOUCH CONTROL REDESIGN PASS ---------- */
+  #movePad {
+    --move-btn:96px;
+    --move-gap:14px;
+    filter:drop-shadow(0 0 14px rgba(111,242,255,.12));
+  }
+
+  #actionPad {
+    gap:14px;
+    filter:drop-shadow(0 0 16px rgba(111,242,255,.08)) drop-shadow(0 0 14px rgba(255,77,166,.08));
+  }
+
+  .ctrlBtn {
+    gap:4px !important;
+    -webkit-backdrop-filter:blur(1.5px);
+    backdrop-filter:blur(1.5px);
+  }
+
+  #leftBtn,
+  #rightBtn {
+    width:96px !important;
+    height:96px !important;
+  }
+
+  .turnBtn {
+    border-color:rgba(125,245,255,.86) !important;
+    background:
+      radial-gradient(circle at 50% 42%, rgba(255,255,255,.08) 0 10%, rgba(111,242,255,.18) 11% 26%, rgba(111,242,255,.06) 27% 39%, rgba(10,18,36,.90) 62%, rgba(4,9,20,.98) 100%) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.03),
+      inset 0 0 26px rgba(111,242,255,.13),
+      inset 0 -10px 16px rgba(0,0,0,.25),
+      0 0 18px rgba(111,242,255,.18),
+      0 0 34px rgba(111,242,255,.06) !important;
+  }
+
+  .turnBtn::before {
+    top:50%;
+    left:24%;
+    right:24%;
+    height:1px;
+    background:linear-gradient(90deg, transparent, rgba(111,242,255,.26), rgba(255,77,166,.18), transparent) !important;
+  }
+
+  .turnBtn::after {
+    inset:9px;
+    border:1px solid rgba(111,242,255,.16);
+    border-radius:50% !important;
+    box-shadow:inset 0 0 16px rgba(111,242,255,.06);
+  }
+
+  #leftBtn .ctrlGlyph,
+  #rightBtn .ctrlGlyph {
+    font-size:30px !important;
+    line-height:1 !important;
+    color:#e6feff;
+    text-shadow:
+      0 0 12px rgba(111,242,255,.62),
+      0 0 24px rgba(111,242,255,.18);
+  }
+
+  #leftBtn .ctrlLabel,
+  #rightBtn .ctrlLabel {
+    font-size:7.6px !important;
+    letter-spacing:1.75px !important;
+    color:rgba(215,249,255,.88);
+  }
+
+  #leftBtn .ctrlGlyph { transform:translateX(-2px); }
+  #rightBtn .ctrlGlyph { transform:translateX(2px); }
+
+  .thrustBtn {
+    width:102px !important;
+    height:102px !important;
+    border-color:rgba(141,247,255,.94) !important;
+    background:
+      radial-gradient(circle at 50% 30%, rgba(255,255,255,.09) 0 8%, rgba(111,242,255,.20) 9% 25%, rgba(111,242,255,.08) 26% 40%, rgba(11,24,45,.92) 63%, rgba(4,9,20,.985) 100%) !important;
+    box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.035),
+      inset 0 0 26px rgba(111,242,255,.16),
+      inset 0 -12px 18px rgba(0,0,0,.24),
+      0 0 20px rgba(111,242,255,.22),
+      0 0 40px rgba(111,242,255,.08) !important;
+  }
+
+  .thrustBtn::before {
+    top:31%;
+    left:50%;
+    right:auto;
+    width:1px;
+    height:34%;
+    transform:translateX(-50%);
+    background:linear-gradient(180deg, rgba(255,255,255,.0), rgba(111,242,255,.34), rgba(255,77,166,.14), rgba(255,255,255,.0)) !important;
+  }
+
+  .thrustBtn::after {
+    inset:10px;
+    border:1px solid rgba(111,242,255,.18);
+    border-radius:50% !important;
+    box-shadow:inset 0 0 18px rgba(111,242,255,.07);
+  }
+
+  .thrustBtn .ctrlGlyph {
+    font-size:31px !important;
+    line-height:1 !important;
+    color:#f0ffff;
+    text-shadow:
+      0 0 14px rgba(111,242,255,.68),
+      0 0 24px rgba(111,242,255,.22);
+    transform:translateY(-1px);
+  }
+
+  .thrustBtn .ctrlLabel {
+    font-size:7.4px !important;
+    letter-spacing:1.9px !important;
+    color:rgba(223,251,255,.90);
+  }
+
+  .moveBtn.active,
+  .turnBtn:active,
+  .thrustBtn:active {
+    transform:scale(.958) !important;
+  }
+
+  .turnBtn.active,
+  .turnBtn:active {
+    border-color:rgba(232,253,255,.98) !important;
+    box-shadow:
+      inset 0 0 28px rgba(111,242,255,.22),
+      0 0 24px rgba(111,242,255,.28),
+      0 0 42px rgba(255,77,166,.08) !important;
+  }
+
+  .thrustBtn.active,
+  .thrustBtn:active {
+    border-color:rgba(241,254,255,.98) !important;
+    box-shadow:
+      inset 0 0 30px rgba(111,242,255,.24),
+      0 0 26px rgba(111,242,255,.30),
+      0 0 48px rgba(111,242,255,.10) !important;
+  }
+
+  @media (max-width:760px) {
+    #movePad {
+      --move-btn:clamp(76px, 22vw, 96px);
+      --move-gap:clamp(8px, 3vw, 14px);
+    }
+
+    #actionPad {
+      gap:clamp(8px, 3vw, 14px);
+    }
+
+    #leftBtn,
+    #rightBtn {
+      width:clamp(76px, 22vw, 96px) !important;
+      height:clamp(76px, 22vw, 96px) !important;
+    }
+
+    .thrustBtn {
+      width:clamp(82px, 24vw, 102px) !important;
+      height:clamp(82px, 24vw, 102px) !important;
+    }
+
+    #leftBtn .ctrlGlyph,
+    #rightBtn .ctrlGlyph {
+      font-size:clamp(24px, 6.2vw, 30px) !important;
+    }
+
+    .thrustBtn .ctrlGlyph {
+      font-size:clamp(25px, 6.5vw, 31px) !important;
+    }
+
+    #leftBtn .ctrlLabel,
+    #rightBtn .ctrlLabel,
+    .thrustBtn .ctrlLabel {
+      font-size:clamp(6.7px, 1.9vw, 7.6px) !important;
+      letter-spacing:clamp(1.2px, .45vw, 1.9px) !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:500px) {
+    #movePad {
+      --move-btn:72px;
+      --move-gap:8px;
+    }
+
+    #actionPad {
+      gap:8px;
+    }
+
+    #leftBtn,
+    #rightBtn {
+      width:72px !important;
+      height:72px !important;
+    }
+
+    .thrustBtn {
+      width:78px !important;
+      height:78px !important;
+    }
+
+    #leftBtn .ctrlGlyph,
+    #rightBtn .ctrlGlyph {
+      font-size:22px !important;
+    }
+
+    .thrustBtn .ctrlGlyph {
+      font-size:23px !important;
+    }
+
+    #leftBtn .ctrlLabel,
+    #rightBtn .ctrlLabel,
+    .thrustBtn .ctrlLabel {
+      font-size:6.2px !important;
+      letter-spacing:1.15px !important;
+    }
+  }
+
+
+  /* ---------- TOUCH CONTROLS // FIRE-BUTTON VISUAL LANGUAGE ---------- */
+  #movePad {
+    --move-btn:96px;
+    --move-gap:14px;
+  }
+
+  #leftBtn,
+  #rightBtn {
+    width:96px !important;
+    height:96px !important;
+  }
+
+  #leftBtn,
+  #rightBtn,
+  .thrustBtn {
+    border-radius:50% !important;
+    border-color:rgba(111,242,255,.86) !important;
+    color:#d8fbff !important;
+    background:
+      radial-gradient(circle at center,
+        rgba(111,242,255,.16) 0 30%,
+        rgba(111,242,255,.055) 31% 44%,
+        rgba(10,16,31,.93) 72%,
+        rgba(4,7,18,.985) 100%) !important;
+    box-shadow:
+      inset 0 0 18px rgba(111,242,255,.13),
+      inset 0 0 30px rgba(255,77,166,.025),
+      0 0 18px rgba(111,242,255,.20),
+      0 0 34px rgba(111,242,255,.08),
+      0 0 16px rgba(255,77,166,.035) !important;
+    text-shadow:0 0 10px rgba(111,242,255,.52) !important;
+  }
+
+  #leftBtn::before,
+  #rightBtn::before,
+  .thrustBtn::before {
+    left:22% !important;
+    right:22% !important;
+    top:50% !important;
+    width:auto !important;
+    height:1px !important;
+    transform:none !important;
+    background:linear-gradient(90deg, transparent, rgba(111,242,255,.36), transparent) !important;
+  }
+
+  #leftBtn::after,
+  #rightBtn::after,
+  .thrustBtn::after {
+    inset:10px !important;
+    border-radius:50% !important;
+    border-color:rgba(111,242,255,.12) !important;
+    box-shadow:none !important;
+  }
+
+  #leftBtn .ctrlGlyph,
+  #rightBtn .ctrlGlyph {
+    font-size:29px !important;
+    color:#e8feff !important;
+    text-shadow:0 0 11px rgba(111,242,255,.58) !important;
+  }
+
+  #leftBtn .ctrlLabel,
+  #rightBtn .ctrlLabel {
+    font-size:7.5px !important;
+    letter-spacing:1.75px !important;
+    color:rgba(218,249,255,.88) !important;
+  }
+
+  .thrustBtn {
+    width:100px !important;
+    height:100px !important;
+  }
+
+  .thrustBtn .ctrlGlyph {
+    font-size:29px !important;
+    color:#eaffff !important;
+    text-shadow:0 0 11px rgba(111,242,255,.62) !important;
+    transform:none !important;
+  }
+
+  .thrustBtn .ctrlLabel {
+    font-size:7.4px !important;
+    letter-spacing:1.8px !important;
+    color:rgba(220,250,255,.90) !important;
+  }
+
+  #leftBtn.active,
+  #rightBtn.active,
+  .thrustBtn.active,
+  #leftBtn:active,
+  #rightBtn:active,
+  .thrustBtn:active {
+    color:#f5ffff !important;
+    border-color:rgba(192,253,255,.98) !important;
+    box-shadow:
+      inset 0 0 24px rgba(111,242,255,.19),
+      0 0 22px rgba(111,242,255,.27),
+      0 0 40px rgba(111,242,255,.10),
+      0 0 14px rgba(255,77,166,.035) !important;
+  }
+
+  @media (max-width:760px) {
+    #movePad {
+      --move-btn:clamp(78px, 22vw, 96px);
+      --move-gap:clamp(8px, 3vw, 14px);
+    }
+
+    #leftBtn,
+    #rightBtn {
+      width:clamp(78px, 22vw, 96px) !important;
+      height:clamp(78px, 22vw, 96px) !important;
+    }
+
+    .thrustBtn {
+      width:clamp(82px, 23vw, 100px) !important;
+      height:clamp(82px, 23vw, 100px) !important;
+    }
+
+    #leftBtn .ctrlGlyph,
+    #rightBtn .ctrlGlyph,
+    .thrustBtn .ctrlGlyph {
+      font-size:clamp(23px, 6vw, 29px) !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:500px) {
+    #movePad {
+      --move-btn:72px;
+      --move-gap:8px;
+    }
+
+    #leftBtn,
+    #rightBtn {
+      width:72px !important;
+      height:72px !important;
+    }
+
+    .thrustBtn {
+      width:78px !important;
+      height:78px !important;
+    }
+
+    #leftBtn .ctrlGlyph,
+    #rightBtn .ctrlGlyph,
+    .thrustBtn .ctrlGlyph {
+      font-size:22px !important;
+    }
+
+    #leftBtn .ctrlLabel,
+    #rightBtn .ctrlLabel,
+    .thrustBtn .ctrlLabel {
+      font-size:6.2px !important;
+      letter-spacing:1.15px !important;
+    }
+  }
+
+
+  /* ---------- TOUCH CONTROLS // TEXT-ONLY THIN GLOW PASS ---------- */
+  /* Hide arrow/triangle glyphs on LEFT / RIGHT / THRUST, keep FIRE unchanged. */
+  #leftBtn .ctrlGlyph,
+  #rightBtn .ctrlGlyph,
+  .thrustBtn .ctrlGlyph {
+    display:none !important;
+  }
+
+  /* Re-center text-only button faces. */
+  #leftBtn,
+  #rightBtn,
+  .thrustBtn {
+    gap:0 !important;
+    justify-content:center !important;
+    align-items:center !important;
+  }
+
+  #leftBtn .ctrlLabel,
+  #rightBtn .ctrlLabel,
+  .thrustBtn .ctrlLabel {
+    font-size:10px !important;
+    letter-spacing:2.15px !important;
+    color:rgba(228,252,255,.96) !important;
+    text-shadow:
+      0 0 8px rgba(111,242,255,.34),
+      0 0 16px rgba(111,242,255,.12) !important;
+  }
+
+  /* Thinner decorative line with a softer neon glow. */
+  #leftBtn::before,
+  #rightBtn::before,
+  .thrustBtn::before {
+    left:19% !important;
+    right:19% !important;
+    top:50% !important;
+    height:1px !important;
+    background:linear-gradient(
+      90deg,
+      transparent 0%,
+      rgba(111,242,255,.00) 10%,
+      rgba(111,242,255,.28) 30%,
+      rgba(111,242,255,.42) 50%,
+      rgba(111,242,255,.28) 70%,
+      rgba(111,242,255,.00) 90%,
+      transparent 100%
+    ) !important;
+    box-shadow:
+      0 0 4px rgba(111,242,255,.24),
+      0 0 10px rgba(111,242,255,.10) !important;
+  }
+
+  /* Slightly thinner rings to feel cleaner. */
+  #leftBtn,
+  #rightBtn,
+  .thrustBtn {
+    border-width:1.1px !important;
+    box-shadow:
+      inset 0 0 14px rgba(111,242,255,.10),
+      inset 0 0 24px rgba(255,77,166,.020),
+      0 0 14px rgba(111,242,255,.18),
+      0 0 28px rgba(111,242,255,.06),
+      0 0 12px rgba(255,77,166,.025) !important;
+  }
+
+  #leftBtn::after,
+  #rightBtn::after,
+  .thrustBtn::after {
+    inset:11px !important;
+    border-width:1px !important;
+    border-color:rgba(111,242,255,.10) !important;
+  }
+
+  @media (max-width:760px) {
+    #leftBtn .ctrlLabel,
+    #rightBtn .ctrlLabel,
+    .thrustBtn .ctrlLabel {
+      font-size:clamp(8.2px, 2.5vw, 10px) !important;
+      letter-spacing:clamp(1.35px, .55vw, 2.15px) !important;
+    }
+  }
+
+  @media (orientation:landscape) and (max-height:500px) {
+    #leftBtn .ctrlLabel,
+    #rightBtn .ctrlLabel,
+    .thrustBtn .ctrlLabel {
+      font-size:7px !important;
+      letter-spacing:1.2px !important;
+    }
+
+    #leftBtn::before,
+    #rightBtn::before,
+    .thrustBtn::before {
+      left:18% !important;
+      right:18% !important;
+    }
+  }
+
 </style>
 </head>
 <body>
@@ -5877,17 +6193,18 @@
         <h3>Weapon builds</h3>
         <p>Pick a weapon build before the run. Your ship and weapon are separate choices, so any hull can pair with any build.</p>
         <div class="powerRow"><span class="powerIcon" style="color:#74e8ff">➹</span><div><b style="color:#74e8ff">Longbow</b>Hard-hitting precision rail shot. Long range, slow cadence, high recoil, and penetration. Only the first target takes the full vaporizing hit; follow-through shots fragment targets normally.</div></div>
-        <div class="powerRow"><span class="powerIcon" style="color:#ffd36f">⋔</span><div><b style="color:#ffd36f">Scattergun</b>Short-range cone of pellets. Multiple pellets from one tight point-blank blast can overwhelm a target; loose or distant hits mostly fragment it.</div></div>
-        <div class="powerRow"><span class="powerIcon" style="color:#ff7a4d">◆</span><div><b style="color:#ff7a4d">Rocket Pod</b>Slow one-shot rocket with a heavy blast radius. Excellent against packed fields; poor when enemies are spread out.</div></div>
-        <div class="powerRow"><span class="powerIcon" style="color:#ff4da6">»</span><div><b style="color:#ff4da6">Cycler</b>High fire rate, short-to-mid range, and low per-shot power. Builds heat while held down and temporarily overheats if you get greedy.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ffd36f">⋔</span><div><b style="color:#ffd36f">Scattergun</b>Short-range cone of pellets. Tight volleys crush armor; loose or distant hits mainly chip heavy material.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#9cf6ff">●</span><div><b style="color:#9cf6ff">Pulse Cannon</b>Balanced medium cannon with a 10-round starting magazine. Tap FIRE for normal shots; hold and release a full charge to spend 5 rounds on a heavy Pulse slug. It reaches farther than the Cycler but stays below Longbow range.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ff7a4d">◆</span><div><b style="color:#ff7a4d">Rocket Pod</b>Slow one-shot rocket with a heavy blast radius. Excellent against packed fields and armored rock.</div></div>
+        <div class="powerRow"><span class="powerIcon" style="color:#ff4da6">»</span><div><b style="color:#ff4da6">Cycler</b>High fire rate and low per-shot power. Inefficient against Standard/Dense rock but brutally effective against Brittle fields.</div></div>
       </div>
       <div class="htpSection">
         <h3>Run upgrades</h3>
         <p>Upgrade windows appear twice per 10-level sector — after levels 3 and 7, then again after 13 and 17, 23 and 27, and so on. Choose 1 of 3 build-specific upgrades. Core upgrades can rank up repeatedly with diminishing gains, while every 10th-level boss awards a separate weapon EVOLUTION.</p>
       </div>
       <div class="htpSection">
-        <h3>Universal pickups</h3>
-        <p>Weapon-defining powerups are gone. Shields are deliberately scarce and only one loose shield can exist at a time. The first two shield layers each absorb two hits; a third layer is volatile, absorbs one hit, then detonates in a close-range overload burst that can vaporize nearby asteroids and enemy ships. Rare 1UP pickups add one life, up to a 5-life cap; they can drop from UFOs and are much more likely after boss kills.</p>
+        <h3>Powerups</h3>
+        <p>Run upgrades are permanent for the current run; battlefield powerups are temporary swings. Shields add reinforced layers, 1UP adds a life, OVERDRIVE boosts weapon cycling/reload, EMP clears hostile fire and interrupts UFO attacks, and PHASE DRIVE grants a short collision-free phase window.</p>
       </div>
       <div class="htpSection">
         <h3>Levels</h3>
@@ -5895,7 +6212,7 @@
       </div>
       <div class="htpSection">
         <h3>Test Ground</h3>
-        <p>Sandbox mode for mechanic testing. Before entering, choose exact ranks for every weapon upgrade and Evolution — competing Evolution paths can be enabled together for stress testing. Inside the Test Lab, use the clickable spawner to create individual asteroid sizes, UFO variants, bosses, Ambushes, shields, and 1UPs on demand. Tap BUILD in the spawner at any time to change upgrade and Evolution ranks live, then APPLY & RETURN to resume the same test. Press 1–4 to swap weapon builds using each weapon's saved Test Lab preset. Test Ground never awards achievements, unlocks, salvage, or permanent stat progress.</p>
+        <p>Sandbox mode for mechanic testing. Before entering, choose exact ranks for every weapon upgrade and Evolution — competing Evolution paths can be enabled together for stress testing. Inside the Test Lab, spawn Standard/Dense/Brittle asteroids, UFO variants, bosses, Ambushes, shields, 1UPs, and temporary powerups on demand. Tap BUILD at any time to change ranks live, then APPLY & RETURN. Press 1–5 to swap weapon builds using each weapon's saved Test Lab preset; 6 triggers the UFO Ambush test. Test Ground never awards achievements, unlocks, salvage, or permanent stat progress.</p>
       </div>
       <div class="htpSection">
         <h3>Enemies</h3>
@@ -6141,6 +6458,8 @@
           <button class="testSpawnBtn" data-spawn="rock2">MEDIUM</button>
           <button class="testSpawnBtn" data-spawn="rock1">SMALL</button>
           <button class="testSpawnBtn utility" data-spawn="rockpack">TARGET PACK</button>
+          <button class="testSpawnBtn asteroidDense" data-spawn="rockDense">DENSE</button>
+          <button class="testSpawnBtn asteroidBrittle" data-spawn="rockBrittle">BRITTLE</button>
         </div>
       </div>
       <div class="testSpawnerGroup">
@@ -6168,6 +6487,9 @@
         <div class="testSpawnerGrid">
           <button class="testSpawnBtn pickup" data-spawn="shield">SHIELD</button>
           <button class="testSpawnBtn pickup" data-spawn="oneup">1UP</button>
+          <button class="testSpawnBtn pickup tempPower" data-spawn="overdrive">OVERDRIVE</button>
+          <button class="testSpawnBtn pickup tempPower" data-spawn="emp">EMP</button>
+          <button class="testSpawnBtn pickup tempPower phasePower" data-spawn="phase">PHASE DRIVE</button>
           <button class="testSpawnBtn utility" data-spawn="clearMobs">CLEAR MOBS</button>
           <button class="testSpawnBtn utility" data-spawn="clearAll">RESET FIELD</button>
         </div>
@@ -6642,6 +6964,11 @@
           noiseBurst(.13,.30,2600);                     // broad blast
           tone(92,.16,'sine',.23,42);                   // low punch
           setTimeout(()=>noiseBurst(.07,.10,900),24);   // mechanical tail
+        } else if(type==='pulse'){
+          noiseBurst(.045,.12,3900);                    // magnetic snap
+          tone(310,.075,'square',.10,185);              // pulse body
+          tone(92,.10,'sine',.095,58);                  // compact recoil thump
+          setTimeout(()=>tone(620,.045,'triangle',.055,360),14);
         } else if(type==='rocket'){
           noiseBurst(.11,.17,1350);                     // ignition wash
           tone(135,.22,'sawtooth',.20,52);              // launch motor
@@ -6653,16 +6980,29 @@
           if(h>.65) tone(105,.035,'sine',.035,80);
         }
       },
+      pulseChargeReady(){
+        tone(740,.08,'triangle',.07,1120);
+        setTimeout(()=>tone(1120,.075,'sine',.055,1540),42);
+      },
+      bigPulse(){
+        noiseBurst(.10,.24,4600);
+        tone(74,.24,'sine',.24,34);
+        tone(250,.16,'sawtooth',.13,120);
+        setTimeout(()=>tone(980,.08,'triangle',.09,410),22);
+        setTimeout(()=>noiseBurst(.08,.11,1800),48);
+      },
       rocketBlast(){ noiseBurst(.42,.48,760); tone(82,.34,'sine',.28,28); setTimeout(()=>noiseBurst(.16,.16,1800),32); },
       overheat(){ tone(160,.35,'square',.18,70); },
       ready(){ tone(420,.10,'triangle',.12,760); },
       reloadStart(type){
         if(type==='sniper'){ tone(190,.07,'triangle',.07,130); setTimeout(()=>tone(260,.05,'square',.045,190),55); }
         else if(type==='shotgun'){ noiseBurst(.045,.075,1200); tone(105,.08,'sine',.075,72); }
+        else if(type==='pulse'){ tone(245,.07,'triangle',.07,170); setTimeout(()=>tone(350,.055,'square',.045,260),45); }
       },
       reloadDone(type){
         if(type==='sniper'){ tone(330,.07,'triangle',.085,620); setTimeout(()=>tone(620,.08,'triangle',.075,920),48); }
         else if(type==='shotgun'){ noiseBurst(.035,.06,1800); tone(210,.055,'triangle',.07,330); }
+        else if(type==='pulse'){ tone(420,.07,'triangle',.08,680); setTimeout(()=>tone(760,.065,'triangle',.065,980),42); }
       },
       mutationReady(){
         // Run-milestone cue: low impact first, then a restrained synthetic rise into the choice screen.
@@ -6703,6 +7043,21 @@
         setTimeout(()=>tone(659, .12, 'square', .14, 784), 90);
         setTimeout(()=>tone(784, .16, 'triangle', .16, 1047), 180);
         setTimeout(()=>tone(1047, .20, 'triangle', .12, 1319), 285);
+      },
+      overdrive() {
+        tone(220,.12,'sawtooth',.13,420);
+        setTimeout(()=>tone(440,.16,'triangle',.12,880),55);
+        setTimeout(()=>tone(880,.20,'triangle',.10,1320),125);
+      },
+      emp() {
+        noiseBurst(.22,.24,720);
+        tone(120,.28,'sine',.20,42);
+        setTimeout(()=>tone(1050,.18,'triangle',.11,180),34);
+      },
+      phase() {
+        tone(610,.13,'sine',.10,980);
+        setTimeout(()=>tone(910,.14,'triangle',.09,460),52);
+        setTimeout(()=>tone(1320,.18,'sine',.08,690),118);
       },
       pickup(type) {
         const freqs = { range: 700, overcharge: 300, spread: 620, rapidfire: 900, piercing: 480 };
@@ -7032,6 +7387,13 @@
 
   // ---------- Juice: screen shake + hit flash ----------
   let shakeMagnitude = 0, shakeTime = 0, hitFlashAlpha = 0, hitConfirmFlash = 0, upgradeFlashAlpha = 0;
+  let empFlashAlpha = 0;
+  let overdriveTimer = 0;
+  let phaseDriveTimer = 0;
+  const OVERDRIVE_DURATION = 600; // ~10 seconds at 60fps
+  const PHASE_DRIVE_DURATION = 300; // ~5 seconds
+  const TEMP_POWERUP_TYPES = ['overdrive','emp','phase'];
+  const TEMP_POWERUP_ASTEROID_CHANCE = 0.004;
   let deathZoomActive = false, deathZoomTimer = 0, deathZoomX = 0, deathZoomY = 0;
   let deathZoomTickAccum = 0; // lets the slow-mo speed itself ramp smoothly instead of being fixed
   const DEATH_ZOOM_DURATION = 150;  // frames of real time for the camera push-in to fully develop (~2.5s)
@@ -7054,6 +7416,8 @@
     let shake = 2.2, frames = 4, flash = 0.075;
     if (id === 'sniper') { shake = 5.8; frames = 8; flash = 0.18; }
     else if (id === 'shotgun') { shake = 4.6; frames = 6; flash = 0.13; }
+    else if (id === 'pulse' && b?.chargedPulse) { shake = 7.2; frames = 9; flash = 0.18; }
+    else if (id === 'pulse') { shake = 2.9; frames = 5; flash = 0.09; }
     else if (id === 'rocket') { shake = 8.5; frames = 12; flash = 0.20; }
     else if (id === 'rapid') { shake = 1.35; frames = 3; flash = 0.045; }
     if (bossHit) { shake *= 1.12; frames += 2; flash *= 1.12; }
@@ -7095,10 +7459,11 @@
   }
 
   const WEAPON_BUILDS = [
-    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration.', stats:weaponStatBars(5,2,4), cooldown:660, speed:13.5, life:42, recoil:0.72 },
-    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Tight blasts can overwhelm a target; range falls off hard. Starts with two shells and can build into a deep tube.', stats:weaponStatBars(4,3,1), cooldown:440, speed:8.2, life:18, recoil:1.05 },
-    { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, punishes packed targets.', stats:weaponStatBars(5,1,4), cooldown:980, speed:5.1, life:110, recoil:1.35 },
-    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Shorter-range pressure weapon; tiny rounds build heat and can overheat.', stats:weaponStatBars(2,5,2), cooldown:92, speed:8.8, life:36, recoil:0.04 }
+    { id:'sniper', name:'LONGBOW', color:'#74e8ff', desc:'Hard-hitting rail shot. Long range, slow cadence, precision penetration. Excellent armor breaker.', stats:weaponStatBars(5,2,4), cooldown:660, speed:13.5, life:42, recoil:0.72 },
+    { id:'shotgun', name:'SCATTERGUN', color:'#ffd36f', desc:'Point-blank monster. Tight volleys crush armor and brittle fields; range falls off hard.', stats:weaponStatBars(4,3,1), cooldown:440, speed:8.2, life:18, recoil:1.05 },
+    { id:'pulse', name:'PULSE CANNON', color:'#9cf6ff', desc:'General-purpose medium cannon. Stronger than the Cycler, faster than the Longbow, with dependable material damage. Range sits cleanly between Cycler and Longbow.', stats:weaponStatBars(4,3,3), cooldown:245, speed:10.2, life:33, recoil:0.34 },
+    { id:'rocket', name:'ROCKET POD', color:'#ff7a4d', desc:'One heavy rocket. Slow projectile, huge blast, and the strongest answer to armored fields.', stats:weaponStatBars(5,1,4), cooldown:980, speed:5.1, life:110, recoil:1.35 },
+    { id:'rapid', name:'CYCLER', color:'#ff4da6', desc:'High sustained fire. Weak against heavy rock, but shreds brittle material and swarm pressure.', stats:weaponStatBars(2,5,2), cooldown:92, speed:8.8, life:36, recoil:0.04 }
   ];
 
   let selectedWeaponIndex = 0;
@@ -7127,13 +7492,20 @@
   let upgradeChoosing = false;
   let weaponHeat = 0;
   let weaponOverheated = false;
-  // Longbow + Scattergun use magazines. Rocket Pod keeps its deliberate single-shot cycle,
-  // while Cycler continues to use heat as its resource rhythm.
+  // Longbow, Scattergun, and Pulse Cannon use magazines. Rocket Pod keeps its deliberate
+  // single-shot cycle, while Cycler continues to use heat as its resource rhythm.
   let weaponAmmo = 0;
   let weaponReloading = false;
   let weaponReloadTimer = 0;
   let weaponReloadDuration = 1;
   let rocketMultiKillFlag = false;
+
+  // Pulse Cannon secondary fire: hold FIRE, release when charged.
+  const PULSE_CHARGE_COST = 5;
+  const PULSE_CHARGE_FRAMES = 48; // ~0.8 sec at the fixed 60 Hz simulation rate
+  let pulseCharging = false;
+  let pulseChargeFrames = 0;
+  let pulseChargeReadyAnnounced = false;
 
   const BUILD_UPGRADES = {
     sniper: [
@@ -7154,6 +7526,14 @@
       {id:'scatterReload', name:'SPEED LOADER', desc:'15% faster Scattergun reload per rank.', maxRank:3},
       {id:'flechette', name:'FLECHETTES', desc:'Center pellets pierce extra targets; +1 pierce per rank.', maxRank:3}
     ],
+    pulse: [
+      {id:'pulseImpact', name:'IMPACT COILS', desc:'+12% asteroid material damage per rank.', maxRank:4},
+      {id:'pulseCycle', name:'FAST CYCLER', desc:'10% faster Pulse Cannon cadence per rank.', maxRank:4},
+      {id:'pulseVelocity', name:'ACCELERATOR', desc:'+8% projectile speed and +5% range per rank.', maxRank:4},
+      {id:'pulseMag', name:'CAPACITOR BANK', desc:'+2 Pulse Cannon shots per magazine per rank. Base magazine starts at 10.', maxRank:3},
+      {id:'pulseReload', name:'QUICK CHARGE', desc:'12% faster Pulse Cannon reload per rank.', maxRank:3},
+      {id:'pulseStability', name:'DAMPER MOUNT', desc:'12% less recoil per rank.', maxRank:3}
+    ],
     rocket: [
       {id:'bigWarhead', name:'HEAVY WARHEAD', desc:'+18% blast radius per rank.', maxRank:4},
       {id:'cluster', name:'CLUSTER BURST', desc:'Explosion throws 6 micro-fragments outward.', maxRank:1},
@@ -7164,7 +7544,7 @@
     rapid: [
       {id:'cooling', name:'COOLING FINS', desc:'+30% cooling per rank.', maxRank:4},
       {id:'twin', name:'TWIN BARREL', desc:'Alternating twin rounds with slight lateral spread.', maxRank:1},
-      {id:'hotLoad', name:'HOT LOAD', desc:'Medium/small targets vaporize, but heat generation rises.', maxRank:1},
+      {id:'hotLoad', name:'HOT LOAD', desc:'+30% asteroid impact, but heat generation rises.', maxRank:1},
       {id:'deepMag', name:'DEEP MAG', desc:'+15% heat capacity per rank.', maxRank:4},
       {id:'spinUp', name:'SPIN-UP', desc:'Sustained fire ramps substantially faster.', maxRank:1}
     ]
@@ -7179,6 +7559,10 @@
       {id:'breacher', name:'BREACHER CORE', desc:'Point-blank pellets gain brutal large-target damage and stronger recoil.', maxRank:3},
       {id:'flechetteArray', name:'FLECHETTE ARRAY', desc:'Extends effective range modestly and grants every pellet limited penetration.', maxRank:3}
     ],
+    pulse: [
+      {id:'heavyPulse', name:'HEAVY PULSE', desc:'Larger, harder pulses gain material and boss damage, but cycle slightly slower.', maxRank:3},
+      {id:'phaseLance', name:'PHASE LANCE', desc:'Pulse rounds gain penetration, velocity, and effective range.', maxRank:3}
+    ],
     rocket: [
       {id:'swarmPod', name:'SWARM POD', desc:'Launch 3 smaller rockets in a fan. Smaller blasts, dramatically better coverage.', maxRank:3},
       {id:'siegeWarhead', name:'SIEGE WARHEAD', desc:'One slower rocket with a massive blast and boss damage, but a longer reload.', maxRank:3}
@@ -7190,25 +7574,144 @@
   };
 
   function upgradeLevel(id) { return runUpgradeState[id] || 0; }
-  function usesMagazine(w=currentWeapon) { return !!w && (w.id==='sniper' || w.id==='shotgun'); }
+  function usesMagazine(w=currentWeapon) { return !!w && (w.id==='sniper' || w.id==='shotgun' || w.id==='pulse'); }
   function magazineSize(w=currentWeapon) {
     if (!w) return 0;
     if (w.id==='sniper') return 5 + upgradeLevel('longMag');
     if (w.id==='shotgun') return 2 + upgradeLevel('shellRack');
+    if (w.id==='pulse') return 10 + upgradeLevel('pulseMag')*2;
     return 0;
   }
   function reloadFrames(w=currentWeapon) {
     if (!w) return 1;
     if (w.id==='sniper') return Math.max(34, Math.round(90 * Math.pow(.85, upgradeLevel('railReload')))); // 1.5s base
     if (w.id==='shotgun') return Math.max(28, Math.round(72 * Math.pow(.85, upgradeLevel('scatterReload')))); // 1.2s base
+    if (w.id==='pulse') return Math.max(34, Math.round(84 * Math.pow(.88, upgradeLevel('pulseReload')))); // 1.4s base
     return 1;
   }
+
+  // UI-only view of the Rocket Pod's existing one-shot cooldown.
+  function rocketReloadProgress(now=performance.now()) {
+    if (!currentWeapon || currentWeapon.id!=='rocket') return 1;
+    const cooldown = currentWeapon.cooldown
+      * Math.pow(.86,upgradeLevel('fastLoader'))
+      * Math.pow(1.18,upgradeLevel('siegeWarhead'));
+    return Math.max(0,Math.min(1,(now-lastShot)/Math.max(1,cooldown)));
+  }
+  function pulseChargeProgress() {
+    return Math.max(0,Math.min(1,pulseChargeFrames/PULSE_CHARGE_FRAMES));
+  }
+
+  function cancelPulseCharge(update=true) {
+    pulseCharging=false;
+    pulseChargeFrames=0;
+    pulseChargeReadyAnnounced=false;
+    if (update && running && currentWeapon) updateHUD();
+  }
+
+  function beginPulseCharge() {
+    if (!currentWeapon || currentWeapon.id!=='pulse') return false;
+    if (!running || gameOver || paused || upgradeChoosing || evolutionChoosing || weaponReloading) return false;
+    if (pulseCharging) return true;
+    pulseCharging=true;
+    pulseChargeFrames=0;
+    pulseChargeReadyAnnounced=false;
+    updateHUD();
+    return true;
+  }
+
+  function updatePulseCharge(isHeld) {
+    if (!pulseCharging) return;
+    if (!isHeld || !currentWeapon || currentWeapon.id!=='pulse' || paused || gameOver || weaponReloading || upgradeChoosing || evolutionChoosing) {
+      cancelPulseCharge();
+      return;
+    }
+
+    if (weaponAmmo >= PULSE_CHARGE_COST) {
+      const chargeRate = overdriveTimer > 0 ? 1.25 : 1;
+      pulseChargeFrames=Math.min(PULSE_CHARGE_FRAMES,pulseChargeFrames+chargeRate);
+      if (pulseChargeFrames>=PULSE_CHARGE_FRAMES && !pulseChargeReadyAnnounced) {
+        pulseChargeReadyAnnounced=true;
+        SFX.pulseChargeReady();
+        triggerShake(1.25,3);
+      }
+    }
+    updateHUD();
+  }
+
+  function fireChargedPulse() {
+    if (!currentWeapon || currentWeapon.id!=='pulse') return false;
+    if (gameOver || !running || paused || upgradeChoosing || evolutionChoosing || weaponReloading) return false;
+    if (weaponAmmo < PULSE_CHARGE_COST) return false;
+
+    const w=currentWeapon;
+    const accel=upgradeLevel('pulseVelocity');
+    const impact=upgradeLevel('pulseImpact');
+    const heavy=upgradeLevel('heavyPulse');
+    const phase=upgradeLevel('phaseLance');
+
+    weaponAmmo=Math.max(0,weaponAmmo-PULSE_CHARGE_COST);
+    lastShot=Date.now();
+
+    // Big slug stays in the Pulse Cannon's medium-range lane instead of becoming a railgun.
+    const speed=w.speed*.86*(1+accel*.02)*(1+phase*.02);
+    const life=Math.round(w.life*1.17*(1+accel*.02)*(1+phase*.03));
+    const normalMaterial=2*(1+impact*.12)+heavy*.45;
+    const materialDamage=normalMaterial*4.5;
+
+    // Boss damage is intentionally independent from asteroid material damage.
+    // Five rounds buy a heavy burst (~4 normal Pulse hits), not an instant boss delete.
+    const bossDamage=(2.1+heavy*.85)*4.0;
+    const pierce=1+phase*2;
+
+    pushProjectile(ship.angle,speed,life,6.6+heavy*.42,{
+      pulse:true,
+      chargedPulse:true,
+      asteroidDamage:materialDamage,
+      pierce,
+      bossDamage
+    });
+
+    const recoil=w.recoil*2.45*Math.pow(.88,upgradeLevel('pulseStability'))*(1+heavy*.10)*(ship.recoilMult||1);
+    ship.vx-=Math.cos(ship.angle)*recoil;
+    ship.vy-=Math.sin(ship.angle)*recoil;
+
+    const mx=ship.x+Math.cos(ship.angle)*ship.r*1.2;
+    const my=ship.y+Math.sin(ship.angle)*ship.r*1.2;
+    impactRings.push({x:mx,y:my,radius:4,maxRadius:54,life:15,maxLife:15,color:'#bffcff',big:true});
+    spawnMuzzleBurst(20+heavy*3,'#bffcff',.18);
+    triggerShake(7.2+heavy*.45,10);
+    hitFlashAlpha=Math.max(hitFlashAlpha,.07);
+    SFX.bigPulse();
+
+    if (weaponAmmo<=0) startWeaponReload();
+    updateHUD();
+    return true;
+  }
+
+  function releasePulseCharge() {
+    if (!pulseCharging) return false;
+    const charged = pulseChargeFrames>=PULSE_CHARGE_FRAMES && weaponAmmo>=PULSE_CHARGE_COST;
+    pulseCharging=false;
+    pulseChargeFrames=0;
+    pulseChargeReadyAnnounced=false;
+
+    if (charged) return fireChargedPulse();
+
+    // Quick/partial hold behaves like the normal Pulse Cannon trigger.
+    fireBullet();
+    updateHUD();
+    return true;
+  }
+
   function resetMagazine() {
+    pulseCharging=false; pulseChargeFrames=0; pulseChargeReadyAnnounced=false;
     weaponReloading=false; weaponReloadTimer=0; weaponReloadDuration=1;
     weaponAmmo=usesMagazine()?magazineSize():0;
   }
   function startWeaponReload() {
     if (!usesMagazine() || weaponReloading || weaponAmmo>=magazineSize()) return;
+    cancelPulseCharge(false);
     weaponReloading=true; weaponReloadTimer=0; weaponReloadDuration=reloadFrames();
     SFX.reloadStart(currentWeapon.id);
     spawnFloatingText(ship.x, ship.y-32, currentWeapon.id==='sniper'?'RECHARGING':'RELOADING', currentWeapon.color);
@@ -7781,7 +8284,7 @@
     const skin = currentHullSkin();
     return {
       x: W / 2, y: H / 2,
-      r: 14 * skin.hitFactor,
+      r: 14 * skin.hitFactor * PLAYER_VISUAL_SCALE,
       hitSpan: skin.hitSpan || 0.6,   // legacy hulls keep the old flat value
       angle: -Math.PI / 2,
       vx: 0, vy: 0,
@@ -7800,29 +8303,84 @@
     };
   }
 
-  function spawnAsteroid(x, y, size) {
+  function asteroidMaterialProfile(type,size) {
+    if (type === 'dense') {
+      if (size === 3) return {armor:6, structure:5};
+      if (size === 2) return {armor:4, structure:3};
+      return {armor:2, structure:1};
+    }
+    if (type === 'brittle') {
+      if (size === 3) return {armor:0, structure:3};
+      if (size === 2) return {armor:0, structure:1.5};
+      return {armor:0, structure:1};
+    }
+    if (size === 3) return {armor:0, structure:5};
+    if (size === 2) return {armor:0, structure:3};
+    return {armor:0, structure:1};
+  }
+
+  function spawnAsteroid(x, y, size, asteroidType='standard') {
     // size: 3 = large, 2 = medium, 1 = small
+    // asteroidType: standard / dense / brittle
+    const type = ['dense','brittle'].includes(asteroidType) ? asteroidType : 'standard';
     const hard = level > 0 && level % 5 === 0;
     const speedMult = Math.min(2.15, 1 + (level - 1) * 0.045) * (hard ? 1.16 : 1);
-    const speedBase = (0.6 + (3 - size) * 0.35) * speedMult;
+
+    const typeSpeed = type === 'dense' ? .82 : type === 'brittle' ? 1.08 : 1;
+    const speedBase = (0.6 + (3 - size) * 0.35) * speedMult * typeSpeed;
     const r = size === 3 ? 50 : size === 2 ? 28 : 14;
+
     const verts = [];
-    const vertCount = Math.floor(rand(8, 13));
+    const vertCount =
+      type === 'dense' ? Math.floor(rand(7, 10))
+      : type === 'brittle' ? Math.floor(rand(10, 15))
+      : Math.floor(rand(8, 13));
+
     for (let i = 0; i < vertCount; i++) {
-      const angle = (i / vertCount) * Math.PI * 2;
-      const variance = rand(0.75, 1.25);
+      const variance =
+        type === 'dense' ? rand(.86, 1.14)
+        : type === 'brittle' ? rand(.68, 1.30)
+        : rand(.75, 1.25);
       verts.push(variance);
     }
+
+    const material = asteroidMaterialProfile(type,size);
+
     return {
       x, y,
       r,
       size,
+      asteroidType:type,
+      armorHP:material.armor,
+      maxArmorHP:material.armor,
+      structureHP:material.structure,
+      maxStructureHP:material.structure,
+      hitFlash:0,
       vx: rand(-1, 1) * speedBase,
       vy: rand(-1, 1) * speedBase,
       angle: rand(0, Math.PI * 2),
-      spin: rand(-0.02, 0.02) * (hard ? 1.4 : 1),
+      spin: rand(-0.02, 0.02) * (hard ? 1.4 : 1) * (type === 'brittle' ? 1.30 : type === 'dense' ? .78 : 1),
       verts
     };
+  }
+
+  function asteroidVariantForWave() {
+    if (currentWaveKind === 'HEAVY FIELD') {
+      const roll=Math.random();
+      return roll < .68 ? 'dense' : roll < .78 ? 'brittle' : 'standard';
+    }
+    if (currentWaveKind === 'ASTEROID STORM') {
+      const roll=Math.random();
+      return roll < .56 ? 'brittle' : roll < .66 ? 'dense' : 'standard';
+    }
+
+    // Normal progression introduces variants gradually instead of flooding early levels.
+    const brittleChance = level >= 4 ? Math.min(.18, .08 + (level-4)*.004) : 0;
+    const denseChance = level >= 7 ? Math.min(.15, .06 + (level-7)*.0035) : 0;
+    const roll=Math.random();
+    if (roll < brittleChance) return 'brittle';
+    if (roll < brittleChance + denseChance) return 'dense';
+    return 'standard';
   }
 
   function waveKindForLevel(lvl) {
@@ -7839,13 +8397,14 @@
     currentWaveKind = waveKindForLevel(level);
     MUSIC.setIntensity(Math.min(3, Math.floor(level / 5)));
 
-    const spawnRock=(size, velMult=1)=>{
+    const spawnRock=(size, velMult=1, forcedType=null)=>{
       let x,y; do { x=rand(PLAY_X,PLAY_X+PLAY_W); y=rand(PLAY_Y,PLAY_Y+PLAY_H); } while(dist(x,y,ship.x,ship.y)<150);
-      const a=spawnAsteroid(x,y,size); a.vx*=velMult; a.vy*=velMult; asteroids.push(a);
+      const a=spawnAsteroid(x,y,size,forcedType || asteroidVariantForWave());
+      a.vx*=velMult; a.vy*=velMult; asteroids.push(a);
     };
 
     if (currentWaveKind === 'BOSS') {
-      for(let i=0;i<Math.min(3+Math.floor(level/20),6);i++) spawnRock(i%2?2:3,.72);
+      for(let i=0;i<Math.min(3+Math.floor(level/20),6);i++) spawnRock(i%2?2:3,.72, i===0 && level>=20 ? 'dense' : 'standard');
       spawnBoss();
     } else if (currentWaveKind === 'ASTEROID STORM') {
       const count=Math.min(18+Math.floor(level/5),28);
@@ -7860,7 +8419,7 @@
       startUfoAmbush();
     } else if (currentWaveKind === 'ELITE FIELD') {
       const count=Math.min(8+Math.floor(level*.55),16);
-      for(let i=0;i<count;i++) spawnRock(3,1.28);
+      for(let i=0;i<count;i++) spawnRock(3,1.28, Math.random()<.42?'dense':null);
       spawnUFOFromEdge(true);
     } else {
       let count = Math.min(3 + Math.floor(level * 1.05), 16);
@@ -7975,11 +8534,11 @@
     }
   }
 
-  function spawnTestAsteroid(size) {
+  function spawnTestAsteroid(size, asteroidType='standard') {
     let x,y;
     do { x=rand(PLAY_X+35,PLAY_X+PLAY_W-35); y=rand(PLAY_Y+35,PLAY_Y+PLAY_H-35); }
     while (dist(x,y,ship.x,ship.y)<150);
-    const a=spawnAsteroid(x,y,size);
+    const a=spawnAsteroid(x,y,size,asteroidType);
     a.vx*=.42; a.vy*=.42; a.testGround=true;
     asteroids.push(a);
     return a;
@@ -8018,7 +8577,11 @@
   }
 
   function spawnTestBoss(bossType) {
-    const hpMap={ 'DREADNOUGHT':44, 'CARRIER PRIME':57, 'HUNTER ACE':70 };
+    const hpMap={
+      'DREADNOUGHT':bossHealthFor('DREADNOUGHT',0),
+      'CARRIER PRIME':bossHealthFor('CARRIER PRIME',1),
+      'HUNTER ACE':bossHealthFor('HUNTER ACE',2)
+    };
     const rMap={ 'DREADNOUGHT':58, 'CARRIER PRIME':54, 'HUNTER ACE':46 };
     const fromLeft=Math.random()<.5;
     const hp=hpMap[bossType] || 44;
@@ -8030,7 +8593,9 @@
       fireCooldown:bossType==='HUNTER ACE'?42:68, carrierCooldown:210, driftTimer:0, ejectTimer:0, broodId:null,
       phase:0, bossMovePhase:rand(0,Math.PI*2), bossVisualPhase:rand(0,Math.PI*2), testGround:true
     });
-    SFX.bossAlert(); updateHUD();
+    SFX.bossAlert();
+    spawnFloatingText(PLAY_X+PLAY_W*.5,PLAY_Y+52,`${bossType} // ${hp} HP`,'#ff8ca8');
+    updateHUD();
   }
 
   function clearTestMobs(includeRocks=true) {
@@ -8053,6 +8618,7 @@
     level=10; lives=99; score=0; resetShieldLayers(SHIELD_MAX_CHARGES);
     rangeLevel=spreadLevel=rayGunLevel=0; weaponMode='normal'; weaponModeTimer=0;
     waveTransitionTimer=0; achievementPollTimer=0; testGroundMaintenanceTimer=0;
+    overdriveTimer=0; phaseDriveTimer=0; empFlashAlpha=0;
     asteroids=[]; ufos=[]; ufoBullets=[]; powerups=[]; bullets=[]; ufoSpawnTimer=Infinity; invulnTimer=180;
     applyTestBuildPreset();
     MUSIC.setIntensity(3); maintainTestGround(); clearTimeout(levelBannerTimeout);
@@ -8066,9 +8632,11 @@
 
   function handleTestSpawnAction(action) {
     if (!testMode || !running || gameOver) return;
-    if (action==='rock3') spawnTestAsteroid(3);
-    else if (action==='rock2') spawnTestAsteroid(2);
-    else if (action==='rock1') spawnTestAsteroid(1);
+    if (action==='rock3') spawnTestAsteroid(3,'standard');
+    else if (action==='rock2') spawnTestAsteroid(2,'standard');
+    else if (action==='rock1') spawnTestAsteroid(1,'standard');
+    else if (action==='rockDense') spawnTestAsteroid(3,'dense');
+    else if (action==='rockBrittle') spawnTestAsteroid(3,'brittle');
     else if (action==='rockpack') spawnTestTargetPack();
     else if (['standard','gunner','hunter','carrier'].includes(action)) spawnTestUFO(action);
     else if (action==='pod') spawnTestEscapePod(1);
@@ -8077,8 +8645,11 @@
     else if (action==='bossCarrier') spawnTestBoss('CARRIER PRIME');
     else if (action==='bossHunter') spawnTestBoss('HUNTER ACE');
     else if (action==='ambush') { currentWaveKind='UFO AMBUSH'; ambushSpawnQueue=[]; startUfoAmbush(); }
-    else if (action==='shield') spawnPowerup(PLAY_X+PLAY_W*.40,PLAY_Y+PLAY_H*.65,'shield',{vx:0,vy:0,life:999999,testGround:true});
-    else if (action==='oneup') spawnPowerup(PLAY_X+PLAY_W*.60,PLAY_Y+PLAY_H*.65,'oneup',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='shield') spawnPowerup(PLAY_X+PLAY_W*.34,PLAY_Y+PLAY_H*.65,'shield',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='oneup') spawnPowerup(PLAY_X+PLAY_W*.46,PLAY_Y+PLAY_H*.65,'oneup',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='overdrive') spawnPowerup(PLAY_X+PLAY_W*.58,PLAY_Y+PLAY_H*.65,'overdrive',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='emp') spawnPowerup(PLAY_X+PLAY_W*.70,PLAY_Y+PLAY_H*.65,'emp',{vx:0,vy:0,life:999999,testGround:true});
+    else if (action==='phase') spawnPowerup(PLAY_X+PLAY_W*.82,PLAY_Y+PLAY_H*.65,'phase',{vx:0,vy:0,life:999999,testGround:true});
     else if (action==='clearMobs') clearTestMobs(false);
     else if (action==='clearAll') { clearTestMobs(true); bullets=[]; powerups=[]; resetShieldLayers(SHIELD_MAX_CHARGES); maintainTestGround(); }
     SFX.uiTick();
@@ -8110,6 +8681,9 @@
     shakeTime = 0;
     hitFlashAlpha = 0;
     hitConfirmFlash = 0;
+    empFlashAlpha = 0;
+    overdriveTimer = 0;
+    phaseDriveTimer = 0;
     hitStopFrames = 0;
     deathZoomActive = false;
     deathZoomTimer = 0;
@@ -8188,15 +8762,40 @@
     if (usesMagazine(w)) {
       weaponStatusText.textContent += `  //  AMMO ${weaponAmmo}/${magazineSize(w)}`;
       if (weaponReloading) weaponStatusText.textContent += '  //  RELOADING';
+      else if (w.id==='pulse' && pulseCharging) {
+        if (weaponAmmo < PULSE_CHARGE_COST) weaponStatusText.textContent += `  //  CHARGE NEEDS ${PULSE_CHARGE_COST}`;
+        else if (pulseChargeProgress()>=1) weaponStatusText.textContent += '  //  CHARGED';
+        else weaponStatusText.textContent += `  //  CHARGE ${Math.floor(pulseChargeProgress()*100)}%`;
+      }
+    } else if (w.id==='rocket') {
+      const rocketPct=rocketReloadProgress();
+      weaponStatusText.textContent += rocketPct>=.999 ? '  //  READY' : '  //  RELOADING';
     }
     weaponStatusText.style.color = w.color;
-    weaponTimerTrack.classList.remove('active'); weaponTimerFill.style.width='0%';
-    reloadTrack.style.display = weaponReloading ? 'block' : 'none';
+
+    const showPulseCharge = w.id==='pulse' && pulseCharging && !weaponReloading;
+    weaponTimerTrack.classList.toggle('active',showPulseCharge);
+    if (showPulseCharge) {
+      const pct = weaponAmmo>=PULSE_CHARGE_COST ? pulseChargeProgress() : 0;
+      weaponTimerFill.style.width=(pct*100)+'%';
+      weaponTimerFill.style.background = weaponAmmo>=PULSE_CHARGE_COST ? '#bffcff' : '#ff6f6f';
+      weaponTimerFill.style.boxShadow = weaponAmmo>=PULSE_CHARGE_COST ? '0 0 12px #9cf6ff' : '0 0 9px #ff6f6f';
+    } else weaponTimerFill.style.width='0%';
+
+    const rocketReloading = w.id==='rocket' && rocketReloadProgress() < .999;
+    const showReloadTrack = weaponReloading || rocketReloading;
+    reloadTrack.style.display = showReloadTrack ? 'block' : 'none';
+
     if (weaponReloading) {
       const pct = Math.max(0, Math.min(1, weaponReloadTimer / Math.max(1, weaponReloadDuration)));
       reloadFill.style.width = (pct * 100) + '%';
       reloadFill.style.background = w.color;
       reloadFill.style.boxShadow = `0 0 9px ${w.color}`;
+    } else if (rocketReloading) {
+      const pct=rocketReloadProgress();
+      reloadFill.style.width=(pct*100)+'%';
+      reloadFill.style.background=w.color;
+      reloadFill.style.boxShadow=`0 0 9px ${w.color}`;
     } else reloadFill.style.width='0%';
     const activeBoss = ufos && ufos.find(u=>u.boss);
     if (activeBoss) {
@@ -8457,10 +9056,15 @@
       }
     }
 
-    // SPACE remains hold-to-fire, but only when keyboard gameplay input is active.
+    // SPACE remains hold-to-fire for conventional weapons.
+    // Pulse Cannon changes the same input into tap-normal / hold-charge-release.
     if (e.key === ' ') {
       e.preventDefault();
-      if (pcKeyboardControlsEnabled()) fireBullet();
+      if (pcKeyboardControlsEnabled()) {
+        if (currentWeapon && currentWeapon.id==='pulse') {
+          if (!e.repeat) beginPulseCharge();
+        } else fireBullet();
+      }
     }
     if (e.code === 'KeyR' && !e.repeat) {
       e.preventDefault();
@@ -8476,12 +9080,12 @@
     if (upgradeChoosing && ['1','2','3'].includes(e.key)) {
       const btn = upgradeChoicesEl.querySelectorAll('.upgradeChoice')[parseInt(e.key,10)-1];
       if (btn) { e.preventDefault(); btn.click(); }
-    } else if (testMode && ['1','2','3','4'].includes(e.key)) {
+    } else if (testMode && ['1','2','3','4','5'].includes(e.key)) {
       e.preventDefault();
       selectedWeaponIndex=parseInt(e.key,10)-1;
       applyTestBuildPreset();
       spawnFloatingText(ship.x, ship.y-42, `${currentWeapon.name} // PRESET`, currentWeapon.color); SFX.uiTick();
-    } else if (testMode && e.key === '5') {
+    } else if (testMode && e.key === '6') {
       e.preventDefault();
       ufos = []; ufoBullets = []; ambushSpawnQueue = []; currentWaveKind = 'UFO AMBUSH';
       startUfoAmbush();
@@ -8490,6 +9094,9 @@
   });
 
   window.addEventListener('keyup', (e) => {
+    if (e.key === ' ' && currentWeapon && currentWeapon.id==='pulse' && pulseCharging) {
+      releasePulseCharge();
+    }
     keys[e.key.toLowerCase()] = false;
   });
 
@@ -8640,8 +9247,10 @@
     if (!touchControlsEnabledNow()) return;
     fireHeld = true;
     fireBtn.classList.add('active');
-    fireBullet();
+    if (currentWeapon && currentWeapon.id==='pulse') beginPulseCharge();
+    else fireBullet();
   }, () => {
+    if (currentWeapon && currentWeapon.id==='pulse') releasePulseCharge();
     fireHeld = false;
     fireBtn.classList.remove('active');
   });
@@ -8692,23 +9301,30 @@
       registerPcMouseButtonIntent(e.button);
       e.preventDefault();
       if (!pcMouseControlsEnabled()) return;
-      if (e.button === 0) { fireHeld = true; fireBullet(); }
+      if (e.button === 0) { fireHeld = true; if (currentWeapon && currentWeapon.id==='pulse') beginPulseCharge(); else fireBullet(); }
       if (e.button === 2) mouseThrust = true;
     });
 
     canvas.addEventListener('mouseup', (e) => {
-      if (e.button === 0) fireHeld = false;
+      if (e.button === 0) {
+        if (currentWeapon && currentWeapon.id==='pulse') releasePulseCharge();
+        fireHeld = false;
+      }
       if (e.button === 2) mouseThrust = false;
     });
 
     window.addEventListener('mouseup', (e) => {
-      if (e.button === 0) fireHeld = false;
+      if (e.button === 0) {
+        if (currentWeapon && currentWeapon.id==='pulse') releasePulseCharge();
+        fireHeld = false;
+      }
       if (e.button === 2) mouseThrust = false;
     });
 
     canvas.addEventListener('mouseleave', () => {
       mouseThrust = false;
       fireHeld = false;
+      if (currentWeapon && currentWeapon.id==='pulse') cancelPulseCharge();
     });
   }
 
@@ -8727,12 +9343,14 @@
     const now=Date.now(); let cooldown=w.cooldown;
     if (w.id==='sniper') cooldown*=Math.pow(.88,upgradeLevel('quickCycle')) * Math.pow(1.14,upgradeLevel('railDriver')) * Math.pow(.92,upgradeLevel('marksmanCore'));
     if (w.id==='shotgun') cooldown*=Math.pow(.87,upgradeLevel('fastPump'));
+    if (w.id==='pulse') cooldown*=Math.pow(.90,upgradeLevel('pulseCycle')) * Math.pow(1.10,upgradeLevel('heavyPulse'));
     if (w.id==='rocket') cooldown*=Math.pow(.86,upgradeLevel('fastLoader')) * Math.pow(1.18,upgradeLevel('siegeWarhead'));
     if (w.id==='rapid') {
       if (upgradeLevel('plasmaCycler')) cooldown*=1.08;
       const maxSpin = upgradeLevel('gatlingCore') ? .58 : .80;
       if (upgradeLevel('spinUp') || upgradeLevel('gatlingCore')) cooldown*=Math.max(maxSpin,1-Math.min(rapidSpinShots,28)*(upgradeLevel('gatlingCore')?.015:.01));
     }
+    if (overdriveTimer > 0) cooldown *= .58;
     if (now-lastShot<cooldown) return; lastShot=now;
     if (usesMagazine(w)) weaponAmmo = Math.max(0, weaponAmmo - 1);
 
@@ -8755,6 +9373,28 @@
         pushProjectile(ship.angle+t*fan,w.speed*rand(.94,1.06),Math.round(life*(1-Math.abs(t)*.42)),1.8,{pellet:true,volleyId,originX:ship.x,originY:ship.y,pierce:evoRange+((Math.abs(t)<.18)?upgradeLevel('flechette'):0),bossDamage:.72+upgradeLevel('breacher')*.28});
       }
       recoil*=ship.recoilMult||1; ship.vx-=Math.cos(ship.angle)*recoil; ship.vy-=Math.sin(ship.angle)*recoil; spawnMuzzleBurst(12,w.color,.42); triggerShake(4,6);
+    } else if (w.id==='pulse') {
+      const accel=upgradeLevel('pulseVelocity');
+      const impact=upgradeLevel('pulseImpact');
+      const heavy=upgradeLevel('heavyPulse');
+      const phase=upgradeLevel('phaseLance');
+      // Pulse Cannon should sit clearly above Cycler reach, but remain well below Longbow.
+      const speed=w.speed*(1+accel*.02)*(1+phase*.02);
+      const life=Math.round(w.life*(1+accel*.02)*(1+phase*.03));
+      const materialDamage=2*(1+impact*.12)+heavy*.45;
+      const radius=2.15+heavy*.28;
+      const bossDamage=2.1+heavy*.85;
+      pushProjectile(ship.angle,speed,life,radius,{
+        pulse:true,
+        asteroidDamage:materialDamage,
+        pierce:phase,
+        bossDamage
+      });
+      const recoil=w.recoil*Math.pow(.88,upgradeLevel('pulseStability'))*(1+heavy*.08)*(ship.recoilMult||1);
+      ship.vx-=Math.cos(ship.angle)*recoil;
+      ship.vy-=Math.sin(ship.angle)*recoil;
+      spawnMuzzleBurst(5+heavy,w.color,.12);
+      triggerShake(2.1+heavy*.25,4);
     } else if (w.id==='rocket') {
       const speed=w.speed*(1+upgradeLevel('booster')*.12)*(upgradeLevel('siegeWarhead')?.84:1); const radius=86*(1+upgradeLevel('bigWarhead')*.18)*(1+upgradeLevel('siegeWarhead')*.20);
       const swarm=upgradeLevel('swarmPod');
@@ -8764,8 +9404,11 @@
     } else {
       const twin=!!upgradeLevel('twin'); const heatCap=100*(1+upgradeLevel('deepMag')*.15); let heatPer=(upgradeLevel('hotLoad')?9.6:8);
       if (upgradeLevel('gatlingCore') && rapidSpinShots>12) heatPer*=1+upgradeLevel('gatlingCore')*.10;
+      if (overdriveTimer > 0) heatPer *= .38;
       const plasma=upgradeLevel('plasmaCycler');
-      const angles=twin?[ship.angle-.025,ship.angle+.025]:[ship.angle]; angles.forEach((a,i)=>pushProjectile(a,w.speed*(plasma?.92:1),w.life,1.55+plasma*.25,{rapid:true,hot:!!upgradeLevel('hotLoad')||plasma>0,barrelSide:twin?(i?1:-1):0,bossDamage:.8+plasma*.25}));
+      const hot=upgradeLevel('hotLoad')?1:0;
+      const asteroidDamage=(1+hot*.30)*(1+plasma*.15);
+      const angles=twin?[ship.angle-.025,ship.angle+.025]:[ship.angle]; angles.forEach((a,i)=>pushProjectile(a,w.speed*(plasma?.92:1),w.life,1.55+plasma*.25,{rapid:true,hot:hot>0||plasma>0,asteroidDamage,barrelSide:twin?(i?1:-1):0,bossDamage:.8+plasma*.25}));
       weaponHeat+=heatPer; rapidSpinShots++;
       if (weaponHeat>=heatCap) { weaponHeat=heatCap; weaponOverheated=true; SFX.overheat(); spawnFloatingText(ship.x,ship.y-32,'OVERHEAT','#ff6f6f'); }
       spawnMuzzleBurst(twin?4:2,w.color,.10);
@@ -8861,23 +9504,123 @@
   }
 
   // ---------- Powerups ----------
-  const POWERUP_COLORS = { shield:'#6fffb0', oneup:'#c8ff4d' };
+  const POWERUP_COLORS = {
+    shield:'#6fffb0',
+    oneup:'#c8ff4d',
+    overdrive:'#6ff2ff',
+    emp:'#81e7ff',
+    phase:'#c589ff'
+  };
+
   function loosePowerupExists(type){ return powerups.some(p => p.type === type && !p.testGround); }
+  function looseTemporaryPowerupExists(){ return powerups.some(p => TEMP_POWERUP_TYPES.includes(p.type) && !p.testGround); }
   function canSpawnShield(){ return shieldCharges < SHIELD_MAX_CHARGES && !loosePowerupExists('shield'); }
   function canSpawnOneUp(){ return lives < MAX_LIVES && !loosePowerupExists('oneup'); }
+  function canSpawnTemporaryPowerup(){ return !looseTemporaryPowerupExists(); }
+
+  function pickTemporaryPowerupType() {
+    const roll=Math.random();
+    return roll < .42 ? 'overdrive' : roll < .74 ? 'emp' : 'phase';
+  }
+
   function spawnPowerup(x,y,type='shield',opts={}){
+    const radius = type==='oneup' ? 17 : TEMP_POWERUP_TYPES.includes(type) ? 16 : 15;
     powerups.push({
       x,y,
-      r:type==='oneup'?15:13,
+      r:radius,
       type,
-      vx:opts.vx ?? rand(-.5,.5),
-      vy:opts.vy ?? rand(-.5,.5),
-      angle:0,
-      life:opts.life ?? (type==='oneup'?900:600),
+      vx:opts.vx ?? rand(-.42,.42),
+      vy:opts.vy ?? rand(-.42,.42),
+      angle:rand(0,Math.PI*2),
+      anim:rand(0,Math.PI*2),
+      pulseSeed:rand(0,Math.PI*2),
+      spinDir:Math.random()<.5?-1:1,
+      life:opts.life ?? (type==='oneup'?900:TEMP_POWERUP_TYPES.includes(type)?720:600),
       testGround:!!opts.testGround
     });
   }
+
+  function spawnPowerupCollectBurst(p, color, radius=92) {
+    spawnExplosion(p.x,p.y,20,color);
+    spawnKillBurst(p.x,p.y,12,color,1.08);
+    impactRings.push({x:p.x,y:p.y,radius:4,maxRadius:radius,life:26,maxLife:26,color,big:true});
+  }
+
+  function activateOverdrive(p) {
+    overdriveTimer=Math.max(overdriveTimer,OVERDRIVE_DURATION);
+    weaponOverheated=false;
+    weaponHeat*=.35;
+    spawnFloatingText(ship.x,ship.y-ship.r-30,'OVERDRIVE // ONLINE','#6ff2ff');
+    spawnPowerupCollectBurst(p,'#6ff2ff',115);
+    triggerShake(4,7);
+    SFX.overdrive();
+  }
+
+  function activateEMP(p) {
+    empFlashAlpha=Math.max(empFlashAlpha,.24);
+    const radius=Math.max(360,Math.min(560,Math.max(PLAY_W,PLAY_H)*.72));
+
+    // Erase hostile fire with visible little electrical pops.
+    for (let i=0;i<ufoBullets.length;i++) {
+      const b=ufoBullets[i];
+      if (i<42) spawnExplosion(b.x,b.y,2,'#9ff8ff');
+    }
+    ufoBullets=[];
+
+    // Push asteroid traffic away from the player without destroying the field.
+    for (const a of asteroids) {
+      const dx=a.x-ship.x, dy=a.y-ship.y;
+      const d=Math.hypot(dx,dy)||1;
+      const strength=Math.max(0,1-d/radius)*1.55;
+      if (strength>0) {
+        a.vx += dx/d*strength;
+        a.vy += dy/d*strength;
+      }
+    }
+
+    // Normal UFOs are interrupted; bosses take a hard pulse instead of a full stun.
+    for (let i=ufos.length-1;i>=0;i--) {
+      const u=ufos[i];
+      if (u.boss) {
+        u.vx*=.35; u.vy*=.35;
+        damageBossUFO(i,4, u.x, u.y);
+      } else {
+        u._empStun=Math.max(u._empStun||0,135);
+        u._attackGlow=0;
+        u.fireCooldown=Math.max(u.fireCooldown||0,90);
+        if (u.variant==='gunner') {
+          u._gunnerVolleyRemaining=0;
+          u._gunnerShotTimer=0;
+        }
+        if (u.variant==='hunter') {
+          u._hunterState='recover';
+          u._hunterTimer=72;
+          u._hunterBurstRemaining=0;
+        }
+      }
+    }
+
+    impactRings.push({x:ship.x,y:ship.y,radius:6,maxRadius:radius,life:34,maxLife:34,color:'#8ff5ff',big:true});
+    impactRings.push({x:ship.x,y:ship.y,radius:4,maxRadius:radius*.72,life:27,maxLife:27,color:'#ff6fe8',big:true});
+    spawnExplosion(ship.x,ship.y,34,'#9ff8ff');
+    spawnFloatingText(ship.x,ship.y-ship.r-30,'EMP // FIELD CLEARED','#9ff8ff');
+    triggerShake(10,16);
+    SFX.emp();
+  }
+
+  function activatePhaseDrive(p) {
+    phaseDriveTimer=Math.max(phaseDriveTimer,PHASE_DRIVE_DURATION);
+    spawnFloatingText(ship.x,ship.y-ship.r-30,'PHASE DRIVE // ONLINE','#d2a2ff');
+    spawnPowerupCollectBurst(p,'#c589ff',108);
+    triggerShake(4,7);
+    SFX.phase();
+  }
+
   function collectPowerup(p){
+    if (p.type === 'overdrive') { activateOverdrive(p); updateHUD(); return; }
+    if (p.type === 'emp') { activateEMP(p); updateHUD(); return; }
+    if (p.type === 'phase') { activatePhaseDrive(p); updateHUD(); return; }
+
     if (p.type === 'oneup') {
       if (testMode) {
         spawnFloatingText(p.x,p.y-22,'1UP // TEST','#c8ff4d');
@@ -8888,21 +9631,28 @@
         score += 500;
         spawnFloatingText(p.x,p.y-22,'+500 // LIFE MAX','#c8ff4d');
       }
-      spawnExplosion(p.x,p.y,24,'#c8ff4d');
-      impactRings.push({x:p.x,y:p.y,radius:5,maxRadius:72,life:22,maxLife:22,color:'#c8ff4d',big:true});
+      spawnPowerupCollectBurst(p,'#c8ff4d',88);
       triggerShake(5,8);
       SFX.oneUp();
       updateHUD();
       return;
     }
-    if (shieldCharges>=SHIELD_MAX_CHARGES) { score+=60; spawnFloatingText(p.x,p.y-18,'+60 SHIELD MAXED','#6fffb0'); }
-    else {
+
+    if (shieldCharges>=SHIELD_MAX_CHARGES) {
+      score+=60;
+      spawnFloatingText(p.x,p.y-18,'+60 SHIELD MAXED','#6fffb0');
+    } else {
       addShieldLayer();
       const added=currentShieldLayer();
-      spawnFloatingText(ship.x,ship.y-ship.r-20,added && added.volatile ? 'OVERLOAD SHIELD ARMED' : `SHIELD ${shieldCharges} // 2 HITS`,added && added.volatile ? '#ff6fe8' : '#6fffb0');
+      spawnFloatingText(
+        ship.x,ship.y-ship.r-20,
+        added && added.volatile ? 'OVERLOAD SHIELD ARMED' : `SHIELD ${shieldCharges} // 2 HITS`,
+        added && added.volatile ? '#ff6fe8' : '#6fffb0'
+      );
       SFX.shieldUp();
     }
-    spawnExplosion(p.x,p.y,12,'#6fffb0'); updateHUD();
+    spawnPowerupCollectBurst(p,'#6fffb0',76);
+    updateHUD();
   }
 
   // ---------- Particles (explosions) ----------
@@ -9031,7 +9781,12 @@
 
     const pointerFireHeld = touchControlsEnabledNow() ? fireHeld : (pcMouseControlsEnabled() && fireHeld);
     const keyboardFireHeld = DESKTOP_GAMEPLAY_MOUSE_ENABLED && pcKeyboardControlsEnabled() && keys[' '];
-    if (pointerFireHeld || keyboardFireHeld) fireBullet();
+    const fireInputHeld = pointerFireHeld || keyboardFireHeld;
+
+    if (currentWeapon && currentWeapon.id==='pulse') {
+      if (pulseCharging) updatePulseCharge(fireInputHeld);
+    } else if (fireInputHeld) fireBullet();
+
     if (reticleKick > 0) reticleKick = Math.max(0, reticleKick - 0.12);
 
     if (waveTransitionTimer > 0) {
@@ -9121,17 +9876,22 @@
     updateReloadHistoryGuard();
 
     if (invulnTimer > 0) invulnTimer--;
+    if (overdriveTimer > 0) overdriveTimer--;
+    if (phaseDriveTimer > 0) phaseDriveTimer--;
+
+    // Rocket Pod keeps its existing cooldown mechanics; only the shared reload HUD animates.
+    if (currentWeapon && currentWeapon.id==='rocket') updateHUD();
 
     // Magazine reloads tick in simulation time, so pausing the game pauses the reload too.
     if (weaponReloading && usesMagazine()) {
-      weaponReloadTimer++;
+      weaponReloadTimer += overdriveTimer > 0 ? 1.9 : 1;
       if (weaponReloadTimer >= weaponReloadDuration) finishWeaponReload();
       else if (weaponReloadTimer % 3 === 0) updateHUD();
     }
 
     // Build-specific continuous systems.
     if (currentWeapon.id === 'rapid') {
-      const cool = 0.70 * (1 + upgradeLevel('cooling')*.30);
+      const cool = 0.70 * (1 + upgradeLevel('cooling')*.30) * (overdriveTimer > 0 ? 1.85 : 1);
       if (!pointerFireHeld && !keyboardFireHeld) rapidSpinShots = Math.max(0, rapidSpinShots - 1);
       weaponHeat = Math.max(0, weaponHeat - cool);
       const cap = 100 * (1 + upgradeLevel('deepMag')*.15);
@@ -9152,9 +9912,22 @@
     // Powerups: drift, wrap, expire, and check pickup
     for (let i = powerups.length - 1; i >= 0; i--) {
       const p = powerups[i];
+      p.anim=(p.anim||0)+0.055;
+      const spinSpeed = p.type==='phase' ? .018 : p.type==='emp' ? .026 : p.type==='overdrive' ? .042 : .028;
+      p.angle += spinSpeed*(p.spinDir||1);
+
+      // Gentle pickup magnetism only at close range; enough to reward a committed approach.
+      const pdx=ship.x-p.x, pdy=ship.y-p.y;
+      const pd=Math.hypot(pdx,pdy)||1;
+      if (pd < 125) {
+        const pull=(1-pd/125)*.035;
+        p.vx += pdx/pd*pull;
+        p.vy += pdy/pd*pull;
+        p.vx*=.992; p.vy*=.992;
+      }
+
       p.x += p.vx;
       p.y += p.vy;
-      p.angle += 0.03;
       p.life--;
       wrap(p);
       if (p.life <= 0) {
@@ -9238,6 +10011,11 @@
       const a=asteroids[i];
       for (let j=bullets.length-1;j>=0;j--) {
         const b=bullets[j];
+
+        // A surviving piercing projectile can pass through OTHER targets, but it cannot
+        // sit inside the same asteroid and register another hit on the following frame.
+        if (b._asteroidHitLocks && b._asteroidHitLocks.has(a)) continue;
+
         if (dist(a.x,a.y,b.x,b.y) < a.r+b.r) {
           if (b.rocket) { explodeRocket(b,j); break; }
 
@@ -9257,25 +10035,45 @@
             let needed=a.size===3 ? Math.max(2,4-breacher-sawed) : a.size===2 ? 2 : 1;
             const hardHit=travel<=closeRange && hitIdx.length>=needed;
             spawnImpactRing(b.x,b.y,currentWeapon.color,hardHit); applyWeaponHitFeedback(b,false);
-            breakAsteroid(i,hardHit);
-            // Consume the pellets that actually landed. Piercing flechettes survive as intended.
+            damageAsteroid(i,b.weapon,{
+              powerful:hardHit,
+              concentrated:hardHit,
+              volleyPellets:hitIdx.length
+            });
+
+            // Consume the pellets that actually landed. Piercing flechettes survive as intended,
+            // but cannot re-hit this same asteroid on the next frame.
             hitIdx.sort((x,y)=>y-x).forEach(k=>{
               const pb=bullets[k]; if(!pb) return;
-              if(pb.pierce>0) pb.pierce--; else bullets.splice(k,1);
+              if(pb.pierce>0) {
+                if(!pb._asteroidHitLocks) pb._asteroidHitLocks=new Set();
+                pb._asteroidHitLocks.add(a);
+                pb.pierce--;
+              } else bullets.splice(k,1);
             });
             updateHUD();
             break;
           }
 
-          spawnImpactRing(b.x,b.y,currentWeapon.color,!!b.vaporize); applyWeaponHitFeedback(b,false);
+          spawnImpactRing(b.x,b.y,currentWeapon.color,!!b.vaporize || !!b.chargedPulse); applyWeaponHitFeedback(b,false);
           const scoreBefore=score;
           const sniperFirstImpact = b.weapon==='sniper' && b.firstImpactVaporize ? (b.impactCount||0)===0 : false;
-          const hardHit = sniperFirstImpact || (b.weapon!=='sniper' && !!b.vaporize) || (!!b.hot && a.size <= 2);
-          breakAsteroid(i,hardHit);
+          const hardHit = sniperFirstImpact || (b.weapon!=='sniper' && !!b.vaporize);
+          damageAsteroid(i,b.weapon,{
+            powerful:hardHit,
+            materialDamage:b.asteroidDamage || 1,
+            hot:!!b.hot,
+            chargedPulse:!!b.chargedPulse
+          });
+
           if (b.weapon==='sniper' && b.firstImpactVaporize) b.impactCount=(b.impactCount||0)+1;
           if (b.scoreMult && b.scoreMult!==1) score += Math.floor((score-scoreBefore)*(b.scoreMult-1));
           updateHUD();
-          if (b.pierce>0) b.pierce--; else bullets.splice(j,1);
+          if (b.pierce>0) {
+            if(!b._asteroidHitLocks) b._asteroidHitLocks=new Set();
+            b._asteroidHitLocks.add(a);
+            b.pierce--;
+          } else bullets.splice(j,1);
           break;
         }
       }
@@ -9296,28 +10094,37 @@
 
     // UFO movement + firing
     for (const u of ufos) {
-      // Track turret angles toward ship for gunner variant
-      if (u.variant === 'gunner') {
-        const targetAngle = Math.atan2(ship.y - u.y, ship.x - u.x);
-        if (u._turretAngle === undefined) u._turretAngle = targetAngle;
-        // Smoothly rotate turret toward player — eased chase
-        let delta = targetAngle - u._turretAngle;
-        while (delta > Math.PI)  delta -= Math.PI * 2;
-        while (delta < -Math.PI) delta += Math.PI * 2;
-        u._turretAngle += delta * 0.045;
-      }
-
-      if (u.boss) {
+      const empStunned = !u.boss && (u._empStun||0) > 0;
+      if (empStunned) {
+        u._empStun--;
+        u._attackGlow=0;
+        u.vx*=.965;
+        u.vy*=.965;
+      } else if (u.boss) {
         updateBossMovement(u);
+      } else if (u.tier === 2 && (u.variant === 'standard' || !u.variant)) {
+        updateStandardUfoCombat(u);
+      } else if (u.variant === 'gunner' && u.tier === 2) {
+        updateGunnerUfoCombat(u);
       } else if (u.variant === 'hunter' && u.tier === 2) {
-        const a=Math.atan2(ship.y-u.y,ship.x-u.x); const desired=1.18+Math.min(.6,level*.012);
-        u.vx += (Math.cos(a)*desired-u.vx)*.015; u.vy += (Math.sin(a)*desired-u.vy)*.015;
+        updateHunterUfoCombat(u);
       } else if (u.variant === 'carrier' && u.tier === 2) {
         u.carrierCooldown--;
-        if (u.carrierCooldown<=0 && ufos.filter(x=>x.tier===1).length<4) { spawnEscapePod(u.x,u.y,rand(0,Math.PI*2),null,false); u.carrierCooldown=rand(240,360); SFX.escapePodEject(); }
+        if (u.carrierCooldown<=0 && ufos.filter(x=>x.tier===1).length<4) {
+          spawnEscapePod(u.x,u.y,rand(0,Math.PI*2),null,false);
+          u.carrierCooldown=rand(190,280);
+          SFX.escapePodEject();
+        }
+        // Carrier defensive weapon remains on the legacy single-shot path for now.
+        u.fireCooldown--;
+        if (u.fireCooldown <= 0) {
+          fireUfoBullet(u);
+          u.fireCooldown = rand(92,142);
+        }
       }
-      if (!u.boss && (u.tier === 1 || u.tier === 0)) {
-        // Pods and debris dart around erratically instead of flying a straight line
+
+      if (!empStunned && !u.boss && (u.tier === 1 || u.tier === 0)) {
+        // Pods and debris dart around erratically instead of flying a straight line.
         u.driftTimer--;
         if (u.driftTimer <= 0) {
           const speed = Math.hypot(u.vx, u.vy) || 2;
@@ -9326,20 +10133,21 @@
           u.vy = Math.sin(newAngle) * speed;
           u.driftTimer = rand(u.tier === 0 ? 15 : 30, u.tier === 0 ? 30 : 60);
         }
+
+        if (u.tier > 0) {
+          u.fireCooldown--;
+          if (u.fireCooldown <= 0) {
+            fireUfoBullet(u);
+            u.fireCooldown = rand(50,84);
+          }
+        }
       }
+
       if (u.ejectTimer > 0) u.ejectTimer--;
       u.x += u.vx;
       u.y += u.vy;
       wrap(u);
       u.angle += 0.02;
-
-      if (u.tier > 0 && !u.boss) {
-        u.fireCooldown--;
-        if (u.fireCooldown <= 0) {
-          fireUfoBullet(u);
-          u.fireCooldown = u.variant==='gunner' ? rand(48,78) : u.variant==='hunter' ? rand(62,92) : u.tier === 2 ? rand(82,135) : rand(50,84);
-        }
-      }
     }
 
     // UFO bullets: move, wrap, expire
@@ -9357,21 +10165,36 @@
       const u=ufos[i];
       for (let j=bullets.length-1;j>=0;j--) {
         const b=bullets[j];
+
+        // Piercing rounds can continue through OTHER ships, but one projectile may only
+        // damage a given UFO/boss once. This prevents large charged shots from sitting
+        // inside a boss hitbox and applying damage again every simulation frame.
+        if (b._ufoHitLocks && b._ufoHitLocks.has(u)) continue;
+
         if (dist(u.x,u.y,b.x,b.y)<u.r+b.r) {
           if (b.rocket) { explodeRocket(b,j); break; }
           const sniperFirstImpact = b.weapon==='sniper' && b.firstImpactVaporize ? (b.impactCount||0)===0 : false;
           const powerfulHit = b.weapon==='sniper' ? sniperFirstImpact : !!b.vaporize;
-          spawnImpactRing(b.x,b.y,currentWeapon.color,powerfulHit); applyWeaponHitFeedback(b,!!u.boss);
-          if (u.boss) damageBossUFO(i,b.bossDamage||1,b.x,b.y); else breakUFO(i,powerfulHit);
+          spawnImpactRing(b.x,b.y,currentWeapon.color,powerfulHit || !!b.chargedPulse);
+          applyWeaponHitFeedback(b,!!u.boss);
+
+          if (u.boss) damageBossUFO(i,b.bossDamage||1,b.x,b.y);
+          else breakUFO(i,powerfulHit);
+
           if (b.weapon==='sniper' && b.firstImpactVaporize) b.impactCount=(b.impactCount||0)+1;
-          if (b.pierce>0) b.pierce--; else bullets.splice(j,1);
+
+          if (b.pierce>0) {
+            if (!b._ufoHitLocks) b._ufoHitLocks=new Set();
+            b._ufoHitLocks.add(u);
+            b.pierce--;
+          } else bullets.splice(j,1);
           break;
         }
       }
     }
 
     // Ship-asteroid collisions
-    if (invulnTimer <= 0) {
+    if (invulnTimer <= 0 && phaseDriveTimer <= 0) {
       for (let i = asteroids.length - 1; i >= 0; i--) {
         const a = asteroids[i];
         if (dist(a.x, a.y, ship.x, ship.y) < a.r + ship.r * ship.hitSpan) {
@@ -9386,7 +10209,7 @@
     }
 
     // Ship-UFO ramming collisions
-    if (invulnTimer <= 0) {
+    if (invulnTimer <= 0 && phaseDriveTimer <= 0) {
       for (let i = ufos.length - 1; i >= 0; i--) {
         const u = ufos[i];
         if (dist(u.x, u.y, ship.x, ship.y) < u.r + ship.r * ship.hitSpan) {
@@ -9401,7 +10224,7 @@
     }
 
     // UFO bullets vs ship
-    if (invulnTimer <= 0) {
+    if (invulnTimer <= 0 && phaseDriveTimer <= 0) {
       for (let i = ufoBullets.length - 1; i >= 0; i--) {
         const b = ufoBullets[i];
         if (dist(b.x, b.y, ship.x, ship.y) < b.r + ship.r * ship.hitSpan) {
@@ -9421,6 +10244,7 @@
     if (hitFlashAlpha > 0) hitFlashAlpha = Math.max(0, hitFlashAlpha - 0.04);
     if (hitConfirmFlash > 0) hitConfirmFlash = Math.max(0, hitConfirmFlash - 0.09);
     if (upgradeFlashAlpha > 0) upgradeFlashAlpha = Math.max(0, upgradeFlashAlpha - 0.035);
+    if (empFlashAlpha > 0) empFlashAlpha = Math.max(0, empFlashAlpha - 0.022);
 
     // Wave clear: a short arcade beat instead of instantly dumping the next field in.
     // UFO AMBUSH is different from a normal field: the player must actually survive and clear
@@ -9428,6 +10252,87 @@
     const ambushThreatsRemain = currentWaveKind === 'UFO AMBUSH' &&
       (ambushSpawnQueue.length > 0 || ufos.some(u=>!u.boss));
     if (!testMode && !upgradeChoosing && !evolutionChoosing && asteroids.length === 0 && !ufos.some(u=>u.boss) && !ambushThreatsRemain && waveTransitionTimer === 0) beginWaveClear();
+  }
+
+  function asteroidWeaponMaterialDamage(a, sourceWeapon, opts={}) {
+    if (sourceWeapon === 'pulse') return opts.materialDamage || 2;
+
+    if (sourceWeapon === 'rapid') {
+      let dmg=opts.materialDamage || 1;
+      // Cycler is intentionally a material mismatch against normal/heavy rock,
+      // but its rapid impulses resonate brutally with brittle stone.
+      if (a.asteroidType === 'brittle') dmg *= 2;
+      return dmg;
+    }
+
+    if (sourceWeapon === 'shotgun') {
+      if (opts.concentrated) return Infinity;
+      // A loose distant volley chips material instead of getting full Breacher behavior.
+      return 1.15 + Math.min(1.35,(opts.volleyPellets||1)*.16);
+    }
+
+    if (sourceWeapon === 'sniper') return Infinity;
+    return opts.materialDamage || 1;
+  }
+
+  function damageAsteroid(index, sourceWeapon=null, opts={}) {
+    const a=asteroids[index];
+    if (!a) return false;
+
+    const dense=a.asteroidType==='dense';
+    const powerful=!!opts.powerful;
+    const materialDamage=asteroidWeaponMaterialDamage(a,sourceWeapon,opts);
+
+    // Dense armor is its own layer. Damage never overflows from armor into structure
+    // on the same projectile/volley, which guarantees a real second Longbow/Scatter shot.
+    if (dense && a.armorHP > 0) {
+      const armorBefore=a.armorHP;
+      const armorDamage =
+        sourceWeapon==='sniper' || (sourceWeapon==='shotgun' && opts.concentrated)
+          ? a.maxArmorHP
+          : materialDamage;
+
+      a.armorHP=Math.max(0,a.armorHP-armorDamage);
+      a.hitFlash=1;
+
+      const kick=Math.atan2(a.y-ship.y,a.x-ship.x);
+      a.vx += Math.cos(kick)*.08;
+      a.vy += Math.sin(kick)*.08;
+
+      if (armorBefore>0 && a.armorHP<=0) {
+        spawnFloatingText(a.x,a.y-a.r*.42,'ARMOR BROKEN','#bfeeff');
+        spawnImpactRing(a.x,a.y,'#9ee7ff',true);
+      }
+      return false;
+    }
+
+    // Longbow / concentrated Scattergun retain their identity once Dense armor is gone,
+    // but Dense fragments normally instead of disappearing in a vaporize shortcut.
+    if (dense && (sourceWeapon==='sniper' || (sourceWeapon==='shotgun' && opts.concentrated))) {
+      breakAsteroid(index,false);
+      return true;
+    }
+
+    // On Standard/Brittle rocks these two weapons preserve their original hard-hit behavior.
+    if (!dense && sourceWeapon==='sniper') {
+      breakAsteroid(index,powerful);
+      return true;
+    }
+    if (!dense && sourceWeapon==='shotgun') {
+      breakAsteroid(index,powerful);
+      return true;
+    }
+
+    // Pulse Cannon and Cycler work through real structure HP.
+    a.structureHP=Math.max(0,(a.structureHP ?? 1)-materialDamage);
+    a.hitFlash=Math.max(a.hitFlash||0,.55);
+
+    if (a.structureHP<=0) {
+      breakAsteroid(index,false);
+      return true;
+    }
+
+    return false;
   }
 
   function breakAsteroid(index, powerful) {
@@ -9446,18 +10351,35 @@
     asteroids.splice(index, 1);
     if (!powerful && a.size > 1) {
       const newSize = a.size - 1;
-      for (let k = 0; k < 2; k++) {
-        const na = spawnAsteroid(a.x, a.y, newSize);
+      const childCount = a.asteroidType === 'dense' ? 1 : a.asteroidType === 'brittle' ? 3 : 2;
+      for (let k = 0; k < childCount; k++) {
+        const na = spawnAsteroid(a.x, a.y, newSize, a.asteroidType || 'standard');
+        // Spread brittle fragments wider; dense chunks retain more of the parent's momentum.
+        if (a.asteroidType === 'dense') {
+          na.vx = na.vx*.42 + a.vx*.62;
+          na.vy = na.vy*.42 + a.vy*.62;
+        } else if (a.asteroidType === 'brittle') {
+          na.vx *= 1.15;
+          na.vy *= 1.15;
+        }
         asteroids.push(na);
       }
     }
 
-    // Powerup drop: one low-probability roll decides IF anything drops, then a
-    // weighted pick decides WHAT — much easier to keep genuinely rare this way.
-    if (!testMode && canSpawnShield() && Math.random() < POWERUP_DROP_CHANCE) spawnPowerup(a.x,a.y,'shield');
+    // Arcade drops stay rare enough to become a decision during heavy combat.
+    if (!testMode) {
+      if (canSpawnShield() && Math.random() < POWERUP_DROP_CHANCE) {
+        spawnPowerup(a.x,a.y,'shield');
+      } else if (canSpawnTemporaryPowerup()) {
+        let tempChance=TEMP_POWERUP_ASTEROID_CHANCE;
+        if (a.asteroidType==='dense') tempChance*=1.75;
+        if (a.asteroidType==='brittle') tempChance*=a.size===1 ? 0 : .60; // no fragment farming
+        if (Math.random()<tempChance) spawnPowerup(a.x,a.y,pickTemporaryPowerupType());
+      }
+    }
   }
 
-  function pickWeightedPowerupType() { return 'shield'; }
+  function pickWeightedPowerupType() { return pickTemporaryPowerupType(); }
 
   // ---------- Ray Gun: passive auto-turret ----------
   // Fires ONE chain-lightning beam, bouncing ship -> nearest small asteroid -> next
@@ -9542,8 +10464,13 @@
     }
     ufos.push({
       x, y, vx, vy, r, tier: 2, angle: 0, variant,
-      fireCooldown: variant==='gunner'?rand(42,72):rand(76,132), driftTimer: 0, ejectTimer: 0, broodId: null,
-      carrierCooldown: rand(220,340)
+      fireCooldown:
+        variant==='gunner' ? rand(58,92)
+        : variant==='standard' ? rand(72,118)
+        : variant==='hunter' ? rand(70,110)
+        : rand(82,132),
+      driftTimer: 0, ejectTimer: 0, broodId: null,
+      carrierCooldown: rand(175,260)
     });
   }
 
@@ -9551,11 +10478,317 @@
     spawnUFOAtEdge(Math.random()<.5?'left':'right', null, null, forced);
   }
 
+
+  function clampUfoSpeed(u, maxSpeed) {
+    const sp = Math.hypot(u.vx, u.vy);
+    if (sp > maxSpeed && sp > 0) {
+      const s = maxSpeed / sp;
+      u.vx *= s;
+      u.vy *= s;
+    }
+  }
+
+  function shortestAngleDelta(target, current) {
+    let d = target - current;
+    while (d > Math.PI) d -= Math.PI * 2;
+    while (d < -Math.PI) d += Math.PI * 2;
+    return d;
+  }
+
+  function predictiveAimAngle(u, leadFrames=18) {
+    const tx = ship.x + ship.vx * leadFrames;
+    const ty = ship.y + ship.vy * leadFrames;
+    return Math.atan2(ty - u.y, tx - u.x);
+  }
+
+  // STANDARD // skirmisher
+  // Circles the player, changes strafe direction occasionally, and fires readable imperfect shots.
+  function updateStandardUfoCombat(u) {
+    if (u._strafeDir == null) u._strafeDir = Math.random() < .5 ? -1 : 1;
+    if (u._repositionTimer == null) u._repositionTimer = rand(130,230);
+
+    const dx = ship.x - u.x;
+    const dy = ship.y - u.y;
+    const dist = Math.hypot(dx,dy) || 1;
+    const a = Math.atan2(dy,dx);
+    const preferred = Math.max(210, Math.min(320, Math.min(PLAY_W,PLAY_H) * .48));
+    const radialError = dist - preferred;
+
+    const speed = .88 + Math.min(.24, level * .006);
+    const radial = Math.max(-.46, Math.min(.46, radialError * .0042));
+    const tangentA = a + u._strafeDir * Math.PI/2;
+    const desiredVx = Math.cos(tangentA) * speed + Math.cos(a) * radial;
+    const desiredVy = Math.sin(tangentA) * speed + Math.sin(a) * radial;
+
+    u.vx += (desiredVx - u.vx) * .030;
+    u.vy += (desiredVy - u.vy) * .030;
+    clampUfoSpeed(u, 1.28 + Math.min(.22, level*.005));
+
+    u._repositionTimer--;
+    if (u._repositionTimer <= 0) {
+      u._strafeDir *= -1;
+      const kickA = a + u._strafeDir * Math.PI/2;
+      u.vx += Math.cos(kickA) * .34;
+      u.vy += Math.sin(kickA) * .34;
+      u._repositionTimer = rand(140,250);
+    }
+
+    u.fireCooldown--;
+    u._attackGlow = u.fireCooldown < 18 ? Math.max(0, 1 - u.fireCooldown / 18) : 0;
+    if (u.fireCooldown <= 0) {
+      fireStandardShot(u);
+      u.fireCooldown = rand(
+        Math.max(66, 98 - level*.55),
+        Math.max(92, 138 - level*.45)
+      );
+      u._attackGlow = 0;
+    }
+  }
+
+  function fireStandardShot(u) {
+    const angle = Math.atan2(ship.y-u.y, ship.x-u.x) + rand(-.30,.30);
+    const speed = 4.0;
+    ufoBullets.push({
+      x:u.x, y:u.y,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      life:124, r:3,
+      shotType:'standard'
+    });
+    SFX.enemyShot();
+  }
+
+  // GUNNER // suppression
+  // Holds a firing lane, tracks with visible turrets, telegraphs, then alternates a 3-shot volley.
+  function updateGunnerUfoCombat(u) {
+    const dx = ship.x-u.x;
+    const dy = ship.y-u.y;
+    const dist = Math.hypot(dx,dy) || 1;
+    const a = Math.atan2(dy,dx);
+
+    if (u._gunnerStrafeDir == null) u._gunnerStrafeDir = Math.random()<.5?-1:1;
+    if (u._gunnerStrafeTimer == null) u._gunnerStrafeTimer = rand(150,240);
+    if (u._gunnerVolleyRemaining == null) u._gunnerVolleyRemaining = 0;
+    if (u._gunnerShotTimer == null) u._gunnerShotTimer = 0;
+    if (u._gunnerBarrelIndex == null) u._gunnerBarrelIndex = 0;
+
+    const targetAngle = Math.atan2(ship.y-u.y, ship.x-u.x);
+    if (u._turretAngle === undefined) u._turretAngle = targetAngle;
+    u._turretAngle += shortestAngleDelta(targetAngle,u._turretAngle) * .055;
+
+    const preferred = Math.max(250, Math.min(390, Math.min(PLAY_W,PLAY_H)*.60));
+    const radialError = dist - preferred;
+    const radial = Math.max(-.62, Math.min(.62, radialError*.0052));
+    const tangentA = a + u._gunnerStrafeDir*Math.PI/2;
+    const sideSpeed = .40;
+    const desiredVx = Math.cos(a)*radial + Math.cos(tangentA)*sideSpeed;
+    const desiredVy = Math.sin(a)*radial + Math.sin(tangentA)*sideSpeed;
+    u.vx += (desiredVx-u.vx)*.038;
+    u.vy += (desiredVy-u.vy)*.038;
+    clampUfoSpeed(u, 1.18);
+
+    u._gunnerStrafeTimer--;
+    if (u._gunnerStrafeTimer <= 0) {
+      u._gunnerStrafeDir *= -1;
+      u._gunnerStrafeTimer = rand(150,250);
+    }
+
+    if (u._gunnerVolleyRemaining > 0) {
+      u._gunnerShotTimer--;
+      u._attackGlow = .48 + .32*Math.sin((u._gunnerShotTimer+1)*.9);
+      if (u._gunnerShotTimer <= 0) {
+        fireGunnerShot(u, u._gunnerBarrelIndex);
+        u._gunnerBarrelIndex = 1-u._gunnerBarrelIndex;
+        u._gunnerVolleyRemaining--;
+        if (u._gunnerVolleyRemaining > 0) {
+          u._gunnerShotTimer = 8;
+        } else {
+          u.fireCooldown = rand(
+            Math.max(74, 112-level*.45),
+            Math.max(102, 148-level*.35)
+          );
+          u._attackGlow = 0;
+        }
+      }
+      return;
+    }
+
+    u.fireCooldown--;
+    u._attackGlow = u.fireCooldown < 24 ? Math.max(0,1-u.fireCooldown/24) : 0;
+    if (u.fireCooldown <= 0) {
+      u._gunnerVolleyRemaining = 3;
+      u._gunnerShotTimer = 1;
+      u._attackGlow = 1;
+    }
+  }
+
+  function fireGunnerShot(u, barrelIndex=0) {
+    const angle = (u._turretAngle ?? Math.atan2(ship.y-u.y,ship.x-u.x)) + rand(-.075,.075);
+    const turretCY = (barrelIndex===0 ? -1 : 1) * u.r * .28;
+    const muzzleLen = u.r*.52;
+    const mx = u.x + Math.cos(angle)*muzzleLen;
+    const my = u.y + turretCY + Math.sin(angle)*muzzleLen;
+    const speed = 4.25;
+    ufoBullets.push({
+      x:mx, y:my,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      life:128, r:3,
+      shotType:'gunner'
+    });
+    SFX.enemyShot();
+  }
+
+  // HUNTER // pursuit / intercept
+  // Predicts player movement, visibly locks, dashes through the intercept line, then fires a fast 2-shot burst.
+  function updateHunterUfoCombat(u) {
+    if (!u._hunterState) {
+      u._hunterState = 'chase';
+      u._hunterTimer = rand(72,118);
+      u._hunterBurstRemaining = 0;
+      u._hunterShotTimer = 0;
+    }
+
+    const predictedX = ship.x + ship.vx*20;
+    const predictedY = ship.y + ship.vy*20;
+    const aim = Math.atan2(predictedY-u.y,predictedX-u.x);
+
+    if (u._hunterState === 'chase') {
+      const desired = 1.42 + Math.min(.37,level*.0085);
+      u.vx += (Math.cos(aim)*desired-u.vx)*.026;
+      u.vy += (Math.sin(aim)*desired-u.vy)*.026;
+      clampUfoSpeed(u, 1.84 + Math.min(.24,level*.0045));
+      u._attackGlow = 0;
+      u._hunterTimer--;
+
+      if (u._hunterTimer <= 0) {
+        u._hunterState = 'telegraph';
+        u._hunterTimer = 22;
+      }
+      return;
+    }
+
+    if (u._hunterState === 'telegraph') {
+      u._hunterTimer--;
+      u.vx *= .975;
+      u.vy *= .975;
+      u._attackGlow = Math.max(0,1-u._hunterTimer/22);
+
+      if (u._hunterTimer <= 0) {
+        const dashAim = predictiveAimAngle(u,16);
+        const dashSpeed = 3.22 + Math.min(.38,level*.0065);
+        u.vx = Math.cos(dashAim)*dashSpeed;
+        u.vy = Math.sin(dashAim)*dashSpeed;
+        u._hunterState = 'dash';
+        u._hunterTimer = 20;
+        u._attackGlow = 1;
+      }
+      return;
+    }
+
+    if (u._hunterState === 'dash') {
+      u._hunterTimer--;
+      u._attackGlow = .58;
+      if (u._hunterTimer <= 0) {
+        u._hunterState = 'burst';
+        u._hunterBurstRemaining = 2;
+        u._hunterShotTimer = 1;
+      }
+      return;
+    }
+
+    if (u._hunterState === 'burst') {
+      u._hunterShotTimer--;
+      u.vx *= .985;
+      u.vy *= .985;
+      u._attackGlow = .82;
+
+      if (u._hunterShotTimer <= 0) {
+        fireHunterShot(u);
+        u._hunterBurstRemaining--;
+        if (u._hunterBurstRemaining > 0) {
+          u._hunterShotTimer = 7;
+        } else {
+          u._hunterState = 'recover';
+          u._hunterTimer = 42;
+          // Pick the orbit direction that best continues the Hunter's current momentum.
+          const toPlayer=Math.atan2(ship.y-u.y,ship.x-u.x);
+          const leftTangent=toPlayer-Math.PI*.5;
+          const rightTangent=toPlayer+Math.PI*.5;
+          const leftDot=u.vx*Math.cos(leftTangent)+u.vy*Math.sin(leftTangent);
+          const rightDot=u.vx*Math.cos(rightTangent)+u.vy*Math.sin(rightTangent);
+          u._hunterOrbitDir = rightDot >= leftDot ? 1 : -1;
+          u._attackGlow = 0;
+        }
+      }
+      return;
+    }
+
+    // Recover window stays aggressive: the Hunter arcs laterally around the player
+    // instead of visibly retreating, while correcting toward a medium-close orbit.
+    if (u._hunterState === 'recover') {
+      if (u._hunterOrbitDir == null) u._hunterOrbitDir = Math.random()<.5 ? -1 : 1;
+
+      const dx=ship.x-u.x;
+      const dy=ship.y-u.y;
+      const dist=Math.hypot(dx,dy)||1;
+      const toPlayer=Math.atan2(dy,dx);
+      const tangent=toPlayer + u._hunterOrbitDir*Math.PI*.5;
+
+      const preferred=Math.max(175,Math.min(245,Math.min(PLAY_W,PLAY_H)*.36));
+      const radialError=dist-preferred;
+      const radialPull=Math.max(-.42,Math.min(.42,radialError*.0060));
+      const orbitSpeed=1.18 + Math.min(.18,level*.004);
+
+      const desiredVx=Math.cos(tangent)*orbitSpeed + Math.cos(toPlayer)*radialPull;
+      const desiredVy=Math.sin(tangent)*orbitSpeed + Math.sin(toPlayer)*radialPull;
+
+      u.vx += (desiredVx-u.vx)*.050;
+      u.vy += (desiredVy-u.vy)*.050;
+      clampUfoSpeed(u,1.48 + Math.min(.15,level*.0035));
+
+      u._hunterTimer--;
+      u._attackGlow = 0;
+
+      if (u._hunterTimer <= 0) {
+        u._hunterState = 'chase';
+        u._hunterTimer = rand(
+          Math.max(52,78-level*.35),
+          Math.max(76,112-level*.28)
+        );
+      }
+    }
+  }
+
+  function fireHunterShot(u) {
+    const angle = predictiveAimAngle(u,14) + rand(-.045,.045);
+    const speed = 5.05;
+    const muzzle = u.r*.68;
+    ufoBullets.push({
+      x:u.x+Math.cos(angle)*muzzle,
+      y:u.y+Math.sin(angle)*muzzle,
+      vx:Math.cos(angle)*speed,
+      vy:Math.sin(angle)*speed,
+      life:112, r:2.8,
+      shotType:'hunter'
+    });
+    SFX.enemyShot();
+  }
+
+  function bossHealthFor(bossType,bossIndex) {
+    const base=60 + bossIndex*15;
+    const roleMult =
+      bossType==='DREADNOUGHT' ? 1.12
+      : bossType==='CARRIER PRIME' ? 1.18
+      : 1.00; // Hunter trades some raw bulk for mobility/aggression.
+    return Math.round(base*roleMult);
+  }
+
   function spawnBoss() {
     const bossIndex=Math.floor(level/10)-1;
     const types=['DREADNOUGHT','CARRIER PRIME','HUNTER ACE'];
     const bossType=types[bossIndex%types.length];
-    const hp=Math.round(44 + bossIndex*13);
+    const hp=bossHealthFor(bossType,bossIndex);
     const fromLeft=Math.random()<.5;
     ufos.push({
       x:fromLeft?PLAY_X-70:PLAY_X+PLAY_W+70, y:PLAY_Y+PLAY_H*.30,
@@ -9664,19 +10897,6 @@
     });
   }
 
-  function fireUfoBullet(u) {
-    const baseAngle = Math.atan2(ship.y - u.y, ship.x - u.x);
-    const inaccuracy = u.tier === 2 ? rand(-0.5, 0.5) : rand(-0.15, 0.15); // mothership sprays wide, pods aim tight
-    const angle = baseAngle + inaccuracy;
-    const speed = 4.2;
-    ufoBullets.push({
-      x: u.x, y: u.y,
-      vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-      life: 120, r: 3
-    });
-    SFX.enemyShot();
-  }
-
   let nextBroodId = 0;
 
   function damageBossUFO(index, amount, hitX=null, hitY=null) {
@@ -9690,9 +10910,15 @@
     const x=u.x,y=u.y; ufos.splice(index,1); bossDefeatsThisRun++; pendingEvolution=true;
     for(let k=0;k<4;k++) setTimeout(()=>spawnExplosion(x+rand(-42,42),y+rand(-30,30),28,'#ff6f6f'),k*45);
     impactRings.push({x,y,radius:10,maxRadius:175,life:34,maxLife:34,color:'#ff6f6f',big:true}); triggerShake(14,22); hitStopFrames=Math.max(hitStopFrames,4); SFX.bossDown(); updateHUD();
-    if (!testMode && canSpawnOneUp() && Math.random() < ONEUP_BOSS_DROP_CHANCE) {
-      spawnPowerup(x,y,'oneup',{vx:rand(-.28,.28),vy:rand(-.28,.28),life:1200});
-      spawnFloatingText(x,y-52,'1UP SIGNAL','#c8ff4d');
+    if (!testMode) {
+      if (canSpawnOneUp() && Math.random() < ONEUP_BOSS_DROP_CHANCE) {
+        spawnPowerup(x,y,'oneup',{vx:rand(-.28,.28),vy:rand(-.28,.28),life:1200});
+        spawnFloatingText(x,y-52,'1UP SIGNAL','#c8ff4d');
+      } else if (canSpawnTemporaryPowerup()) {
+        const type=pickTemporaryPowerupType();
+        spawnPowerup(x,y,type,{vx:rand(-.22,.22),vy:rand(-.22,.22),life:1200});
+        spawnFloatingText(x,y-52,`${type==='phase'?'PHASE DRIVE':type.toUpperCase()} SIGNAL`,POWERUP_COLORS[type]);
+      }
     }
     return true;
   }
@@ -9741,6 +10967,13 @@
         spawnPowerup(u.x,u.y,'oneup');
       } else if (canSpawnShield() && Math.random() < UFO_POWERUP_DROP_CHANCE) {
         spawnPowerup(u.x,u.y,'shield');
+      } else if (canSpawnTemporaryPowerup()) {
+        const tempChance =
+          u.variant==='carrier' ? .060
+          : (u.variant==='gunner' || u.variant==='hunter') ? .045
+          : u.tier===1 ? .015
+          : .025;
+        if (Math.random() < tempChance) spawnPowerup(u.x,u.y,pickTemporaryPowerupType());
       }
     }
   }
@@ -9751,7 +10984,7 @@
     const radius=b.blastRadius||86; const targets=[];
     for(let i=asteroids.length-1;i>=0;i--) if(dist(b.x,b.y,asteroids[i].x,asteroids[i].y)<=radius+asteroids[i].r*.35) targets.push({kind:'a',i,d:dist(b.x,b.y,asteroids[i].x,asteroids[i].y)});
     for(let i=ufos.length-1;i>=0;i--) if(dist(b.x,b.y,ufos[i].x,ufos[i].y)<=radius+ufos[i].r*.25) targets.push({kind:'u',i,d:dist(b.x,b.y,ufos[i].x,ufos[i].y)});
-    const rocketColor=(WEAPON_BUILDS.find(w=>w.id===b.weapon)||WEAPON_BUILDS[2]).color; spawnExplosion(b.x,b.y,34,rocketColor); impactRings.push({x:b.x,y:b.y,radius:8,maxRadius:radius,life:18,maxLife:18,color:rocketColor,big:true}); triggerShake(upgradeLevel('bigWarhead')?12:9,14); hitFlashAlpha=Math.max(hitFlashAlpha,.08); SFX.rocketBlast();
+    const rocketColor=(WEAPON_BUILDS.find(w=>w.id===b.weapon)||WEAPON_BUILDS.find(w=>w.id==='rocket')||currentWeapon).color; spawnExplosion(b.x,b.y,34,rocketColor); impactRings.push({x:b.x,y:b.y,radius:8,maxRadius:radius,life:18,maxLife:18,color:rocketColor,big:true}); triggerShake(upgradeLevel('bigWarhead')?12:9,14); hitFlashAlpha=Math.max(hitFlashAlpha,.08); SFX.rocketBlast();
     // break from high indexes so array mutation stays safe
     targets.filter(t=>t.kind==='a').sort((x,y)=>y.i-x.i).forEach(t=>{ if(asteroids[t.i]) breakAsteroid(t.i, t.d<radius*.62 || upgradeLevel('bigWarhead')); });
     targets.filter(t=>t.kind==='u').sort((x,y)=>y.i-x.i).forEach(t=>{ if(ufos[t.i]) { if(ufos[t.i].boss) damageBossUFO(t.i,b.bossDamage||9,b.x,b.y); else breakUFO(t.i, t.d<radius*.5 && upgradeLevel('bigWarhead')); } });
@@ -9867,9 +11100,11 @@
     }
   }
 
+  const PLAYER_VISUAL_SCALE = 1.009925; // Visual-only: 0.5% smaller than the prior +1.5% version; collision remains unchanged.
+
   function drawShip() {
     if (deathZoomActive || rebirthActive) return; // ship is destroyed / not yet reassembled
-    if (invulnTimer > 0 && Math.floor(invulnTimer / 6) % 2 === 0) return; // blink
+    if (phaseDriveTimer <= 0 && invulnTimer > 0 && Math.floor(invulnTimer / 6) % 2 === 0) return; // blink
 
     const skin = ship.skin || SHIP_SKINS[0];
     const hullColor = shipDisplayColor(skin);
@@ -9911,6 +11146,7 @@
     ctx.save();
     ctx.translate(ship.x, ship.y);
     ctx.rotate(ship.angle);
+    ctx.scale(PLAYER_VISUAL_SCALE, PLAYER_VISUAL_SCALE);
 
     // Very light thrust blur: faint hull echoes behind the ship while accelerating.
     // Keep it subtle so the vector silhouette stays sharp.
@@ -9929,8 +11165,77 @@
       ctx.restore();
     }
 
+    // PHASE DRIVE // multiple spatial echoes instead of the ordinary damage blink.
+    if (phaseDriveTimer > 0) {
+      const phaseT=Date.now()/90;
+      for (let i=0;i<3;i++) {
+        const off=3.2+i*2.5;
+        ctx.save();
+        ctx.translate(Math.cos(phaseT+i*2.1)*off,Math.sin(phaseT*1.17+i*2.1)*off);
+        strokeShipHull(ctx, .10+i*.025, 10, 1.45, .55);
+        ctx.restore();
+      }
+    }
+
     // Main crisp ship pass.
-    strokeShipHull(ctx, 0.9, 7, 1.7, 1);
+    strokeShipHull(ctx, phaseDriveTimer > 0 ? .68 : 0.9, phaseDriveTimer > 0 ? 11 : 7, 1.7, 1);
+
+    // PULSE CHARGE // energy visibly compresses at the weapon nose while FIRE is held.
+    if (currentWeapon && currentWeapon.id==='pulse' && pulseCharging) {
+      const cp=pulseChargeProgress();
+      const canCharge=weaponAmmo>=PULSE_CHARGE_COST;
+      const noseX=ship.r*1.12;
+      const ct=Date.now()/75;
+      ctx.save();
+      ctx.translate(noseX,0);
+      ctx.strokeStyle=canCharge?'#9cf6ff':'#ff6f6f';
+      ctx.fillStyle=canCharge?'#efffff':'#ffb0b0';
+      ctx.shadowColor=canCharge?'#9cf6ff':'#ff6f6f';
+      ctx.shadowBlur=12+cp*20;
+      ctx.globalAlpha=.38+.38*cp;
+
+      for(let r=0;r<3;r++){
+        const ringRadius=(10+r*4)*(1-cp*.48);
+        ctx.lineWidth=.8+cp*.55;
+        ctx.beginPath();
+        ctx.arc(0,0,ringRadius,ct*(r%2?-.9:.7)+r,ct*(r%2?-.9:.7)+r+Math.PI*1.45);
+        ctx.stroke();
+      }
+
+      ctx.globalAlpha=.68+.30*cp;
+      ctx.beginPath();
+      ctx.arc(0,0,1.8+cp*3.7,0,Math.PI*2);
+      ctx.fill();
+
+      if (cp>=1 && canCharge) {
+        ctx.globalAlpha=.32+.18*Math.sin(ct*3);
+        ctx.lineWidth=1.4;
+        ctx.beginPath();
+        ctx.arc(0,0,17+Math.sin(ct*2)*2,0,Math.PI*2);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    // OVERDRIVE // energized concentric arcs orbit the hull while the boost is active.
+    if (overdriveTimer > 0) {
+      const ot=Date.now()/150;
+      ctx.save();
+      ctx.rotate(ot);
+      ctx.strokeStyle='#6ff2ff';
+      ctx.shadowColor='#6ff2ff';
+      ctx.shadowBlur=12;
+      ctx.lineWidth=1;
+      ctx.globalAlpha=.30+.10*Math.sin(ot*2.2);
+      for (let ring=0;ring<2;ring++) {
+        const rr=ship.r*(1.48+ring*.22);
+        ctx.beginPath();
+        ctx.arc(0,0,rr,.12+ring*.7,1.58+ring*.7);
+        ctx.arc(0,0,rr,Math.PI+.12+ring*.7,Math.PI+1.58+ring*.7);
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
 
     if (thrusting) {
       const thrustColor = skin.custom ? (skin.accentColor || skin.color) : '#ffb347';
@@ -10001,97 +11306,150 @@
 
   function drawPowerups() {
     for (const p of powerups) {
-      ctx.save();
-      ctx.translate(p.x, p.y);
-      ctx.rotate(p.angle);
-      const flicker = p.life < 120 && Math.floor(p.life / 8) % 2 === 0;
-      ctx.globalAlpha = flicker ? 0.35 : 1;
+      const flicker = p.life < 120 && Math.floor(p.life / 7) % 2 === 0;
       const color = POWERUP_COLORS[p.type] || '#ffffff';
-      ctx.strokeStyle = color;
-      ctx.shadowColor = color;
-      ctx.shadowBlur = 10;
-      ctx.lineWidth = 2;
-      // hexagon capsule shape
+      const pulse=.5+.5*Math.sin((p.anim||0)+(p.pulseSeed||0));
+
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.globalAlpha=flicker?.30:1;
+
+      // Every pickup breathes into the field so it stays visible in late-run chaos.
+      ctx.strokeStyle=color;
+      ctx.shadowColor=color;
+      ctx.shadowBlur=10+pulse*7;
+      ctx.lineWidth=1;
+      ctx.globalAlpha*=.13+pulse*.12;
       ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const a = (i / 6) * Math.PI * 2;
-        const x = Math.cos(a) * p.r;
-        const y = Math.sin(a) * p.r;
-        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
+      ctx.arc(0,0,p.r*(1.72+pulse*.20),0,Math.PI*2);
       ctx.stroke();
-      // inner glyph
-      ctx.beginPath();
-      if (p.type === 'oneup') {
-        // Keep the arcade label upright even while the outer capsule rotates.
-        ctx.rotate(-p.angle);
-        ctx.fillStyle = color;
-        ctx.font = 'bold 9px "Courier New", monospace';
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('1UP',0,.5);
-        ctx.textAlign = 'left';
-        ctx.textBaseline = 'alphabetic';
-      } else if (p.type === 'shield') {
-        ctx.moveTo(0, -p.r * 0.5);
-        ctx.lineTo(p.r * 0.4, -p.r * 0.1);
-        ctx.lineTo(p.r * 0.25, p.r * 0.5);
-        ctx.lineTo(-p.r * 0.25, p.r * 0.5);
-        ctx.lineTo(-p.r * 0.4, -p.r * 0.1);
-        ctx.closePath();
-        ctx.stroke();
-      } else if (p.type === 'overcharge') {
-        ctx.moveTo(p.r * 0.15, -p.r * 0.55);
-        ctx.lineTo(-p.r * 0.3, p.r * 0.05);
-        ctx.lineTo(p.r * 0.05, p.r * 0.05);
-        ctx.lineTo(-p.r * 0.15, p.r * 0.55);
-        ctx.lineTo(p.r * 0.35, -p.r * 0.1);
-        ctx.lineTo(p.r * 0.05, -p.r * 0.1);
-        ctx.closePath();
-        ctx.stroke();
-      } else if (p.type === 'spread') {
-        ctx.moveTo(-p.r * 0.35, -p.r * 0.1);
-        ctx.lineTo(p.r * 0.45, -p.r * 0.5);
-        ctx.moveTo(-p.r * 0.35, -p.r * 0.1);
-        ctx.lineTo(p.r * 0.5, 0);
-        ctx.moveTo(-p.r * 0.35, -p.r * 0.1);
-        ctx.lineTo(p.r * 0.45, p.r * 0.45);
-        ctx.stroke();
-      } else if (p.type === 'rapidfire') {
-        ctx.moveTo(-p.r * 0.32, -p.r * 0.42);
-        ctx.lineTo(-p.r * 0.32, p.r * 0.42);
-        ctx.moveTo(0, -p.r * 0.42);
-        ctx.lineTo(0, p.r * 0.42);
-        ctx.moveTo(p.r * 0.32, -p.r * 0.42);
-        ctx.lineTo(p.r * 0.32, p.r * 0.42);
-        ctx.stroke();
-      } else if (p.type === 'piercing') {
-        ctx.moveTo(-p.r * 0.5, 0);
-        ctx.lineTo(p.r * 0.5, 0);
-        ctx.moveTo(p.r * 0.28, -p.r * 0.22);
-        ctx.lineTo(p.r * 0.5, 0);
-        ctx.lineTo(p.r * 0.28, p.r * 0.22);
-        ctx.stroke();
+      ctx.globalAlpha=flicker?.30:1;
+
+      if (p.type==='shield') {
+        // Defensive field: two counter-rotating rings around a clean shield crest.
+        ctx.save();
+        ctx.rotate(p.angle);
+        ctx.strokeStyle=color; ctx.shadowColor=color; ctx.shadowBlur=13; ctx.lineWidth=1.25;
+        ctx.beginPath(); ctx.arc(0,0,p.r*.98,.12,Math.PI*.88); ctx.stroke();
+        ctx.rotate(-p.angle*2.15);
+        ctx.globalAlpha=.62;
+        ctx.beginPath(); ctx.arc(0,0,p.r*.76,Math.PI*1.08,Math.PI*1.90); ctx.stroke();
+        ctx.restore();
+
+        ctx.strokeStyle=color; ctx.shadowBlur=9; ctx.lineWidth=1.45; ctx.globalAlpha=.96;
         ctx.beginPath();
-        ctx.arc(-p.r * 0.05, 0, p.r * 0.28, 0, Math.PI * 2);
+        ctx.moveTo(0,-p.r*.52);
+        ctx.lineTo(p.r*.39,-p.r*.18);
+        ctx.lineTo(p.r*.28,p.r*.34);
+        ctx.lineTo(0,p.r*.55);
+        ctx.lineTo(-p.r*.28,p.r*.34);
+        ctx.lineTo(-p.r*.39,-p.r*.18);
+        ctx.closePath();
         ctx.stroke();
-      } else if (p.type === 'raygun') {
-        ctx.arc(0, 0, p.r * 0.4, 0, Math.PI * 2); // targeting reticle
-        ctx.moveTo(0, -p.r * 0.55); ctx.lineTo(0, -p.r * 0.25);
-        ctx.moveTo(0, p.r * 0.25); ctx.lineTo(0, p.r * 0.55);
-        ctx.moveTo(-p.r * 0.55, 0); ctx.lineTo(-p.r * 0.25, 0);
-        ctx.moveTo(p.r * 0.25, 0); ctx.lineTo(p.r * 0.55, 0);
-        ctx.stroke();
-      } else {
-        ctx.moveTo(-p.r * 0.4, 0);
-        ctx.lineTo(p.r * 0.4, 0);
-        ctx.moveTo(p.r * 0.1, -p.r * 0.3);
-        ctx.lineTo(p.r * 0.4, 0);
-        ctx.lineTo(p.r * 0.1, p.r * 0.3);
-        ctx.stroke();
+
+      } else if (p.type==='oneup') {
+        // Rare life pickup: tiny ship silhouette with two orbiting life sparks.
+        ctx.save();
+        ctx.rotate(-p.angle*.35);
+        ctx.strokeStyle=color; ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=12;
+        ctx.lineWidth=1.35;
+        ctx.beginPath();
+        ctx.moveTo(p.r*.48,0);
+        ctx.lineTo(-p.r*.34,-p.r*.34);
+        ctx.lineTo(-p.r*.18,0);
+        ctx.lineTo(-p.r*.34,p.r*.34);
+        ctx.closePath(); ctx.stroke();
+        for (let i=0;i<2;i++) {
+          const oa=(p.anim||0)*(i?-.9:1.1)+i*Math.PI;
+          ctx.beginPath();
+          ctx.arc(Math.cos(oa)*p.r*.92,Math.sin(oa)*p.r*.92,1.6+pulse*.55,0,Math.PI*2);
+          ctx.fill();
+        }
+        ctx.restore();
+
+      } else if (p.type==='overdrive') {
+        // Turbine core: rotating spokes, inner reactor, and counter-rotating outer arcs.
+        ctx.save();
+        ctx.rotate(p.angle);
+        ctx.strokeStyle=color; ctx.fillStyle=color; ctx.shadowColor=color; ctx.shadowBlur=15; ctx.lineWidth=1.2;
+        ctx.beginPath(); ctx.arc(0,0,p.r*.82,0,Math.PI*2); ctx.stroke();
+        for(let i=0;i<4;i++){
+          const a=i*Math.PI/2;
+          ctx.beginPath();
+          ctx.moveTo(Math.cos(a)*p.r*.24,Math.sin(a)*p.r*.24);
+          ctx.lineTo(Math.cos(a+.28)*p.r*.70,Math.sin(a+.28)*p.r*.70);
+          ctx.stroke();
+        }
+        ctx.beginPath(); ctx.arc(0,0,p.r*(.20+pulse*.035),0,Math.PI*2); ctx.fill();
+        ctx.restore();
+        ctx.save();
+        ctx.rotate(-p.angle*.72);
+        ctx.globalAlpha=.58;
+        ctx.lineWidth=.9;
+        ctx.strokeStyle=color;
+        ctx.beginPath(); ctx.arc(0,0,p.r*1.02,.08,1.24); ctx.stroke();
+        ctx.beginPath(); ctx.arc(0,0,p.r*1.02,Math.PI+.08,Math.PI+1.24); ctx.stroke();
+        ctx.restore();
+
+      } else if (p.type==='emp') {
+        // Electrical sphere: unstable center, broken orbital rings, and animated arc segments.
+        ctx.strokeStyle=color; ctx.shadowColor=color; ctx.shadowBlur=16; ctx.lineWidth=1;
+        ctx.globalAlpha=.76;
+        ctx.beginPath(); ctx.arc(0,0,p.r*.72,0,Math.PI*2); ctx.stroke();
+        ctx.save();
+        ctx.rotate(p.angle*1.45);
+        for(let i=0;i<3;i++){
+          const a=i*Math.PI*2/3;
+          ctx.beginPath();
+          ctx.arc(0,0,p.r*(.88+i*.08),a,a+.72+pulse*.18);
+          ctx.stroke();
+        }
+        ctx.restore();
+        ctx.fillStyle='#eaffff'; ctx.shadowBlur=18; ctx.globalAlpha=.88;
+        ctx.beginPath(); ctx.arc(0,0,p.r*(.12+pulse*.04),0,Math.PI*2); ctx.fill();
+
+        // Short jagged electrical arcs.
+        ctx.strokeStyle='#d9ffff'; ctx.lineWidth=.85; ctx.globalAlpha=.60+.22*pulse;
+        for(let i=0;i<3;i++){
+          const a=(p.anim||0)*.72+i*Math.PI*2/3;
+          const x1=Math.cos(a)*p.r*.26, y1=Math.sin(a)*p.r*.26;
+          const x2=Math.cos(a+.16)*p.r*.78, y2=Math.sin(a+.16)*p.r*.78;
+          ctx.beginPath();
+          ctx.moveTo(x1,y1);
+          ctx.lineTo((x1+x2)*.5+Math.sin(a*3)*3,(y1+y2)*.5+Math.cos(a*2)*3);
+          ctx.lineTo(x2,y2);
+          ctx.stroke();
+        }
+
+      } else if (p.type==='phase') {
+        // Phase Drive: three slightly displaced diamond states that never perfectly align.
+        const offsets=[
+          [Math.sin((p.anim||0)*1.1)*3.2,Math.cos((p.anim||0)*.9)*1.8,.20],
+          [Math.cos((p.anim||0)*.8)*-3.0,Math.sin((p.anim||0)*1.3)*2.2,.30],
+          [0,0,.92]
+        ];
+        for(const [ox,oy,alpha] of offsets){
+          ctx.save();
+          ctx.translate(ox,oy);
+          ctx.rotate(p.angle*(alpha<.5?-.5:.45));
+          ctx.strokeStyle=color; ctx.shadowColor=color; ctx.shadowBlur=alpha>.5?14:8;
+          ctx.globalAlpha=alpha;
+          ctx.lineWidth=alpha>.5?1.35:.8;
+          ctx.beginPath();
+          ctx.moveTo(0,-p.r*.72);
+          ctx.lineTo(p.r*.55,0);
+          ctx.lineTo(0,p.r*.72);
+          ctx.lineTo(-p.r*.55,0);
+          ctx.closePath();
+          ctx.stroke();
+          ctx.restore();
+        }
+        ctx.globalAlpha=.55+pulse*.28;
+        ctx.strokeStyle='#e7d4ff'; ctx.lineWidth=.8; ctx.shadowBlur=10;
+        ctx.beginPath(); ctx.moveTo(-p.r*.34,0); ctx.lineTo(p.r*.34,0); ctx.stroke();
       }
-      ctx.globalAlpha = 1;
+
+      ctx.globalAlpha=1;
       ctx.restore();
     }
   }
@@ -10102,6 +11460,8 @@
     ctx.rotate(a.angle);
 
     const vertCount = a.verts.length;
+    const asteroidType = a.asteroidType || 'standard';
+    if (a.hitFlash > 0) a.hitFlash = Math.max(0,a.hitFlash-.12);
 
     function traceAsteroidPath() {
       ctx.beginPath();
@@ -10145,24 +11505,50 @@
       ctx.restore();
     }
 
-    // Stronger bloom pass first, then a crisp icy edge on top.
-    ctx.strokeStyle = 'rgba(208,246,255,0.38)';
-    ctx.lineWidth = 2.35;
-    ctx.shadowColor = 'rgba(111,242,255,0.64)';
-    ctx.shadowBlur = 16;
+    // Variant-specific body language while preserving the same neon asteroid family.
+    const dense = asteroidType === 'dense';
+    const brittle = asteroidType === 'brittle';
+    const hitFlash = a.hitFlash || 0;
+
+    const bloomStroke = dense
+      ? `rgba(155,220,255,${.34 + hitFlash*.20})`
+      : brittle
+        ? `rgba(255,190,231,${.34 + hitFlash*.18})`
+        : `rgba(208,246,255,${.38 + hitFlash*.18})`;
+
+    const edgeStroke = dense
+      ? 'rgba(204,235,255,0.98)'
+      : brittle
+        ? 'rgba(255,228,246,0.98)'
+        : 'rgba(240,246,255,0.97)';
+
+    const glowColor = dense
+      ? 'rgba(100,190,255,0.64)'
+      : brittle
+        ? 'rgba(255,96,188,0.58)'
+        : 'rgba(111,242,255,0.64)';
+
+    ctx.strokeStyle = bloomStroke;
+    ctx.lineWidth = dense ? 2.75 : brittle ? 2.15 : 2.35;
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = dense ? 15 : brittle ? 18 : 16;
     traceAsteroidPath();
     ctx.stroke();
 
-    // Subtle luminous body tint.
-    ctx.fillStyle = 'rgba(111,242,255,0.038)';
+    // Dense gets a visibly heavier body fill; brittle stays glassier.
+    ctx.fillStyle = dense
+      ? `rgba(96,166,215,${.085 + hitFlash*.055})`
+      : brittle
+        ? `rgba(255,108,193,${.030 + hitFlash*.04})`
+        : `rgba(111,242,255,${.038 + hitFlash*.04})`;
     traceAsteroidPath();
     ctx.fill();
 
     // Crisp primary edge.
-    ctx.strokeStyle = 'rgba(240,246,255,0.97)';
-    ctx.lineWidth = 1.55;
-    ctx.shadowColor = 'rgba(164,246,255,0.58)';
-    ctx.shadowBlur = 11;
+    ctx.strokeStyle = edgeStroke;
+    ctx.lineWidth = dense ? 1.85 : brittle ? 1.35 : 1.55;
+    ctx.shadowColor = glowColor;
+    ctx.shadowBlur = dense ? 9 : brittle ? 12 : 11;
     traceAsteroidPath();
     ctx.stroke();
     ctx.shadowBlur = 0;
@@ -10174,33 +11560,308 @@
     const angB = (idxB / vertCount) * Math.PI * 2;
     const rA = a.r * a.verts[idxA] * 0.5;
     const rB = a.r * a.verts[idxB] * 0.5;
-    ctx.strokeStyle = 'rgba(141,242,255,0.18)';
-    ctx.shadowColor = 'rgba(111,242,255,0.18)';
-    ctx.shadowBlur = 4;
-    ctx.lineWidth = 1;
+    ctx.strokeStyle = dense
+      ? 'rgba(158,216,255,0.16)'
+      : brittle
+        ? 'rgba(255,178,228,0.42)'
+        : 'rgba(141,242,255,0.18)';
+    ctx.shadowColor = dense
+      ? 'rgba(111,196,255,0.14)'
+      : brittle
+        ? 'rgba(255,95,190,0.34)'
+        : 'rgba(111,242,255,0.18)';
+    ctx.shadowBlur = brittle ? 8 : 4;
+    ctx.lineWidth = brittle ? .8 : dense ? 1.15 : 1;
     ctx.beginPath();
     ctx.moveTo(Math.cos(angA) * rA, Math.sin(angA) * rA);
     ctx.lineTo(0, 0);
     ctx.lineTo(Math.cos(angB) * rB, Math.sin(angB) * rB);
     ctx.stroke();
 
+    if (brittle) {
+      ctx.globalAlpha=.72;
+      ctx.strokeStyle='rgba(255,210,241,.34)';
+      ctx.shadowColor='rgba(255,77,166,.24)';
+      ctx.shadowBlur=7;
+      ctx.lineWidth=.7;
+      for (const off of [-.18,.16]) {
+        ctx.beginPath();
+        ctx.moveTo(-a.r*.12, a.r*off);
+        ctx.lineTo(a.r*.10, a.r*(off*.34));
+        ctx.lineTo(a.r*.31, -a.r*off*.72);
+        ctx.stroke();
+      }
+    } else if (dense) {
+      const armorPct=a.maxArmorHP>0 ? Math.max(0,Math.min(1,a.armorHP/a.maxArmorHP)) : 0;
+      if (armorPct>0) {
+        // Dense armor ring visibly weakens as the shell is chipped away.
+        ctx.globalAlpha=.16+armorPct*.25;
+        ctx.strokeStyle='rgba(170,225,255,.58)';
+        ctx.shadowColor='rgba(111,205,255,.30)';
+        ctx.shadowBlur=5+armorPct*5;
+        ctx.lineWidth=.85+armorPct*.55;
+        ctx.beginPath();
+        ctx.arc(0,0,a.r*.50,-Math.PI*.5,-Math.PI*.5+Math.PI*2*armorPct);
+        ctx.stroke();
+      } else {
+        // Armor is gone: leave a faint broken interior scar instead of the intact ring.
+        ctx.globalAlpha=.18;
+        ctx.strokeStyle='rgba(190,226,255,.28)';
+        ctx.lineWidth=.7;
+        ctx.beginPath();
+        ctx.arc(0,0,a.r*.48,.18,1.38);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(0,0,a.r*.48,Math.PI+.18,Math.PI+1.38);
+        ctx.stroke();
+      }
+    }
+
     ctx.restore();
   }
 
   function drawBullets() {
     for (const b of bullets) {
-      const w=WEAPON_BUILDS.find(x=>x.id===b.weapon)||currentWeapon; const color=b.clusterFrag?'#ffd76f':w.color;
-      ctx.save(); ctx.strokeStyle=color; ctx.fillStyle=color; ctx.shadowColor=color;
+      const w=WEAPON_BUILDS.find(x=>x.id===b.weapon)||currentWeapon;
+      const color=b.clusterFrag?'#ffd76f':w.color;
+      ctx.save();
+      ctx.strokeStyle=color;
+      ctx.fillStyle=color;
+      ctx.shadowColor=color;
+
       if (b.rocket) {
-        ctx.translate(b.x,b.y); const ang=Math.atan2(b.vy,b.vx); ctx.rotate(ang); ctx.shadowBlur=12;
-        ctx.beginPath(); ctx.moveTo(7,0); ctx.lineTo(-5,-4); ctx.lineTo(-3,0); ctx.lineTo(-5,4); ctx.closePath(); ctx.stroke();
-        const flame=upgradeLevel('booster')?14:9; ctx.globalAlpha=.65; ctx.beginPath(); ctx.moveTo(-4,0); ctx.lineTo(-4-flame-rand(0,4),0); ctx.stroke();
+        ctx.translate(b.x,b.y);
+        const ang=Math.atan2(b.vy,b.vx);
+        ctx.rotate(ang);
+        ctx.shadowBlur=12;
+        ctx.beginPath();
+        ctx.moveTo(7,0);
+        ctx.lineTo(-5,-4);
+        ctx.lineTo(-3,0);
+        ctx.lineTo(-5,4);
+        ctx.closePath();
+        ctx.stroke();
+
+        const flame=upgradeLevel('booster')?14:9;
+        ctx.globalAlpha=.75;
+        ctx.strokeStyle='#ffd27a';
+        ctx.shadowColor='#ff9f5f';
+        ctx.beginPath();
+        ctx.moveTo(-4,0);
+        ctx.lineTo(-4-flame-rand(0,4),0);
+        ctx.stroke();
+
+      } else if (b.weapon==='sniper') {
+        // LONGBOW // long cyan-white rail lance with a crisp core.
+        ctx.translate(b.x,b.y);
+        const ang=Math.atan2(b.vy,b.vx);
+        ctx.rotate(ang);
+
+        ctx.shadowColor='#aef8ff';
+        ctx.shadowBlur=15;
+
+        ctx.globalAlpha=.34;
+        ctx.strokeStyle='#74e8ff';
+        ctx.lineWidth=3.0;
+        ctx.beginPath();
+        ctx.moveTo(-22,0);
+        ctx.lineTo(12,0);
+        ctx.stroke();
+
+        ctx.globalAlpha=.92;
+        ctx.strokeStyle='#dffcff';
+        ctx.lineWidth=1.5;
+        ctx.beginPath();
+        ctx.moveTo(-19,0);
+        ctx.lineTo(10,0);
+        ctx.stroke();
+
+        ctx.globalAlpha=.68;
+        ctx.strokeStyle='#74e8ff';
+        ctx.lineWidth=.9;
+        ctx.beginPath();
+        ctx.moveTo(-14,-1.55);
+        ctx.lineTo(6,-1.55);
+        ctx.moveTo(-14,1.55);
+        ctx.lineTo(6,1.55);
+        ctx.stroke();
+
+        ctx.globalAlpha=1;
+        ctx.fillStyle='#f4ffff';
+        ctx.beginPath();
+        ctx.moveTo(12,0);
+        ctx.lineTo(6,-2.2);
+        ctx.lineTo(6,2.2);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.globalAlpha=.52;
+        ctx.strokeStyle='#74e8ff';
+        ctx.lineWidth=1.1;
+        ctx.beginPath();
+        ctx.moveTo(-22,0);
+        ctx.lineTo(-27,0);
+        ctx.stroke();
+
+      } else if (b.weapon==='pulse') {
+        // PULSE CANNON // normal compressed slug or five-round charged mass.
+        ctx.translate(b.x,b.y);
+        const ang=Math.atan2(b.vy,b.vx);
+        ctx.rotate(ang);
+
+        const t=Date.now()/70 + b.x*.018 + b.y*.013;
+        const pulse=.5+.5*Math.sin(t);
+
+        if (b.chargedPulse) {
+          // Charged slug: huge white-hot core, layered plasma body, and twin shock rings.
+          ctx.globalAlpha=.16+.05*pulse;
+          ctx.fillStyle='#6fefff';
+          ctx.shadowColor='#6fefff';
+          ctx.shadowBlur=42;
+          ctx.beginPath();
+          ctx.ellipse(-2,0,18,10,0,0,Math.PI*2);
+          ctx.fill();
+
+          ctx.globalAlpha=.28;
+          ctx.fillStyle='#79efff';
+          ctx.shadowBlur=32;
+          ctx.beginPath();
+          ctx.moveTo(-6,-5.2);
+          ctx.lineTo(-28,-1.2);
+          ctx.lineTo(-34,0);
+          ctx.lineTo(-28,1.2);
+          ctx.lineTo(-6,5.2);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.globalAlpha=.94;
+          ctx.fillStyle='#aefaff';
+          ctx.shadowColor='#bffcff';
+          ctx.shadowBlur=30;
+          ctx.beginPath();
+          ctx.moveTo(15,0);
+          ctx.quadraticCurveTo(7,-8,-5,-6);
+          ctx.lineTo(-11,-2.4);
+          ctx.lineTo(-11,2.4);
+          ctx.lineTo(-5,6);
+          ctx.quadraticCurveTo(7,8,15,0);
+          ctx.closePath();
+          ctx.fill();
+
+          ctx.globalAlpha=1;
+          ctx.strokeStyle='#ffffff';
+          ctx.shadowColor='#ffffff';
+          ctx.shadowBlur=34;
+          ctx.lineWidth=2.6;
+          ctx.beginPath();
+          ctx.moveTo(-8,0);
+          ctx.lineTo(12,0);
+          ctx.stroke();
+
+          for (let ring=0;ring<2;ring++) {
+            ctx.globalAlpha=.34+.18*pulse-ring*.08;
+            ctx.strokeStyle=ring===0?'#dfffff':'#7cefff';
+            ctx.shadowColor=ctx.strokeStyle;
+            ctx.shadowBlur=24;
+            ctx.lineWidth=1.2;
+            ctx.beginPath();
+            ctx.ellipse(-11-ring*6,0,4+pulse*2+ring*2,9+pulse*3+ring*4,0,0,Math.PI*2);
+            ctx.stroke();
+          }
+
+          ctx.globalAlpha=1;
+          ctx.fillStyle='#ffffff';
+          ctx.shadowBlur=38;
+          ctx.beginPath();
+          ctx.arc(-10.8,0,2.2,0,Math.PI*2);
+          ctx.fill();
+        } else {
+
+        // Broad atmospheric bloom.
+        ctx.globalAlpha=.15+.05*pulse;
+        ctx.fillStyle='#6fefff';
+        ctx.shadowColor='#6fefff';
+        ctx.shadowBlur=30;
+        ctx.beginPath();
+        ctx.ellipse(-1,0,10.5,5.7,0,0,Math.PI*2);
+        ctx.fill();
+
+        // Tapered wake behind the compressed slug.
+        ctx.globalAlpha=.26;
+        ctx.fillStyle='#78efff';
+        ctx.shadowBlur=22;
+        ctx.beginPath();
+        ctx.moveTo(-3.8,-2.6);
+        ctx.lineTo(-16.2,-.65);
+        ctx.lineTo(-19.3,0);
+        ctx.lineTo(-16.2,.65);
+        ctx.lineTo(-3.8,2.6);
+        ctx.closePath();
+        ctx.fill();
+
+        // Thick energy slug body.
+        ctx.globalAlpha=.93;
+        ctx.fillStyle='#a9f9ff';
+        ctx.shadowColor='#a9f9ff';
+        ctx.shadowBlur=19;
+        ctx.beginPath();
+        ctx.moveTo(8.2,0);
+        ctx.quadraticCurveTo(3.5,-4.4,-2.9,-3.3);
+        ctx.lineTo(-5.9,-1.5);
+        ctx.lineTo(-5.9,1.5);
+        ctx.lineTo(-2.9,3.3);
+        ctx.quadraticCurveTo(3.5,4.4,8.2,0);
+        ctx.closePath();
+        ctx.fill();
+
+        // White-hot core spine.
+        ctx.globalAlpha=1;
+        ctx.strokeStyle='#f4ffff';
+        ctx.shadowColor='#f4ffff';
+        ctx.shadowBlur=24;
+        ctx.lineWidth=1.7;
+        ctx.beginPath();
+        ctx.moveTo(-4.2,0);
+        ctx.lineTo(6.9,0);
+        ctx.stroke();
+
+        // Expanding shock ring behind the bolt.
+        ctx.globalAlpha=.36+.18*pulse;
+        ctx.strokeStyle='#8cf5ff';
+        ctx.shadowColor='#8cf5ff';
+        ctx.shadowBlur=18;
+        ctx.lineWidth=.95;
+        ctx.beginPath();
+        ctx.ellipse(-6.2,0,2.6+pulse*1.5,5.1+pulse*1.9,0,0,Math.PI*2);
+        ctx.stroke();
+
+        // Rear compression spark.
+        ctx.globalAlpha=.88;
+        ctx.fillStyle='#efffff';
+        ctx.shadowBlur=20;
+        ctx.beginPath();
+        ctx.arc(-6.2,0,1.3,0,Math.PI*2);
+        ctx.fill();
+        }
+
       } else {
-        ctx.shadowBlur=b.weapon==='sniper'?12:b.weapon==='rapid'?5:7;
-        const mag=Math.hypot(b.vx,b.vy)||1; const len=b.weapon==='sniper'?22:b.weapon==='rapid'?7:b.pellet?5:9;
-        ctx.globalAlpha=.5; ctx.lineWidth=b.weapon==='sniper'?2:1.2; ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(b.x-(b.vx/mag)*len,b.y-(b.vy/mag)*len); ctx.stroke();
-        ctx.globalAlpha=1; ctx.beginPath(); ctx.arc(b.x,b.y,b.r,0,Math.PI*2); ctx.fill();
+        ctx.shadowBlur=b.weapon==='rapid'?5:7;
+        const mag=Math.hypot(b.vx,b.vy)||1;
+        const len=b.weapon==='rapid'?7:b.pellet?5:9;
+
+        ctx.globalAlpha=.5;
+        ctx.lineWidth=1.2;
+        ctx.beginPath();
+        ctx.moveTo(b.x,b.y);
+        ctx.lineTo(b.x-(b.vx/mag)*len,b.y-(b.vy/mag)*len);
+        ctx.stroke();
+
+        ctx.globalAlpha=1;
+        ctx.beginPath();
+        ctx.arc(b.x,b.y,b.r,0,Math.PI*2);
+        ctx.fill();
       }
+
       ctx.restore();
     }
   }
@@ -10578,8 +12239,7 @@
             // Twin barrels with slight spread
             const barrelLen = r * (.44 + pulse * .08);
             for (const spread of [-r*.055, r*.055]) {
-              // Perpendicular offset from aim direction
-              const perpX = Math.cos(turretAngle + Math.PI/2) * spread - Math.cos(turretAngle + Math.PI/2) * spread;
+              // Local Y offset becomes perpendicular to aim after the turret rotation.
               const perpY = spread;
               ctx.beginPath();
               ctx.moveTo(0, perpY);
@@ -10593,6 +12253,17 @@
             ctx.moveTo(barrelLen, -r*.065);
             ctx.lineTo(barrelLen,  r*.065);
             ctx.stroke();
+
+            if ((u._attackGlow || 0) > .12) {
+              const g = Math.min(1,u._attackGlow);
+              ctx.globalAlpha = isBloom ? .18 + g*.20 : .36 + g*.44;
+              ctx.fillStyle = color;
+              ctx.shadowColor = color;
+              ctx.shadowBlur = 8 + g*12;
+              ctx.beginPath();
+              ctx.arc(barrelLen,0,r*(.045+g*.025),0,Math.PI*2);
+              ctx.fill();
+            }
 
             ctx.restore();
           }
@@ -10703,12 +12374,26 @@
         // Core position varies by variant so it sits in the thick part of the hull
         let coreX = 0, coreY = 0;
         if (u.tier === 2 && (u.variant === 'standard' || !u.variant)) coreX = -r*.28; // crescent body mass
-        ctx.shadowColor = color; ctx.shadowBlur = 10 + pulse*8;
-        ctx.fillStyle = color;
-        ctx.globalAlpha = 0.18 + pulse*.12;
-        ctx.beginPath(); ctx.arc(coreX, coreY, coreR*1.7, 0, Math.PI*2); ctx.fill();
-        ctx.globalAlpha = 0.92;
-        ctx.beginPath(); ctx.arc(coreX, coreY, coreR, 0, Math.PI*2); ctx.fill();
+        const attackGlow = Math.max(0, Math.min(1, u._attackGlow || 0));
+        const telegraphColor = u.variant === 'hunter' ? '#ffd16a' : color;
+        ctx.shadowColor = telegraphColor;
+        ctx.shadowBlur = 10 + pulse*8 + attackGlow*18;
+        ctx.fillStyle = telegraphColor;
+        ctx.globalAlpha = 0.18 + pulse*.12 + attackGlow*.18;
+        ctx.beginPath(); ctx.arc(coreX, coreY, coreR*(1.7 + attackGlow*.55), 0, Math.PI*2); ctx.fill();
+        ctx.globalAlpha = Math.min(1, 0.92 + attackGlow*.08);
+        ctx.beginPath(); ctx.arc(coreX, coreY, coreR*(1 + attackGlow*.14), 0, Math.PI*2); ctx.fill();
+
+        // Thin lock ring makes imminent attacks readable without adding UI text.
+        if (attackGlow > .08 && u.tier === 2) {
+          ctx.globalAlpha = .18 + attackGlow*.42;
+          ctx.strokeStyle = telegraphColor;
+          ctx.lineWidth = 1;
+          ctx.shadowBlur = 8 + attackGlow*10;
+          ctx.beginPath();
+          ctx.arc(coreX, coreY, coreR*(2.15 + attackGlow*.34), 0, Math.PI*2);
+          ctx.stroke();
+        }
       }
 
       ctx.globalAlpha = 1;
@@ -11406,6 +13091,14 @@
     if (hitConfirmFlash > 0) {
       ctx.fillStyle = `rgba(255,255,255,${hitConfirmFlash})`;
       ctx.fillRect(0, 0, W, H);
+    }
+    if (empFlashAlpha > 0) {
+      const empPulse=ctx.createRadialGradient(W*.5,H*.5,0,W*.5,H*.5,Math.max(W,H)*.72);
+      empPulse.addColorStop(0,`rgba(220,255,255,${empFlashAlpha*.95})`);
+      empPulse.addColorStop(.35,`rgba(91,232,255,${empFlashAlpha*.55})`);
+      empPulse.addColorStop(1,`rgba(151,86,255,0)`);
+      ctx.fillStyle=empPulse;
+      ctx.fillRect(0,0,W,H);
     }
     if (upgradeFlashAlpha > 0) {
       // Upgrade milestone flash: synthwave cyan + magenta, kept separate from the red damage flash.
@@ -12238,58 +13931,7 @@
   });
 
   // ---------- Main menu (re)binding — needed because "quit to menu" restores fresh markup ----------
-  function weaponMenuSchematic(weapon) {
-    const color = weapon?.color || '#6ff2ff';
-    const common = `fill="none" stroke="${color}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"`;
-    const soft = `fill="none" stroke="${color}" stroke-width="1" opacity=".32" vector-effect="non-scaling-stroke"`;
-    const id = weapon?.id || 'sniper';
 
-    if (id === 'sniper') {
-      return `<svg viewBox="0 0 180 90" aria-hidden="true">
-        <path ${soft} d="M18 45h144M90 14v62"/>
-        <circle ${soft} cx="90" cy="45" r="28"/>
-        <path ${common} d="M24 45h96"/>
-        <path ${common} d="M120 39v12h25l11-6-11-6h-25Z"/>
-        <path ${common} d="M42 36h16v18H42zM65 39h19v12H65z"/>
-        <path ${common} d="M28 45 18 39v12l10-6Z"/>
-        <path ${soft} d="M151 31v28M158 34v22"/>
-      </svg>`;
-    }
-
-    if (id === 'shotgun') {
-      return `<svg viewBox="0 0 180 90" aria-hidden="true">
-        <path ${soft} d="M20 45h140M90 14v62"/>
-        <circle ${soft} cx="90" cy="45" r="28"/>
-        <path ${common} d="M30 34h86l25 7v8l-25 7H30"/>
-        <path ${common} d="M38 39h70M38 51h70"/>
-        <path ${common} d="M29 34 18 40v10l11 6"/>
-        <path ${soft} d="M140 41 164 29M140 45h28M140 49l24 12"/>
-      </svg>`;
-    }
-
-    if (id === 'rocket') {
-      return `<svg viewBox="0 0 180 90" aria-hidden="true">
-        <path ${soft} d="M20 45h140M90 14v62"/>
-        <circle ${soft} cx="90" cy="45" r="29"/>
-        <rect ${common} x="39" y="28" width="58" height="34" rx="4"/>
-        <path ${common} d="M49 34v22M61 34v22M73 34v22M85 34v22"/>
-        <path ${common} d="M101 45h29"/>
-        <path ${common} d="M130 34 159 45l-29 11 7-11-7-11Z"/>
-        <path ${soft} d="M32 24v42M104 22v46"/>
-      </svg>`;
-    }
-
-    return `<svg viewBox="0 0 180 90" aria-hidden="true">
-      <path ${soft} d="M20 45h140M90 14v62"/>
-      <circle ${soft} cx="90" cy="45" r="29"/>
-      <path ${common} d="M30 45h34"/>
-      <circle ${common} cx="82" cy="45" r="18"/>
-      <circle ${soft} cx="82" cy="45" r="10"/>
-      <path ${common} d="M82 27v36M64 45h36M69 32l26 26M95 32 69 58"/>
-      <path ${common} d="M100 38h37l19 7-19 7h-37"/>
-      <path ${soft} d="M145 31v28M153 35v20"/>
-    </svg>`;
-  }
 
   function bindMainMenuUI() {
     const startBtn = overlay.querySelector('#startBtn');
@@ -12340,19 +13982,12 @@
     shipNameLabelEl = overlay.querySelector('#shipNameLabel');
     shipDescLabelEl = overlay.querySelector('#shipDescLabel');
     const weaponNameEl=overlay.querySelector('#weaponNameLabel'); const weaponDescEl=overlay.querySelector('#weaponDescLabel'); const weaponStatsEl=overlay.querySelector('#weaponStatsLabel');
-    const weaponSchematicEl=overlay.querySelector('#weaponSchematicIcon');
-    const weaponSchematicFrame=overlay.querySelector('#weaponSchematicFrame');
     const weaponPrevBtn=overlay.querySelector('#weaponPrevBtn'); const weaponNextBtn=overlay.querySelector('#weaponNextBtn');
     const refreshWeaponUI=()=>{ 
       const w=WEAPON_BUILDS[selectedWeaponIndex];
       if(weaponNameEl){weaponNameEl.textContent=w.name; weaponNameEl.style.color=w.color;}
       if(weaponDescEl)weaponDescEl.textContent=w.desc;
       if(weaponStatsEl)weaponStatsEl.textContent=w.stats;
-      if(weaponSchematicEl)weaponSchematicEl.innerHTML=weaponMenuSchematic(w);
-      if(weaponSchematicFrame){
-        weaponSchematicFrame.style.setProperty('--weapon-color', w.color);
-        weaponSchematicFrame.dataset.weapon=w.id;
-      }
     };
     if(weaponPrevBtn)weaponPrevBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+WEAPON_BUILDS.length-1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
     if(weaponNextBtn)weaponNextBtn.addEventListener('click',()=>{selectedWeaponIndex=(selectedWeaponIndex+1)%WEAPON_BUILDS.length;refreshWeaponUI();SFX.uiTick();});
@@ -12510,7 +14145,12 @@
     if (val) renderPauseLoadout();
     pauseOverlay.classList.toggle('hidden', !val);
     pauseBtn.innerHTML = uiIcon(val ? 'play' : 'pause');
-    if (val) SFX.setThrust(false);
+    if (val) {
+      SFX.setThrust(false);
+      fireHeld=false;
+      cancelPulseCharge(false);
+      updateHUD();
+    }
   }
 
   pauseBtn.addEventListener('click', () => { SFX.uiTick(); setPaused(!paused); });
